@@ -9,6 +9,17 @@ using RoundDisplayAppGUI.Views;
 
 namespace RoundDisplayAppGUI;
 
+/* Inicializační kód pro Avalonia framework
+ * Součástí Avalonia.MVVM template
+ * Hledá View a ViewModel, které se nachází v projektu pomocí reflection a aplikuje je, pokud jsou potřeba.
+ * Více o MVVM struktuře: https://learn.microsoft.com/cs-cz/dotnet/architecture/maui/mvvm
+ *
+ * Doporučuju na tento kód nesahat.
+ *
+ * Hlavní kód se nachází v Views/MainWindow a ViewModels/MainWindowViewModel
+ */
+
+
 public partial class App : Application
 {
     public override void Initialize()

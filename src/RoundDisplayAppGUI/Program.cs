@@ -3,6 +3,14 @@ using System;
 
 namespace RoundDisplayAppGUI;
 
+/* Inicializační kód pro Avalonia framework
+ * Součástí Avalonia.MVVM template
+ *
+ * Doporučuji na tento kód nesahat
+ *
+ * Hlavní kód se nachází v Views/MainWindow a ViewModels/MainWindowViewModel
+ */
+
 sealed class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
