@@ -8,35 +8,80 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
-
-    public ITransform RotationTransform
+    public ITransform SecondHandRotation
     {
-        get => _rotationTransform;
+        get => _secondHandRotation;
         set
         {
-            _rotationTransform = value;
-            this.OnPropertyChanged(nameof(RotationTransform));
+            _secondHandRotation = value;
+            OnPropertyChanged();
         }
     }
-    private ITransform _rotationTransform;
+    private ITransform _secondHandRotation;
+
+    public ITransform MinuteHandRotation
+    {
+        get => _minuteHandRotation;
+        set
+        {
+            _minuteHandRotation = value;
+            OnPropertyChanged();
+        }
+    }
+    private ITransform _minuteHandRotation;
+
+    public ITransform HourHandRotation
+    {
+        get => _hourHandRotation;
+        set
+        {
+            _hourHandRotation = value;
+            OnPropertyChanged();
+        }
+    }
+    private ITransform _hourHandRotation;
 
     public MainWindowViewModel()
     {
-        RotationTransform = new RotateTransform()
+        // Jako výchozí hodnotu natočení obrázku dáme 0°, což znamená, že obrázek není otočení
+        
+        SecondHandRotation = new RotateTransform()
         {
-            Angle = 0, CenterX = 480 / 2,
-            CenterY = 480 / 2
+            Angle = 0,
+            CenterX = 0.5,
+            CenterY = 0.5
         };
+
+        MinuteHandRotation = new RotateTransform()
+        {
+            Angle = 0,
+            CenterX = 0.5,
+            CenterY = 0.5
+        };
+
+        HourHandRotation = new RotateTransform()
+        {
+            Angle = 0,
+            CenterX = 0.5,
+            CenterY = 0.5
+        };
+        
+        // Dosadíme do RT sama sebe, aby kompilátor nenadával
+        // Kompilátor tohle stejně asi během kompilace smaže
+        _secondHandRotation = SecondHandRotation;
+        _minuteHandRotation = MinuteHandRotation;
+        _hourHandRotation = HourHandRotation;
+    }
+
+    public void SetTime(DateTime time)
+    {
+        SetSecondHand(time.Second);
+        SetMinuteHand(time.Minute + ((double)time.Second / 60));
+        SetHourHand(time.Hour + ((double)time.Minute / 60));
     }
     
-    public void SetSecondHand(byte seconds)
+    private void SetSecondHand(int seconds)
     {
-        if (seconds > 60)
-        {
-            throw new ArgumentOutOfRangeException(nameof(seconds), seconds, "Seconds must have a value from 0 to 60.");
-        }
-        
         // 0 sekund je -90 stupňů.
         // 15 sekund je 0 stupňů
         // 30 sekund je 90 stupňů
@@ -45,12 +90,43 @@ public partial class MainWindowViewModel : ViewModelBase
 
         int angle = (90/15) * seconds - 90;
 
-        RotationTransform = new RotateTransform()
+        SecondHandRotation = new RotateTransform()
         {
             Angle = angle,
             CenterX = 0.5,
             CenterY = 0.5
         };
+    }
+
+    private void SetMinuteHand(double minutes)
+    {
+        // Princip stejný jako u sekundové ručičky, jenom už je přesnější
+        // Ručičku ale posouvám o 2.5 stupňů zpátky kvůli nepřesnostem způsobeným mou úpravou obrázků
+        double angle = (90.0 / 15) * minutes - 90 - 2.5;
+
+        MinuteHandRotation = new RotateTransform()
+        {
+            Angle = angle,
+            CenterX = 0.5,
+            CenterY = 0.5
+        };
+    }
+    
+    private void SetHourHand(double hours)
+    {
+        // 0 hodin = -90 stupňů
+        // 3 hodiny = 0 stupňů
+        // 6 hodin = 90 stupňů
+        // 9 hodin = 180 stupňů
+        // 12 hodin = 270 stupňů (-90)
         
+        double angle = (90 / 3) * hours - 90;
+
+        HourHandRotation = new RotateTransform()
+        {
+            Angle = angle,
+            CenterX = 0.5,
+            CenterY = 0.5
+        };
     }
 }

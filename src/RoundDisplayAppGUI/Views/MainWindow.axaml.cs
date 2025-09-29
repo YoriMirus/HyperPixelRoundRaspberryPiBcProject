@@ -28,7 +28,7 @@ public partial class MainWindow : Window
         if (DataContext is null)
             return true;
         
-        ((MainWindowViewModel)DataContext).SetSecondHand((byte)DateTime.Now.Second);
+        ((MainWindowViewModel)DataContext).SetTime(DateTime.Now);
         
         // Časovač potřebuje vědět, zda má tuto metodu zavolat znova
         // Nemáme důvod to přerušovat, takže vždycky dáváme true, a.k.a. pokračovat časování

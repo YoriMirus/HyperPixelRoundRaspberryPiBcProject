@@ -19,7 +19,9 @@
     
     <Grid>
         <Image Source="/Assets/clock.png" ZIndex="0"/>
-        <Image x:Name="SecondHandImage" Source="/Assets/second-hand.png" RenderTransform="{Binding RotationTransform}" ZIndex="1"/>
+        <Image x:Name="SecondHandImage" Source="/Assets/second-hand.png" RenderTransform="{Binding SecondHandRotation}" ZIndex="3"/>
+        <Image x:Name="MinuteHandImage" Source="/Assets/minute-hand.png" RenderTransform="{Binding MinuteHandRotation}" ZIndex="2"/>
+        <Image x:Name="HourHandImage" Source="/Assets/hour-hand.png" RenderTransform="{Binding HourHandRotation}"/>
     </Grid>
 
 </Window>
