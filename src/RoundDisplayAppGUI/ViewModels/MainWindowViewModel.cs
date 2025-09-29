@@ -41,9 +41,32 @@ public partial class MainWindowViewModel : ViewModelBase
     }
     private ITransform _hourHandRotation;
 
+    public string DayOfWeek
+    {
+        get => _dayOfWeek;
+        set
+        {
+            _dayOfWeek = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private string _dayOfWeek;
+
+    public string DateStr
+    {
+        get => _dateStr;
+        set
+        {
+            _dateStr = value;
+            OnPropertyChanged();
+        }
+    }
+    private string _dateStr;
+
     public MainWindowViewModel()
     {
-        // Jako výchozí hodnotu natočení obrázku dáme 0°, což znamená, že obrázek není otočení
+        // Jako výchozí hodnotu natočení obrázku dáme 0°, což znamená, že obrázek není otočen
         
         SecondHandRotation = new RotateTransform()
         {
@@ -71,6 +94,9 @@ public partial class MainWindowViewModel : ViewModelBase
         _secondHandRotation = SecondHandRotation;
         _minuteHandRotation = MinuteHandRotation;
         _hourHandRotation = HourHandRotation;
+
+        _dateStr = string.Empty;
+        _dayOfWeek = string.Empty;
     }
 
     public void SetTime(DateTime time)
@@ -78,6 +104,33 @@ public partial class MainWindowViewModel : ViewModelBase
         SetSecondHand(time.Second);
         SetMinuteHand(time.Minute + ((double)time.Second / 60));
         SetHourHand(time.Hour + ((double)time.Minute / 60));
+
+        switch (time.DayOfWeek)
+        {
+            case System.DayOfWeek.Monday:
+                DayOfWeek = "PO";
+                break;
+            case System.DayOfWeek.Tuesday:
+                DayOfWeek = "ÚT";
+                break;
+            case System.DayOfWeek.Wednesday:
+                DayOfWeek = "ST";
+                break;
+            case System.DayOfWeek.Thursday:
+                DayOfWeek = "ČT";
+                break;
+            case System.DayOfWeek.Friday:
+                DayOfWeek = "PÁ";
+                break;
+            case System.DayOfWeek.Saturday:
+                DayOfWeek = "SO";
+                break;
+            case System.DayOfWeek.Sunday:
+                DayOfWeek = "NE";
+                break;
+        }
+
+        DateStr = time.ToString("dd.MM.yyyy");
     }
     
     private void SetSecondHand(int seconds)

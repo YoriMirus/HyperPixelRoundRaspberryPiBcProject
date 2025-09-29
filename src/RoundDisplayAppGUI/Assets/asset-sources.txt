@@ -2,3 +2,5 @@ Pro zatím jsem si většinu obrázků vzal z internetu. V budoucnu je kdyžtak 
 clock.png - https://illustoon.com/?id=5054
 
 second-hand.png - udělal jsem sám
+minute-hand.png a hour-hand.png - https://www.klockit.com/3-5-8-black-push-on-hour-and-minute-hand-set.html
+
