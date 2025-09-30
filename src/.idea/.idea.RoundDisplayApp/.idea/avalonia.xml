@@ -5,6 +5,8 @@
       <map>
         <entry key="RoundDisplayAppGUI/App.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Resources/ClockResources.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
+        <entry key="RoundDisplayAppGUI/Views/ClockUserControl.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
+        <entry key="RoundDisplayAppGUI/Views/ClockView.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/MainWindow.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
       </map>
     </option>

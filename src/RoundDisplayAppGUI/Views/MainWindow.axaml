@@ -3,6 +3,7 @@
         xmlns:vm="using:RoundDisplayAppGUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:RoundDisplayAppGUI.Views"
         mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="480" Width="480" Height="480"
         x:Class="RoundDisplayAppGUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -18,23 +19,8 @@
     </Design.DataContext>
     
     <Grid>
-        <!--Samotný design hodin-->
-        <Image Source="/Assets/clock.png" ZIndex="0"/>
-        <Image x:Name="SecondHandImage" Source="/Assets/second-hand.png" RenderTransform="{Binding SecondHandRotation}" ZIndex="3"/>
-        <Image x:Name="MinuteHandImage" Source="/Assets/minute-hand.png" RenderTransform="{Binding MinuteHandRotation}" ZIndex="2"/>
-        <Image x:Name="HourHandImage" Source="/Assets/hour-hand.png" RenderTransform="{Binding HourHandRotation}" ZIndex="1"/>
-        
-        <!--Digitální displej datumu -->
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,130" Width="240" Height="60">
-            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" BorderThickness="2">
-                <Grid>
-                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Text="{Binding DayOfWeek}"
-                               FontSize="30" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One "/>
-                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Text="{Binding DateStr}"
-                               FontSize="30" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One "/>
-                </Grid>
-            </Border>
-            
-        </Grid>
+        <!--Avalonia defaultně dává pro potomky datacontext rodiče. Musíme ho tedy ručně přepsat. Nejlépe pomocí vlastnosti v datacontextu rodiče.-->
+        <views:ClockView DataContext="{Binding ClockVM}"/>
     </Grid>
+
 </Window>

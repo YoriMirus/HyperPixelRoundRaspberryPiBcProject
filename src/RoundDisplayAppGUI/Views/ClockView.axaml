@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:RoundDisplayAppGUI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="vm:ClockViewModel"
+             x:Class="RoundDisplayAppGUI.Views.ClockView">
+    <Grid>
+        <!--Samotný design hodin-->
+        <Image Source="/Assets/clock.png" ZIndex="0"/>
+        <Image x:Name="SecondHandImage" Source="/Assets/second-hand.png" RenderTransform="{Binding SecondHandRotation}" ZIndex="3"/>
+        <Image x:Name="MinuteHandImage" Source="/Assets/minute-hand.png" RenderTransform="{Binding MinuteHandRotation}" ZIndex="2"/>
+        <Image x:Name="HourHandImage" Source="/Assets/hour-hand.png" RenderTransform="{Binding HourHandRotation}" ZIndex="1"/>
+        
+        <!--Digitální displej datumu -->
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,130" Width="240" Height="60">
+            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderBrush="White" BorderThickness="2">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Text="{Binding DayOfWeek}"
+                               FontSize="30" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One "/>
+                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Text="{Binding DateStr}"
+                               FontSize="30" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One "/>
+                </Grid>
+            </Border>
+            
+        </Grid>
+    </Grid>
+</UserControl>
