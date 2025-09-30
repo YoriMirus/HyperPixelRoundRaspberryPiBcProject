@@ -20,7 +20,8 @@
     
     <Grid>
         <!--Avalonia defaultně dává pro potomky datacontext rodiče. Musíme ho tedy ručně přepsat. Nejlépe pomocí vlastnosti v datacontextu rodiče.-->
-        <views:ClockView DataContext="{Binding ClockVM}"/>
+        <!--<views:ClockView DataContext="{Binding ClockVM}"/>-->
+        <views:Speedometer></views:Speedometer>
     </Grid>
 
 </Window>
