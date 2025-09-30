@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -8,19 +9,20 @@ namespace RoundDisplayAppGUI.Views;
 
 public partial class MainWindow : Window
 {
+    private bool _continueTimer = true;
+    
     public MainWindow()
     {
+        Closing += OnWindowClosing;
         InitializeComponent();
         //DataContext = new MainWindowViewModel();
 
         DispatcherTimer.Run(OnTimerTick, TimeSpan.FromMilliseconds(100), DispatcherPriority.ApplicationIdle);
-        
-        this.SecondHandImage.RenderTransform = new RotateTransform()
-        {
-            Angle = 69,
-            CenterX = 0.5,
-            CenterY = 0.5
-        };
+    }
+
+    void OnWindowClosing(object? sender, CancelEventArgs e)
+    {
+        _continueTimer = false;
     }
 
     bool OnTimerTick()
@@ -32,6 +34,6 @@ public partial class MainWindow : Window
         
         // Časovač potřebuje vědět, zda má tuto metodu zavolat znova
         // Nemáme důvod to přerušovat, takže vždycky dáváme true, a.k.a. pokračovat časování
-        return true;
+        return _continueTimer;
     }
 }
