@@ -71,22 +71,22 @@ public partial class MainWindowViewModel : ViewModelBase
         SecondHandRotation = new RotateTransform()
         {
             Angle = 0,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
 
         MinuteHandRotation = new RotateTransform()
         {
             Angle = 0,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
 
         HourHandRotation = new RotateTransform()
         {
             Angle = 0,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
         
         // Dosadíme do RT sama sebe, aby kompilátor nenadával
@@ -146,22 +146,22 @@ public partial class MainWindowViewModel : ViewModelBase
         SecondHandRotation = new RotateTransform()
         {
             Angle = angle,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
     }
 
     private void SetMinuteHand(double minutes)
     {
         // Princip stejný jako u sekundové ručičky, jenom už je přesnější
-        // Ručičku ale posouvám o 2.5 stupňů zpátky kvůli nepřesnostem způsobeným mou úpravou obrázků
-        double angle = (90.0 / 15) * minutes - 90 - 2.5;
+        // Ručičku ale posouvám o 1 stupeň zpátky kvůli nepřesnostem způsobeným mou úpravou obrázků
+        double angle = (90.0 / 15) * minutes - 90 - 1;
 
         MinuteHandRotation = new RotateTransform()
         {
             Angle = angle,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
     }
     
@@ -178,8 +178,8 @@ public partial class MainWindowViewModel : ViewModelBase
         HourHandRotation = new RotateTransform()
         {
             Angle = angle,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
     }
 }
