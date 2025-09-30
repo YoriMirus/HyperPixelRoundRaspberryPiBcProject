@@ -71,22 +71,22 @@ public partial class ClockViewModel : ViewModelBase
         SecondHandRotation = new RotateTransform()
         {
             Angle = 0,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
 
         MinuteHandRotation = new RotateTransform()
         {
             Angle = 0,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
 
         HourHandRotation = new RotateTransform()
         {
             Angle = 0,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
         
         // Dosadíme do RT sama sebe, aby kompilátor nenadával
@@ -146,8 +146,8 @@ public partial class ClockViewModel : ViewModelBase
         SecondHandRotation = new RotateTransform()
         {
             Angle = angle,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
     }
 
@@ -160,8 +160,8 @@ public partial class ClockViewModel : ViewModelBase
         MinuteHandRotation = new RotateTransform()
         {
             Angle = angle,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
     }
     
@@ -178,8 +178,8 @@ public partial class ClockViewModel : ViewModelBase
         HourHandRotation = new RotateTransform()
         {
             Angle = angle,
-            CenterX = 0.5,
-            CenterY = 0.5
+            CenterX = 0,
+            CenterY = 0
         };
     }
 }
