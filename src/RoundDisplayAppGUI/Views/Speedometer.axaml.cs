@@ -4,11 +4,30 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Threading;
+using CommunicationLibrary;
 
 namespace RoundDisplayAppGUI.Views;
 
 public partial class Speedometer : UserControl
 {
+    public static ISensorDataSource<double>? SpeedometerDataSource
+    {
+        get
+        {
+            return _speedoDataSource;
+        }
+        set
+        {
+            _speedoDataSource = value;
+            DataSourceChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    private static ISensorDataSource<double> _speedoDataSource;
+    private static event EventHandler? DataSourceChanged;
+
+    private double _currentValue = 0.0;
+    
     // Parametry
     readonly double _startAngle = 135 * Math.PI / 180.0;  // -135°
     readonly double _endAngle   = 405 * Math.PI / 180.0;  // +225°
@@ -22,6 +41,18 @@ public partial class Speedometer : UserControl
     
     public Speedometer()
     {
+        DataSourceChanged += (s, e) =>
+        {
+            if (SpeedometerDataSource is null)
+                return;
+            SpeedometerDataSource.OnDataReceived += (sender, args) => { Dispatcher.UIThread.Invoke(() =>
+            {
+                _currentValue = args.Value;
+                InvalidateVisual();
+            }); 
+            };
+            SpeedometerDataSource.StartListening();
+        };
         InitializeComponent();
     }
     
@@ -77,7 +108,7 @@ public partial class Speedometer : UserControl
                 new Point(labelPos.X - formatted.Width / 2, labelPos.Y - formatted.Height / 2));
         }
         
-        DrawNeedle(context, new Point(Bounds.Width / 2, Bounds.Height/2), radius, 70);
+        DrawNeedle(context, new Point(Bounds.Width / 2, Bounds.Height/2), radius, _currentValue);
     }
     
     StreamGeometry DrawArcSegment(Point center, double radius,

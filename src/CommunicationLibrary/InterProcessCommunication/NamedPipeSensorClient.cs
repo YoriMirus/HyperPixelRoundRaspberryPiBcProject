@@ -10,14 +10,14 @@ namespace CommunicationLibrary.InterProcessCommunication;
 /// <summary>
 /// Klient, který poslouchá data ze senzoru přes Named Pipe a vyvolává události při příjmu nových dat.
 /// </summary>
-public class NamedPipeSensorClient : ISensorDataSource<string>
+public class NamedPipeSensorClient<T> : ISensorDataSource<T>
 {
     private readonly string _pipeName;
     private CancellationTokenSource? _cts;
     private Task? _listeningTask;
     private NamedPipeClientStream? _pipeClient;
 
-    public event SensorDataReceivedHandler<string>? OnDataReceived;
+    public event SensorDataReceivedHandler<T>? OnDataReceived;
 
     public NamedPipeSensorClient(string pipeName)
     {
@@ -69,7 +69,7 @@ public class NamedPipeSensorClient : ISensorDataSource<string>
                     try
                     {
                         // Expecting server to send JSON like: {"Timestamp":"2025-10-04T12:34:56.789Z","Value":42.7}
-                        var data = JsonSerializer.Deserialize<SensorDataEventArgs<string>>(json);
+                        var data = JsonSerializer.Deserialize<SensorDataEventArgs<T>>(json);
                         if (data != null)
                         {
                             OnDataReceived?.Invoke(this, data);

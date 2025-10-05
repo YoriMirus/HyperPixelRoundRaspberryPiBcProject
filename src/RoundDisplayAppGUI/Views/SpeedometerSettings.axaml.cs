@@ -4,6 +4,9 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
+using CommunicationLibrary.InterProcessCommunication;
+using CommunicationLibrary.TCPIPCommunication;
+
 namespace RoundDisplayAppGUI.Views;
 
 public partial class SpeedometerSettings : UserControl
@@ -52,7 +55,27 @@ public partial class SpeedometerSettings : UserControl
 
     private void AbsorbOnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        // Stejný účel jako AbsornOnPointerPressed
+        // Stejný účel jako AbsorbOnPointerPressed
         e.Handled = true;
+    }
+
+    private void ApplySettingsButtonClicked(object? sender, RoutedEventArgs e)
+    {
+        // TCP/IP
+        if (SelectionComboBox.SelectedIndex == 0)
+        {
+            if (IPAddressTextBox.Text is null)
+                return;
+            string ipAddress = IPAddressTextBox.Text;
+            Speedometer.SpeedometerDataSource = new TcpSensorClient<double>(ipAddress);
+        }
+        // PipeName IPC
+        else if (SelectionComboBox.SelectedIndex == 1)
+        {
+            if (PipeNameTextBox.Text is null)
+                return;
+            var pipeName = PipeNameTextBox.Text;
+            Speedometer.SpeedometerDataSource = new NamedPipeSensorClient<double>(pipeName);
+        }
     }
 }

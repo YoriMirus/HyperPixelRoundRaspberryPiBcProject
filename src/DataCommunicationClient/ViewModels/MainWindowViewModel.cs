@@ -14,7 +14,7 @@ using CommunicationLibrary.TCPIPCommunication;
 public partial class MainWindowViewModel : ViewModelBase , IDisposable
 {
     //public NamedPipeSensorServer IPCServer { get; set; }
-    public TcpSensorServer<string> TCPIPServer { get; set; }
+    public TcpSensorServer<double> TCPIPServer { get; set; }
     
     public double DataToSend
     {
@@ -33,14 +33,14 @@ public partial class MainWindowViewModel : ViewModelBase , IDisposable
         /*IPCServer = new NamedPipeSensorServer("SensorPipe");
         IPCServer.Start();*/
 
-        TCPIPServer = new TcpSensorServer<string>(35653);
+        TCPIPServer = new TcpSensorServer<double>();
         TCPIPServer.StartListening();
     }
 
     public async Task SendDataAsync()
     {
         //await IPCServer.SendAsync(DataToSend.ToString(CultureInfo.InvariantCulture));
-        TCPIPServer.CurrentValue = DataToSend.ToString();
+        TCPIPServer.CurrentValue = _dataToSend;
     }
     
     public void Dispose()

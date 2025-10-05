@@ -16,7 +16,7 @@ public partial class MainWindow : Window
 {
     private Point _mousePressPosition;
     private bool _isPointerPressed;
-    private Thickness originalMargin;
+    private Thickness _originalMargin;
     
     public MainWindow()
     {
@@ -26,33 +26,31 @@ public partial class MainWindow : Window
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
     {
         _isPointerPressed = true;
-        originalMargin = ContentGrid.Margin;
+        _originalMargin = ContentGrid.Margin;
         _mousePressPosition = e.GetPosition(this);
-        Console.WriteLine($"x: {e.GetPosition(this).X}, y: {e.GetPosition(this).Y}");
         e.Handled = true;
     }
 
     private async void OnMouseReleased(object? sender, PointerReleasedEventArgs e)
     {
         _isPointerPressed = false;
-        Console.WriteLine($"x: {e.GetPosition(this).X}, y: {e.GetPosition(this).Y}");
 
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
 
-        Thickness newMargin = originalMargin;
+        Thickness newMargin = _originalMargin;
 
         if (deltaY > 120)
         {
-            newMargin = new Thickness(originalMargin.Left, originalMargin.Top - 960, originalMargin.Right,
-                originalMargin.Bottom);
+            newMargin = new Thickness(_originalMargin.Left, _originalMargin.Top - 960, _originalMargin.Right,
+                _originalMargin.Bottom);
         }
         else if (deltaY < -120)
         {
-            newMargin = new Thickness(originalMargin.Left, originalMargin.Top + 960, originalMargin.Right,
-                originalMargin.Bottom);
+            newMargin = new Thickness(_originalMargin.Left, _originalMargin.Top + 960, _originalMargin.Right,
+                _originalMargin.Bottom);
         }
 
-        originalMargin = newMargin;
+        _originalMargin = newMargin;
         
         // Vytvořme animaci, aby ten přechod byl plynulý
 
@@ -96,9 +94,7 @@ public partial class MainWindow : Window
             return;
         
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
-        ContentGrid.Margin = new Thickness(ContentGrid.Margin.Left, originalMargin.Top - (deltaY * 2),
+        ContentGrid.Margin = new Thickness(ContentGrid.Margin.Left, _originalMargin.Top - (deltaY * 2),
             ContentGrid.Margin.Right, ContentGrid.Margin.Bottom);
-        
-        Console.WriteLine($"x: {e.GetPosition(this).X}, y: {e.GetPosition(this).Y}");
     }
 }

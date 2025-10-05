@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// Serverová část komunikace přes Named Pipe — odesílá data senzoru klientovi.
 /// </summary>
-public class NamedPipeSensorServer : IDisposable
+public class NamedPipeSensorServer<T> : IDisposable
 {
     private readonly string _pipeName;
     private NamedPipeServerStream? _pipeServer;
@@ -52,12 +52,12 @@ public class NamedPipeSensorServer : IDisposable
     /// <summary>
     /// Odesílá data klientovi (pokud je připojen).
     /// </summary>
-    public async Task SendAsync(string value)
+    public async Task SendAsync(T value)
     {
         if (_writer == null)
             return; // no client yet
 
-        var data = new SensorDataEventArgs<string>(DateTime.Now, value);
+        var data = new SensorDataEventArgs<T>(DateTime.Now, value);
         string json = JsonSerializer.Serialize(data);
 
         await _writer.WriteLineAsync(json);

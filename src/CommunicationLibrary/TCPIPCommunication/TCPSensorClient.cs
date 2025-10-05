@@ -15,7 +15,7 @@ public class TcpSensorClient<T> : ISensorDataSource<T>
 
     public event SensorDataReceivedHandler<T>? OnDataReceived;
 
-    public TcpSensorClient(string host, int port)
+    public TcpSensorClient(string host, int port = 35653)
     {
         _host = host;
         _port = port;
