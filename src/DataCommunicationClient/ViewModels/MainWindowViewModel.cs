@@ -8,13 +8,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DataCommunicationClient.ViewModels;
 
-using CommunicationLibrary;
 using CommunicationLibrary.InterProcessCommunication;
+using CommunicationLibrary.TCPIPCommunication;
 
 public partial class MainWindowViewModel : ViewModelBase , IDisposable
 {
-    public NamedPipeSensorServer IPCServer { get; set; }
-
+    //public NamedPipeSensorServer IPCServer { get; set; }
+    public TcpSensorServer<string> TCPIPServer { get; set; }
+    
     public double DataToSend
     {
         get => _dataToSend;
@@ -29,17 +30,22 @@ public partial class MainWindowViewModel : ViewModelBase , IDisposable
     
     public MainWindowViewModel()
     {
-        IPCServer = new NamedPipeSensorServer("SensorPipe");
-        IPCServer.Start();
+        /*IPCServer = new NamedPipeSensorServer("SensorPipe");
+        IPCServer.Start();*/
+
+        TCPIPServer = new TcpSensorServer<string>(35653);
+        TCPIPServer.StartListening();
     }
 
     public async Task SendDataAsync()
     {
-        await IPCServer.SendAsync(DataToSend.ToString(CultureInfo.InvariantCulture));
+        //await IPCServer.SendAsync(DataToSend.ToString(CultureInfo.InvariantCulture));
+        TCPIPServer.CurrentValue = DataToSend.ToString();
     }
     
     public void Dispose()
     {
-        IPCServer.Dispose();
+        //IPCServer.Dispose();
+        TCPIPServer.Dispose();
     }
 }
