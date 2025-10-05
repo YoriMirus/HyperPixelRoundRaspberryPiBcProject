@@ -3,6 +3,8 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="DataCommunicationClient/App.axaml" value="DataCommunicationClient/DataCommunicationClient.csproj" />
+        <entry key="DataCommunicationClient/Views/MainWindow.axaml" value="DataCommunicationClient/DataCommunicationClient.csproj" />
         <entry key="RoundDisplayAppGUI/App.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Resources/ClockResources.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/ClockUserControl.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
