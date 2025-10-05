@@ -25,4 +25,7 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
   </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CommunicationLibrary\CommunicationLibrary.csproj" />
+    </ItemGroup>
 </Project>

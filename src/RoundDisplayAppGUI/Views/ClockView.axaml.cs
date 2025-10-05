@@ -9,9 +9,12 @@ namespace RoundDisplayAppGUI.Views;
 
 using RoundDisplayAppGUI.ViewModels;
 
+using CommunicationLibrary;
+
 
 public partial class ClockView : UserControl
 {
+    
     public ClockView()
     {
         //this.DataContextChanged += InitializeDataContext;

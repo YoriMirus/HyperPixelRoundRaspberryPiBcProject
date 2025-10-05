@@ -4,6 +4,10 @@ using System.Text.Json;
 
 namespace CommunicationLibrary.TCPIPCommunication;
 
+/// <summary>
+/// Server na bázi TCP/IP, pomocí kterého se můžou odesílat data ze senzoru
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class TcpSensorServer<T>
 {
     private readonly int _port;

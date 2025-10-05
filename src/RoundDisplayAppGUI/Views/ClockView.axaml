@@ -3,7 +3,7 @@
              xmlns:vm="clr-namespace:RoundDisplayAppGUI.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="480" Width="480" Height="480"
              x:DataType="vm:ClockViewModel"
              x:Class="RoundDisplayAppGUI.Views.ClockView">
     <Grid>
