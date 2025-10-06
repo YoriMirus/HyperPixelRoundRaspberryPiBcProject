@@ -21,6 +21,8 @@ public partial class MainWindowViewModel : ViewModelBase
     
     public MainWindowViewModel()
     {
-        ClockVM = new ClockViewModel();       
+        ClockVM = new ClockViewModel();
+        // Assignuju znova sama sebe, aby kompilátor ztichnul
+        _clockVM = ClockVM;
     }
 }

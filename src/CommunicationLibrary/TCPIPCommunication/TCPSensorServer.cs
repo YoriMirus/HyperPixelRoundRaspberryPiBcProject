@@ -17,8 +17,9 @@ public class TcpSensorServer<T>
     
     public T CurrentValue { get; set; }
     
-    public TcpSensorServer(int port = 35653)
+    public TcpSensorServer(T initialValue, int port = 35653)
     {
+        CurrentValue = initialValue;
         _port = port;
     }
 

@@ -33,11 +33,11 @@ public partial class MainWindowViewModel : ViewModelBase , IDisposable
         /*IPCServer = new NamedPipeSensorServer("SensorPipe");
         IPCServer.Start();*/
 
-        TCPIPServer = new TcpSensorServer<double>();
+        TCPIPServer = new TcpSensorServer<double>(0.0);
         TCPIPServer.StartListening();
     }
 
-    public async Task SendDataAsync()
+    public void SendData()
     {
         //await IPCServer.SendAsync(DataToSend.ToString(CultureInfo.InvariantCulture));
         TCPIPServer.CurrentValue = _dataToSend;

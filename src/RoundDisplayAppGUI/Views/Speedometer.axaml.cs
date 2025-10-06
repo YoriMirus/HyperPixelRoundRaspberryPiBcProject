@@ -23,7 +23,7 @@ public partial class Speedometer : UserControl
             DataSourceChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private static ISensorDataSource<double> _speedoDataSource;
+    private static ISensorDataSource<double>? _speedoDataSource;
     private static event EventHandler? DataSourceChanged;
 
     private double _currentValue = 0.0;

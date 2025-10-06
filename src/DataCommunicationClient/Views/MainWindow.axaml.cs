@@ -12,19 +12,11 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private async void Button_OnClick(object? sender, RoutedEventArgs e)
+    private void Slider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
     {
         if (DataContext is null)
             return;
 
-        await ((MainWindowViewModel)DataContext).SendDataAsync();
-    }
-
-    private async void Slider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (DataContext is null)
-            return;
-
-        await ((MainWindowViewModel)DataContext).SendDataAsync();
+        ((MainWindowViewModel)DataContext).SendData();
     }
 }
