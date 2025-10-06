@@ -8,7 +8,7 @@ namespace CommunicationLibrary.TCPIPCommunication;
 /// Server na bázi TCP/IP, pomocí kterého se můžou odesílat data ze senzoru
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class TcpSensorServer<T>
+public class TcpSensorServer<T> : ISensorDataServer<T>
 {
     private readonly int _port;
     private TcpListener? _listener;
@@ -23,7 +23,7 @@ public class TcpSensorServer<T>
         _port = port;
     }
 
-    public void StartListening()
+    public void Start()
     {
         if (_acceptTask != null && !_acceptTask.IsCompleted)
             throw new InvalidOperationException("Server already running.");
@@ -35,7 +35,7 @@ public class TcpSensorServer<T>
         _acceptTask = Task.Run(() => AcceptClientsAsync(_cts.Token));
     }
 
-    public void StopListening()
+    public void Stop()
     {
         _cts?.Cancel();
         _listener?.Stop();
@@ -87,10 +87,15 @@ public class TcpSensorServer<T>
             Console.WriteLine($"Client disconnected: {client.Client.RemoteEndPoint}");
         }
     }
+    
+    public void UpdateValue(T value)
+    {
+        CurrentValue = value;
+    }
 
     public void Dispose()
     {
-        StopListening();
+        Stop();
         _cts?.Dispose();
     }
 }

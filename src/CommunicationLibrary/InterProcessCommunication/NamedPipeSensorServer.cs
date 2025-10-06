@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// Serverová část komunikace přes Named Pipe — odesílá data senzoru klientovi.
 /// </summary>
-public class NamedPipeSensorServer<T> : IDisposable
+public class NamedPipeSensorServer<T>: ISensorDataServer<T>
 {
     private readonly string _pipeName;
     private NamedPipeServerStream? _pipeServer;
@@ -19,12 +19,16 @@ public class NamedPipeSensorServer<T> : IDisposable
     private CancellationTokenSource? _cts;
     private Task? _serverTask;
 
+    private T _valueToSend;
+    private T? _lastSentValue;
+
     /// <summary>
     /// Inicializuje server s daným názvem roury.
     /// </summary>
-    public NamedPipeSensorServer(string pipeName)
+    public NamedPipeSensorServer(T initialValue, string pipeName)
     {
         _pipeName = pipeName;
+        _valueToSend = initialValue;
     }
 
     /// <summary>
@@ -49,19 +53,9 @@ public class NamedPipeSensorServer<T> : IDisposable
         _pipeServer?.Dispose();
     }
 
-    /// <summary>
-    /// Odesílá data klientovi (pokud je připojen).
-    /// </summary>
-    public async Task SendAsync(T value)
+    public void UpdateValue(T value)
     {
-        if (_writer == null)
-            return; // no client yet
-
-        var data = new SensorDataEventArgs<T>(DateTime.Now, value);
-        string json = JsonSerializer.Serialize(data);
-
-        await _writer.WriteLineAsync(json);
-        await _writer.FlushAsync();
+        _valueToSend = value;
     }
 
     private async Task RunServerAsync(CancellationToken token)
@@ -78,7 +72,20 @@ public class NamedPipeSensorServer<T> : IDisposable
 
             while (!token.IsCancellationRequested)
             {
-                await Task.Delay(100, token); // keep alive loop
+                await Task.Delay(10, token);
+                if (_valueToSend is null)
+                    continue;
+                if (_valueToSend.Equals(_lastSentValue)) 
+                    continue;
+                if (_writer == null)
+                    return; // no client yet
+
+                var data = new SensorDataEventArgs<T>(DateTime.Now, _valueToSend);
+                string json = JsonSerializer.Serialize(data);
+
+                await _writer.WriteLineAsync(json);
+                await _writer.FlushAsync(token);
+                _lastSentValue = _valueToSend;
             }
         }
         catch (OperationCanceledException)

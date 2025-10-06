@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Avalonia.Media;
 using Avalonia;
+using CommunicationLibrary;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DataCommunicationClient.ViewModels;
@@ -13,8 +14,7 @@ using CommunicationLibrary.TCPIPCommunication;
 
 public partial class MainWindowViewModel : ViewModelBase , IDisposable
 {
-    //public NamedPipeSensorServer IPCServer { get; set; }
-    public TcpSensorServer<double> TCPIPServer { get; set; }
+    public ISensorDataServer<double> Server { get; set; }
     
     public double DataToSend
     {
@@ -30,22 +30,17 @@ public partial class MainWindowViewModel : ViewModelBase , IDisposable
     
     public MainWindowViewModel()
     {
-        /*IPCServer = new NamedPipeSensorServer("SensorPipe");
-        IPCServer.Start();*/
-
-        TCPIPServer = new TcpSensorServer<double>(0.0);
-        TCPIPServer.StartListening();
+        Server = new NamedPipeSensorServer<double>(0.0, "Speedo");
+        Server.Start();
     }
 
     public void SendData()
     {
-        //await IPCServer.SendAsync(DataToSend.ToString(CultureInfo.InvariantCulture));
-        TCPIPServer.CurrentValue = _dataToSend;
+        Server.UpdateValue(_dataToSend);
     }
     
     public void Dispose()
     {
-        //IPCServer.Dispose();
-        TCPIPServer.Dispose();
+        Server.Dispose();
     }
 }
