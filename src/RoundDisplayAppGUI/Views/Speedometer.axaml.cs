@@ -6,6 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
 using CommunicationLibrary;
+using RoundDisplayAppGUI.Helpers;
 
 namespace RoundDisplayAppGUI.Views;
 
@@ -26,7 +27,7 @@ public partial class Speedometer : UserControl
     private static ISensorDataSource<double>? _speedoDataSource;
     private static event EventHandler? DataSourceChanged;
 
-    private double _currentValue = 0.0;
+    private double _currentValue = 25.0;
     
     // Parametry
     readonly double _startAngle = 135 * Math.PI / 180.0;  // -135°
@@ -66,127 +67,42 @@ public partial class Speedometer : UserControl
         var whitePen = new Pen(Brushes.White, 6);
         var yellowPen = new Pen(Brushes.Yellow, 6);
         var redPen = new Pen(Brushes.Red, 6);
+
+        var state = new InstrumentClusterSettingsState()
+        {
+            Center = center,
+            Radius = radius,
+            NormalPen = whitePen,
+            WarningPen = yellowPen,
+            DangerPen = redPen,
+            MinimumValue = _minValue,
+            MaximumValue = _maxValue,
+            WarningValue = _warningValue,
+            DangerValue = _dangerValue,
+            StartAngle = _startAngle,
+            EndAngle = _endAngle,
+            StepValue = _step
+        };
         
         // Vykreslení kruhu tachometru (tam, kde jsou čísla)
-        var numberLineSegment = DrawArcSegment(center, radius, 0, _warningValue);
-        context.DrawGeometry(null, whitePen, numberLineSegment);
+        var arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, 0, _warningValue);
+        context.DrawGeometry(null, whitePen, arc);
+        arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, _warningValue, _dangerValue);
+        context.DrawGeometry(null, yellowPen, arc);
+        arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, _dangerValue, _maxValue);
+        context.DrawGeometry(null, redPen, arc);
 
-        numberLineSegment = DrawArcSegment(center, radius, _warningValue, _dangerValue);
-        context.DrawGeometry(null, yellowPen, numberLineSegment);
-
-        numberLineSegment = DrawArcSegment(center, radius, _dangerValue, _maxValue);
-        context.DrawGeometry(null, redPen, numberLineSegment);
-        
-        // Vykreslení čárek a čísel tachometru
-        for (int value = _minValue; value <= _maxValue; value += _step)
+        // Vykreslení čísel a čárek tachometru
+        var ticksAndNums = InstrumentClusterDrawingHelper.CreateArcTicksAndNumbers(state);
+        foreach (Tuple<InstrumentClusterTick, InstrumentClusterNumber> ticksAndNum in ticksAndNums)
         {
-            Pen pen = whitePen;
-            if (value >= _warningValue && value < _dangerValue)
-                pen = yellowPen;
-            else if (value >= _dangerValue)
-                pen = redPen;
-            
-            double angle = ValueToAngle(value, _minValue, _maxValue);
-            
-            var tickStart = new Point(
-                center.X + Math.Cos(angle) * (radius - 20),
-                center.Y + Math.Sin(angle) * (radius - 20));
-            var tickEnd = new Point(
-                center.X + Math.Cos(angle) * radius,
-                center.Y + Math.Sin(angle) * radius);
-
-            context.DrawLine(pen, tickStart, tickEnd);
-
-            var labelPos = new Point(
-                center.X + Math.Cos(angle) * (radius - 60),
-                center.Y + Math.Sin(angle) * (radius - 60));
-
-            var formatted = new FormattedText(value.ToString(), CultureInfo.CurrentCulture,
-                FlowDirection.LeftToRight, Typeface.Default, 46, pen.Brush);
-
-            context.DrawText(formatted,
-                new Point(labelPos.X - formatted.Width / 2, labelPos.Y - formatted.Height / 2));
-        }
-        
-        DrawNeedle(context, new Point(Bounds.Width / 2, Bounds.Height/2), radius, _currentValue);
-    }
-    
-    StreamGeometry DrawArcSegment(Point center, double radius,
-        double startVal, double endVal)
-    {
-        var geo = new StreamGeometry();
-        using (var ctx = geo.Open())
-        {
-            // steps = vyhlazenost segmentu. Čím menší číslo, tím méně čár (jednodušší na GPU), ale budou více vidět nepřesnosti
-            int steps = 40;
-            for (int i = 0; i <= steps; i++)
-            {
-                double t = (double)i / steps;
-                double val = startVal + t * (endVal - startVal);
-                double angle = ValueToAngle(val, _minValue, _maxValue);
-
-                var pt = new Point(center.X + Math.Cos(angle) * radius, center.Y + Math.Sin(angle) * radius);
-
-                if (i == 0)
-                    ctx.BeginFigure(pt, false);
-                else
-                    ctx.LineTo(pt);
-            }
-            ctx.EndFigure(false);
+            ticksAndNum.Item1.DisplayTick(context);
+            ticksAndNum.Item2.DisplayNumber(context);
         }
 
-        return geo;
-    }
-    double ValueToAngle(double value, double min, double max)
-    {
-        // Poměr hodnoty k maximu
-        double t = (value - min) / (max - min);
-        
-        // Převeď na úhel
-        return _startAngle + t * (_endAngle - _startAngle);
-    }
-    
-    private void DrawNeedle(DrawingContext context, Point pivot, double radius, double value)
-    {
-        // Úhel natočení ručičky
-        double angle = ValueToAngle(value, _minValue, _maxValue);
-
-        // Paramety ručičky
-        double needleLength = radius * 0.9;
-        double needleWidth = radius * 0.03;
-
-        // Směrový vektor
-        double dx = Math.Cos(angle);
-        double dy = Math.Sin(angle);
-
-        // Pravoúhlý vektor
-        var perp = new Vector(-dy, dx);
-
-        // Špička ručičky
-        var tip = new Point(pivot.X + dx * needleLength,
-            pivot.Y + dy * needleLength);
-
-        // Základ ručičky (2 body, protože děláme trojúhelník)
-        var baseLeft = new Point(pivot.X - dx * 15 + perp.X * needleWidth,
-            pivot.Y - dy * 15 + perp.Y * needleWidth);
-        var baseRight = new Point(pivot.X - dx * 15 - perp.X * needleWidth,
-            pivot.Y - dy * 15 - perp.Y * needleWidth);
-
-        // Postav trojúhelník
-        var geo = new StreamGeometry();
-        using (var ctx = geo.Open())
-        {
-            ctx.BeginFigure(baseLeft, true);
-            ctx.LineTo(baseRight);
-            ctx.LineTo(tip);
-            ctx.EndFigure(true);
-        }
-
-        // Nakresli kruh uprostřed obrazovky
-        double hubRadius = radius * 0.1;
-        context.DrawEllipse(null, new Pen(Brushes.White, 3), pivot, hubRadius, hubRadius);
-        
-        // Nakresli ručičku
-        context.DrawGeometry(Brushes.Red, null, geo);
+        // Vykreslení ručičky tachometru
+        var needle = InstrumentClusterDrawingHelper.DrawNeedle(state, _currentValue);
+        context.DrawGeometry(null, whitePen, needle.Item1);
+        context.DrawGeometry(null, redPen, needle.Item2);
     }
 }
