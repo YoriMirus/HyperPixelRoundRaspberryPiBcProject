@@ -23,6 +23,7 @@
         <views:ClockView DataContext="{Binding ClockVM}"/>
         <views:Speedometer Margin="0,960,0,0"></views:Speedometer>
         <views:SpeedometerSettings Margin="0,1920,0,0"></views:SpeedometerSettings>
+        <views:TwoNeedleExample Margin="0,2880,0,0"></views:TwoNeedleExample>
     </Grid>
 
 </Window>

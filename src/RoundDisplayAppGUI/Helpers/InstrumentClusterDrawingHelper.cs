@@ -49,10 +49,33 @@ public class InstrumentClusterSettingsState
     /// Číselná vzdálenost mezi čísly na číselná ose
     /// </summary>
     public int StepValue { get; set; }
+    /// <summary>
+    /// Použij tuto metodu, pokud ručička ukazuje přesně opačně od číselné osy (všude, jenom ne na ní)
+    /// </summary>
+    public bool ReverseDirection { get; set; }
     
     public required Pen NormalPen { get; set; }
     public required Pen WarningPen { get; set; }
     public required Pen DangerPen { get; set; }
+
+    public InstrumentClusterSettingsState Clone()
+    {
+        return new InstrumentClusterSettingsState()
+        {
+            Center = Center,
+            DangerPen = DangerPen,
+            WarningPen = WarningPen,
+            NormalPen = NormalPen,
+            WarningValue = WarningValue,
+            DangerValue = DangerValue,
+            StepValue = StepValue,
+            Radius = Radius,
+            MinimumValue = MinimumValue,
+            MaximumValue = MaximumValue,
+            StartAngle = StartAngle,
+            EndAngle = EndAngle,
+        };
+    }
 }
 
 public class InstrumentClusterTick
@@ -209,12 +232,51 @@ public static class InstrumentClusterDrawingHelper
 
         return new Tuple<EllipseGeometry, StreamGeometry>(ellipse, geo);
     }
+
+    /// <summary>
+    /// Vytvoří nové nastavení přístrojovky, ve kterém jsou upraveny hodnoty StartAngle a EndAngle, Radius a Center tak,
+    /// aby kresba ručičky byla přesná, i když ručička se nenachází v prostředku kružnice, pomocí které byla nakreslena číslicová křivka
+    /// </summary>
+    /// <param name="state"></param>
+    /// <param name="xValue">Hondnota x, po které byl tachometr posunut. Kladné hodnoty směřují doprava, záporné doleva</param>
+    /// <returns></returns>
+    public static InstrumentClusterSettingsState ShiftNeedleByX(InstrumentClusterSettingsState state, double xValue)
+    {
+        // Úprava úhlu
+        var start = new Point(
+            state.Center.X + Math.Cos(state.StartAngle) * state.Radius,
+            state.Center.Y + Math.Sin(state.StartAngle) * state.Radius);
+
+        var end = new Point(
+            state.Center.X + Math.Cos(state.EndAngle) * state.Radius,
+            state.Center.Y + Math.Sin(state.EndAngle) * state.Radius);
+
+        // new pivot moved left by dx
+        var newPivot = new Point(state.Center.X + xValue, state.Center.Y);
+
+        // angles from new pivot to the same arc points
+        double newMinAngle = Math.Atan2(start.Y - newPivot.Y, start.X - newPivot.X);
+        double newMaxAngle = Math.Atan2(end.Y   - newPivot.Y, end.X   - newPivot.X);
+
+        var instrumentNeedleState = state.Clone();
+        
+        instrumentNeedleState.StartAngle = newMinAngle;
+        instrumentNeedleState.EndAngle = newMaxAngle;
+
+        instrumentNeedleState.Center = new Point(state.Center.X + xValue, state.Center.Y);
+        instrumentNeedleState.Radius -= 40;
+        
+        return instrumentNeedleState;
+    }
     
     
     private static double ValueToAngle(InstrumentClusterSettingsState state, double value)
     {
         // Poměr hodnoty k maximu
         double t = (value - state.MinimumValue) / (state.MaximumValue - state.MinimumValue);
+
+        if (state.ReverseDirection)
+            t = 1 - t;
         
         // Převeď na úhel
         return state.StartAngle + t * (state.EndAngle - state.StartAngle);

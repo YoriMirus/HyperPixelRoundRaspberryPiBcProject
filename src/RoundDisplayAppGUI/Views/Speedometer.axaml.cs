@@ -29,17 +29,6 @@ public partial class Speedometer : UserControl
 
     private double _currentValue = 25.0;
     
-    // Parametry
-    readonly double _startAngle = 135 * Math.PI / 180.0;  // -135°
-    readonly double _endAngle   = 405 * Math.PI / 180.0;  // +225°
-
-    readonly int _minValue = 0;
-    readonly int _maxValue = 160;
-    readonly int _step = 20;
-    
-    readonly int _warningValue = 100;
-    readonly int _dangerValue = 140;
-    
     public Speedometer()
     {
         DataSourceChanged += (s, e) =>
@@ -75,21 +64,21 @@ public partial class Speedometer : UserControl
             NormalPen = whitePen,
             WarningPen = yellowPen,
             DangerPen = redPen,
-            MinimumValue = _minValue,
-            MaximumValue = _maxValue,
-            WarningValue = _warningValue,
-            DangerValue = _dangerValue,
-            StartAngle = _startAngle,
-            EndAngle = _endAngle,
-            StepValue = _step
+            MinimumValue = 0,
+            MaximumValue = 160,
+            WarningValue = 100,
+            DangerValue = 140,
+            StartAngle = 135 * Math.PI / 180.0, //-135°
+            EndAngle = 405 * Math.PI / 180.0,  // +225°
+            StepValue = 20
         };
         
         // Vykreslení kruhu tachometru (tam, kde jsou čísla)
-        var arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, 0, _warningValue);
+        var arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, 0, state.WarningValue);
         context.DrawGeometry(null, whitePen, arc);
-        arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, _warningValue, _dangerValue);
+        arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, state.WarningValue, state.DangerValue);
         context.DrawGeometry(null, yellowPen, arc);
-        arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, _dangerValue, _maxValue);
+        arc = InstrumentClusterDrawingHelper.CreateArcSegment(state, state.DangerValue, state.MaximumValue);
         context.DrawGeometry(null, redPen, arc);
 
         // Vykreslení čísel a čárek tachometru
