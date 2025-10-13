@@ -21,6 +21,9 @@
             <TabItem Header="Tachometr">
                 <v:SpeedometerClient DataContext="{Binding SpeedoVM}"></v:SpeedometerClient>
             </TabItem>
+            <TabItem Header="Přístrojovka">
+                <v:TwoNeedleExampleClient DataContext="{Binding TwoNeedleVM}"></v:TwoNeedleExampleClient>
+            </TabItem>
         </TabControl>
     </Grid>
 

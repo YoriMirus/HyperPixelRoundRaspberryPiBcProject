@@ -5,6 +5,8 @@
       <map>
         <entry key="DataCommunicationClient/App.axaml" value="DataCommunicationClient/DataCommunicationClient.csproj" />
         <entry key="DataCommunicationClient/Views/MainWindow.axaml" value="DataCommunicationClient/DataCommunicationClient.csproj" />
+        <entry key="DataCommunicationClient/Views/SpeedometerClient.axaml" value="DataCommunicationClient/DataCommunicationClient.csproj" />
+        <entry key="DataCommunicationClient/Views/TwoNeedleExampleClient.axaml" value="DataCommunicationClient/DataCommunicationClient.csproj" />
         <entry key="RoundDisplayAppGUI/App.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Resources/ClockResources.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/ClockUserControl.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
@@ -12,6 +14,7 @@
         <entry key="RoundDisplayAppGUI/Views/MainWindow.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/Speedometer.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/SpeedometerSettings.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
+        <entry key="RoundDisplayAppGUI/Views/TwoNeedleExample.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
       </map>
     </option>
   </component>

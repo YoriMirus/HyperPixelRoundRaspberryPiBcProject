@@ -15,10 +15,12 @@ using CommunicationLibrary.TCPIPCommunication;
 public partial class MainWindowViewModel : ViewModelBase
 {
     public SpeedometerClientViewModel SpeedoVM { get; set; }
+    public TwoNeedleExampleClientViewModel TwoNeedleVM { get; set; }
     
     
     public MainWindowViewModel()
     {
         SpeedoVM = new SpeedometerClientViewModel();
+        TwoNeedleVM = new TwoNeedleExampleClientViewModel();
     }
 }
