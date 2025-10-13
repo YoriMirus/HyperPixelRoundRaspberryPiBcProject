@@ -12,35 +12,13 @@ namespace DataCommunicationClient.ViewModels;
 using CommunicationLibrary.InterProcessCommunication;
 using CommunicationLibrary.TCPIPCommunication;
 
-public partial class MainWindowViewModel : ViewModelBase , IDisposable
+public partial class MainWindowViewModel : ViewModelBase
 {
-    public ISensorDataServer<double> Server { get; set; }
+    public SpeedometerClientViewModel SpeedoVM { get; set; }
     
-    public double DataToSend
-    {
-        get => _dataToSend;
-        set
-        {
-            _dataToSend = value;
-            OnPropertyChanged();
-        } 
-    }
-
-    private double _dataToSend;
     
     public MainWindowViewModel()
     {
-        Server = new NamedPipeSensorServer<double>(0.0, "Speedo");
-        Server.Start();
-    }
-
-    public void SendData()
-    {
-        Server.UpdateValue(_dataToSend);
-    }
-    
-    public void Dispose()
-    {
-        Server.Dispose();
+        SpeedoVM = new SpeedometerClientViewModel();
     }
 }

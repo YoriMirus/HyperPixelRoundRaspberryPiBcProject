@@ -11,12 +11,4 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
-
-    private void Slider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (DataContext is null)
-            return;
-
-        ((MainWindowViewModel)DataContext).SendData();
-    }
 }
