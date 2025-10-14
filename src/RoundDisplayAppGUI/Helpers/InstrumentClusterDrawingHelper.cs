@@ -257,7 +257,10 @@ public static class InstrumentClusterDrawingHelper
         // angles from new pivot to the same arc points
         double newMinAngle = Math.Atan2(start.Y - newPivot.Y, start.X - newPivot.X);
         double newMaxAngle = Math.Atan2(end.Y   - newPivot.Y, end.X   - newPivot.X);
-
+        
+        if (state.ReverseDirection)
+            newMaxAngle += 2 * Math.PI;
+        
         var instrumentNeedleState = state.Clone();
         
         instrumentNeedleState.StartAngle = newMinAngle;
@@ -274,9 +277,6 @@ public static class InstrumentClusterDrawingHelper
     {
         // Poměr hodnoty k maximu
         double t = (value - state.MinimumValue) / (state.MaximumValue - state.MinimumValue);
-
-        if (state.ReverseDirection)
-            t = 1 - t;
         
         // Převeď na úhel
         return state.StartAngle + t * (state.EndAngle - state.StartAngle);

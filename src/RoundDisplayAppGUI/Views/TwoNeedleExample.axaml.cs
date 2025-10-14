@@ -53,10 +53,10 @@ public partial class TwoNeedleExample : UserControl
             MaximumValue = 100,
             WarningValue = 80,
             DangerValue = 80,
-            StartAngle = 135 * Math.PI / 180.0, //-135°
-            EndAngle = 225 * Math.PI / 180.0,  // -135° + 90°
+            StartAngle = (135) * Math.PI / 180.0, //-135°
+            EndAngle = (225) * Math.PI / 180.0,  // -135° + 90°
             StepValue = 50,
-            ReverseDirection = false
+            ReverseDirection = true
         };
         
         
