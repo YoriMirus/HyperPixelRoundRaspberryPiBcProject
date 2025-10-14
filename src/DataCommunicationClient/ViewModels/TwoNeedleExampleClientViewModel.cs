@@ -35,7 +35,7 @@ public class TwoNeedleExampleClientViewModel : ViewModelBase
         get => _value1;
         set
         {
-            _value1 = value;
+            _value1 = Math.Round(value, 1);;
             OnPropertyChanged();
         }
     }
@@ -46,7 +46,7 @@ public class TwoNeedleExampleClientViewModel : ViewModelBase
         get => _minValue2;
         set
         {
-            _minValue2 = value;
+            _minValue2 = value;;
             OnPropertyChanged();
         }
     }
@@ -68,7 +68,7 @@ public class TwoNeedleExampleClientViewModel : ViewModelBase
         get => _value2;
         set
         {
-            _value2 = value;
+            _value2 = Math.Round(value, 1);;
             OnPropertyChanged();
         }
     }

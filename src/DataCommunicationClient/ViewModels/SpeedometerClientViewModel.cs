@@ -1,3 +1,5 @@
+using System;
+
 namespace DataCommunicationClient.ViewModels;
 
 using CommunicationLibrary;
@@ -33,7 +35,7 @@ public class SpeedometerClientViewModel : ViewModelBase
         get => _value;
         set
         {
-            _value = value;
+            _value = Math.Round(value, 1);
             OnPropertyChanged();
         }
     }
