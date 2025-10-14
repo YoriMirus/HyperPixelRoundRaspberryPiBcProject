@@ -101,8 +101,11 @@ public class TwoNeedleExampleClientViewModel : ViewModelBase
     public TwoNeedleExampleClientViewModel()
     {
         MinValue1 = 0;
-        MaxValue1 = 160;
+        MaxValue1 = 100;
+        MinValue2 = 0;
+        MaxValue2 = 100;
         Value1= 80;
+        Value2 = 80;
 
         _portNum = 35653;
         _pipeName = "TwoValues";
