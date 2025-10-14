@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -6,6 +9,8 @@ using Avalonia.Markup.Xaml;
 
 using CommunicationLibrary.InterProcessCommunication;
 using CommunicationLibrary.TCPIPCommunication;
+
+using RoundDisplayAppGUI.ViewModels;
 
 namespace RoundDisplayAppGUI.Views;
 
@@ -18,8 +23,15 @@ public partial class SpeedometerSettings : UserControl
 
     private void LoadIPFromFileButtonClicked(object? sender, RoutedEventArgs e)
     {
+        string filePath = Assembly.GetExecutingAssembly().Location;
+        string[] fileSplit = filePath.Split('/', '\\');
+        fileSplit[^1] = "SpeedoIP.txt";
+        filePath = string.Join('/', fileSplit);
+
+        if (!File.Exists(filePath))
+            return;
         
-        
+        IPAddressTextBox.Text = File.ReadAllText(filePath).Trim();
     }
 
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -41,8 +53,15 @@ public partial class SpeedometerSettings : UserControl
 
     private void LoadPipeNameFromFileButtonClicked(object? sender, RoutedEventArgs e)
     {
+        string filePath = Assembly.GetExecutingAssembly().Location;
+        string[] fileSplit = filePath.Split('/', '\\');
+        fileSplit[^1] = "SpeedoPipeName.txt";
+        filePath = string.Join('/', fileSplit);
+
+        if (!File.Exists(filePath))
+            return;
         
-        
+        PipeNameTextBox.Text = File.ReadAllText(filePath).Trim();
     }
     private void AbsorbOnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
