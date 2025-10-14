@@ -28,7 +28,7 @@ public partial class MainWindow : Window
         Console.WriteLine("User name: " + userName);
         
         if (hostName.Contains("raspberry") || hostName.Contains("rpi") || userName.Contains("raspberry") || userName.Contains("rpi"))
-            WindowState = WindowState.Maximized;
+            WindowState = WindowState.FullScreen;
     }
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
