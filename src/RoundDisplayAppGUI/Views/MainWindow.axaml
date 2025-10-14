@@ -9,7 +9,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="RoundDisplayAppGUI"
-        CanResize="False" PointerPressed="OnMousePressed" PointerReleased="OnMouseReleased" PointerMoved="OnMouseMoved"
+        CanResize="True" PointerPressed="OnMousePressed" PointerReleased="OnMouseReleased" PointerMoved="OnMouseMoved"
         SystemDecorations="None">
     
     <Design.DataContext>

@@ -21,6 +21,14 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        string hostName = Environment.MachineName;
+        string userName =  Environment.UserName;
+
+        Console.WriteLine("Host name: " + hostName);
+        Console.WriteLine("User name: " + userName);
+        
+        if (hostName.Contains("raspberry") || hostName.Contains("rpi") || userName.Contains("raspberry") || userName.Contains("rpi"))
+            WindowState = WindowState.Maximized;
     }
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
