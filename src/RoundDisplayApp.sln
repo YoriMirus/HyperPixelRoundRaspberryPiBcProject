@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunicationLibrary", "Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClientConsoleApp", "TestClientConsoleApp\TestClientConsoleApp.csproj", "{BFAFDCC6-5FB5-4B93-B8EE-9E5A63263D38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMP180GY68SensorTest", "BMP180GY68SensorTest\BMP180GY68SensorTest.csproj", "{9E7021A8-C695-4B2E-A285-95974D420DEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{BFAFDCC6-5FB5-4B93-B8EE-9E5A63263D38}.Release|x64.Build.0 = Release|Any CPU
 		{BFAFDCC6-5FB5-4B93-B8EE-9E5A63263D38}.Release|x86.ActiveCfg = Release|Any CPU
 		{BFAFDCC6-5FB5-4B93-B8EE-9E5A63263D38}.Release|x86.Build.0 = Release|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Debug|x64.Build.0 = Debug|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Debug|x86.Build.0 = Debug|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Release|x64.ActiveCfg = Release|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Release|x64.Build.0 = Release|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Release|x86.ActiveCfg = Release|Any CPU
+		{9E7021A8-C695-4B2E-A285-95974D420DEB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

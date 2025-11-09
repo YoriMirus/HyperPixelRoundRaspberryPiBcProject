@@ -29,6 +29,8 @@ public class Bmp180Gy68PressureTemperatureSensor : ISensorDataSource<Tuple<doubl
         var i2CSettings = new I2cConnectionSettings(I2CBusNumber, Bmp180.DefaultI2cAddress);
         I2cDevice = I2cDevice.Create(i2CSettings);
         Bmp180Device = new Bmp180(I2cDevice);
+
+        Task.Run(ReadingLoop);
     }
 
     public void StopListening()
