@@ -15,6 +15,8 @@ public partial class MainWindow : Window
     private bool _isPointerPressed;
     private int _pointerPressCount;
     private double _originalScroll;
+
+    private bool currentlyScrolling;
     
     public MainWindow()
     {
@@ -31,6 +33,8 @@ public partial class MainWindow : Window
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
     {
+        if (currentlyScrolling)
+            return;
         // Pokud je již myš zmáčknutá, tak se nejedná o myš, ale o dotyk na displeji
         // Přesněji, dva prsty na obrazovce najednou
         // To většinou nedopadá dobře :P
@@ -46,6 +50,8 @@ public partial class MainWindow : Window
 
     private async void OnMouseReleased(object? sender, PointerReleasedEventArgs e)
     {
+        if (_pointerPressCount == 0)
+            return;
         _pointerPressCount--;
         // Pokud ještě je detekován stisk, znamená to, že byly na displeji zmá
         if (_pointerPressCount != 0)
@@ -66,10 +72,14 @@ public partial class MainWindow : Window
         }
 
         _originalScroll = newScroll;
+
+        currentlyScrolling = true;
         
         // Vytvořme animaci, aby ten přechod byl plynulý
         var anim = CreateScrollAnimationTemplate(MainContentScroller.Offset, new Vector(MainContentScroller.Offset.X, newScroll));
         await anim.RunAsync(MainContentScroller, CancellationToken.None);
+
+        currentlyScrolling = false;
         
         e.Handled = true;
     }
