@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommunicationLibrary", "Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClientConsoleApp", "TestClientConsoleApp\TestClientConsoleApp.csproj", "{BFAFDCC6-5FB5-4B93-B8EE-9E5A63263D38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMP180GY68SensorTest", "BMP180GY68SensorTest\BMP180GY68SensorTest.csproj", "{9E7021A8-C695-4B2E-A285-95974D420DEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SensorTesting", "SensorTesting\SensorTesting.csproj", "{9E7021A8-C695-4B2E-A285-95974D420DEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

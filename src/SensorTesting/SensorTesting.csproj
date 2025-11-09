@@ -9,6 +9,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>BMP180GY68SensorTest</RootNamespace>
     </PropertyGroup>
 
 </Project>
