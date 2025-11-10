@@ -12,9 +12,11 @@
         <entry key="RoundDisplayAppGUI/Views/ClockUserControl.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/ClockView.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/MainWindow.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
+        <entry key="RoundDisplayAppGUI/Views/MapWidget.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/Speedometer.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/SpeedometerSettings.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/TwoNeedleExample.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
+        <entry key="RoundDisplayAppGUI/Views/TwoNeedleExampleSettings.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
       </map>
     </option>
   </component>
