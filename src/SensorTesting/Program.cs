@@ -2,6 +2,7 @@
 
 using CommunicationLibrary.I2CSensors;
 using CommunicationLibrary;
+using CommunicationLibrary.I2CSensors.DTOs;
 
 Console.WriteLine("Tester senzorů. Zadej číslo i2c sběrnice (podívej se do /dev a zkus svůj senzor najít pomocí i2cdetect)");
 string? input = "...";
@@ -14,9 +15,11 @@ while (!int.TryParse(input, out i2CBusNumber))
 Console.WriteLine("Který senzor chceš použít?");
 Console.WriteLine("0 = BMP180 GY-68 (nadmořská výška, atmosférický tlak, teplota)");
 Console.WriteLine("1 = SHT30 (teplota, vlhkost)");
+Console.WriteLine("2 = MMA8452Q akcelerometr");
 
 ISensorDataSource<Tuple<double,double,double>>? BmpSensor = null;
 ISensorDataSource<Tuple<double, double>>? Sht30Sensor = null;
+ISensorDataSource<AccelerometerDTO> MMA8452Q = null;
 
 bool cancel = false;
 while (!cancel)
@@ -36,6 +39,12 @@ while (!cancel)
             Sht30Sensor.StartListening();
             cancel = true;
             break;
+        case "2":
+            MMA8452Q = new MMA8452QAccelerometer(i2CBusNumber, 100, 2);
+            MMA8452Q.OnDataReceived += MMA8452QOnOnDataReceived;
+            MMA8452Q.StartListening();
+            cancel = true;
+            break;
     }
 }
 
@@ -50,6 +59,9 @@ if (BmpSensor is not null)
 if (Sht30Sensor is not null)
     Sht30Sensor.Dispose();
 
+if (MMA8452Q is not null)
+    MMA8452Q.Dispose();
+
 return;
 
 void DataReceived(object sender, SensorDataEventArgs<Tuple<double, double, double>> e)
@@ -63,4 +75,9 @@ void Sht30SensorOnOnDataReceived(object sender, SensorDataEventArgs<Tuple<double
 {
     Console.WriteLine("Teplota (°C): " + e.Value.Item1);
     Console.WriteLine("Vlhkost (%): " + e.Value.Item2);
+}
+
+void MMA8452QOnOnDataReceived(object sender, SensorDataEventArgs<AccelerometerDTO> e)
+{
+    Console.WriteLine($"X:Y:Z = {e.Value.AccelerationX}:{e.Value.AccelerationY}:{e.Value.AccelerationZ}");
 }
