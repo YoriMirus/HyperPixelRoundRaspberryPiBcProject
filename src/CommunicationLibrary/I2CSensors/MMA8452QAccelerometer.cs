@@ -149,9 +149,6 @@ public class MMA8452QAccelerometer : ISensorDataSource<AccelerometerDTO>
 
     private short ConvertMSBLSBPairsToRawShort(byte MSB, byte LSB)
     {
-        Console.WriteLine($"MSB:{Convert.ToString(MSB, 2)}");
-        Console.WriteLine($"LSB:{Convert.ToString(LSB, 2)}");
-        
         // Rád bych zde použil short, ale to se kompilátoru z nějakého důvodu nelíbí
         // MSB popisuje prvních 8 bitů čísla, LSB poslední 4. Tyto bity jsou ale nalevo, takže je musíme posunout doprava
         int result = (MSB << 4) | (LSB >> 4);
@@ -162,9 +159,7 @@ public class MMA8452QAccelerometer : ISensorDataSource<AccelerometerDTO>
         {
             result = result | (0b1111 << 12);
         }
-
-        Console.WriteLine($"Result: {Convert.ToString(result, 2)}");
-
+        
         return (short)result;
     }
 }
