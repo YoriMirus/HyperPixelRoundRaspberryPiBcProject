@@ -55,7 +55,17 @@ public class MMA8452QAccelerometer : ISensorDataSource<AccelerometerDTO>
         
         Device.Write(new ReadOnlySpan<byte>([0x0E, registerValue[0]]));
         
-        Task.Run(ReadingLoop);
+        Task.Run(() =>
+        {
+            try
+            {
+                ReadingLoop();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ReadingLoop exception: {ex.Message}");
+            }
+        });
     }
 
     public void StopListening()
@@ -112,12 +122,12 @@ public class MMA8452QAccelerometer : ISensorDataSource<AccelerometerDTO>
             Span<byte> data = new Span<byte>(new byte[6]);
             Device.WriteRead(registerAddress, data);
             
-            byte OUT_X_MSB = registerAddress[0];
-            byte OUT_X_LSB = registerAddress[1];
-            byte OUT_Y_MSB = registerAddress[2];
-            byte OUT_Y_LSB = registerAddress[3];
-            byte OUT_Z_MSB = registerAddress[4];
-            byte OUT_Z_LSB = registerAddress[5];
+            byte OUT_X_MSB = data[0];
+            byte OUT_X_LSB = data[1];
+            byte OUT_Y_MSB = data[2];
+            byte OUT_Y_LSB = data[3];
+            byte OUT_Z_MSB = data[4];
+            byte OUT_Z_LSB = data[5];
 
             short x = ConvertMSBLSBPairsToRawShort(OUT_X_MSB, OUT_X_LSB);
             short y = ConvertMSBLSBPairsToRawShort(OUT_Y_MSB, OUT_Y_LSB);
