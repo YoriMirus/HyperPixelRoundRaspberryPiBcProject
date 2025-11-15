@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     
     public MainWindow()
     {
+        this.Closing += OnClosing;
         InitializeComponent();
         string hostName = Environment.MachineName;
         string userName =  Environment.UserName;
@@ -29,6 +30,11 @@ public partial class MainWindow : Window
         
         if (hostName.Contains("raspberry") || hostName.Contains("rpi") || userName.Contains("raspberry") || userName.Contains("rpi"))
             WindowState = WindowState.FullScreen;
+    }
+
+    private void OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        ClockWidget.OnWindowClosing();
     }
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)

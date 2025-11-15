@@ -14,13 +14,21 @@ using CommunicationLibrary;
 
 public partial class ClockView : UserControl
 {
+    private IDisposable _timer;
     
     public ClockView()
     {
         //this.DataContextChanged += InitializeDataContext;
         InitializeComponent();
         
-        DispatcherTimer.Run(OnTimerTick, TimeSpan.FromMilliseconds(100), DispatcherPriority.ApplicationIdle);
+        _timer = DispatcherTimer.Run(OnTimerTick, TimeSpan.FromMilliseconds(100), DispatcherPriority.ApplicationIdle);
+    }
+
+    public void OnWindowClosing()
+    {
+        // Timer je třeba zrušit během zavírání okna, protože se může dispatcher spustit po Disposenutí okna, což způsobí výjimku
+        // Tato výjimka se sice stává při vypínání programu, takže to asi nic moc neovlivní, ale nevypadá to dobře mít v konzoli výjimky
+        _timer.Dispose();
     }
     
     bool OnTimerTick()
