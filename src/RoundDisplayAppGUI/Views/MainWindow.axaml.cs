@@ -15,7 +15,6 @@ public partial class MainWindow : Window
 {
     private Point _mousePressPosition;
     private bool _isPointerPressed;
-    private int _pointerPressCount;
     private double _originalScroll;
 
     private bool currentlyScrolling;
@@ -50,29 +49,23 @@ public partial class MainWindow : Window
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
     {
+        Console.WriteLine("Mouse pressed.");
         if (currentlyScrolling)
             return;
-        // Pokud je již myš zmáčknutá, tak se nejedná o myš, ale o dotyk na displeji
-        // Přesněji, dva prsty na obrazovce najednou
-        // To většinou nedopadá dobře :P
-        _pointerPressCount++;
-        if (_isPointerPressed)
-            return;
+        Console.WriteLine("Handling...");
         
         _isPointerPressed = true;
         _originalScroll = MainContentScroller.Offset.Y;
         _mousePressPosition = e.GetPosition(this);
-        e.Handled = true;
     }
 
     private async void OnMouseReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (_pointerPressCount == 0)
+        Console.WriteLine("Mouse released.");
+        if (currentlyScrolling)
             return;
-        _pointerPressCount--;
-        // Pokud ještě je detekován stisk, znamená to, že byly na displeji zmá
-        if (_pointerPressCount != 0)
-            return;
+        Console.WriteLine("Handling...");
+        
         _isPointerPressed = false;
 
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
@@ -97,14 +90,14 @@ public partial class MainWindow : Window
         await anim.RunAsync(MainContentScroller, CancellationToken.None);
 
         currentlyScrolling = false;
-        
-        e.Handled = true;
     }
 
     private void OnMouseMoved(object? sender, PointerEventArgs e)
     {
-        if (!_isPointerPressed)
+        Console.WriteLine("Mouse moved.");
+        if (!_isPointerPressed || currentlyScrolling)
             return;
+        Console.WriteLine("Handling...");
         
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
         MainContentScroller.Offset = new Vector(MainContentScroller.Offset.X, _originalScroll + (deltaY));
