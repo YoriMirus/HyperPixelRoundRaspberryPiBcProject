@@ -49,10 +49,10 @@ public partial class MainWindow : Window
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
     {
-        Console.WriteLine("Mouse pressed.");
+        Console.WriteLine($"Mouse pressed ({e.Pointer.Id})");
         if (currentlyScrolling)
             return;
-        Console.WriteLine("Handling...");
+        Console.WriteLine($"Handling ({e.Pointer.Id})");
         
         _isPointerPressed = true;
         _originalScroll = MainContentScroller.Offset.Y;
@@ -61,10 +61,10 @@ public partial class MainWindow : Window
 
     private async void OnMouseReleased(object? sender, PointerReleasedEventArgs e)
     {
-        Console.WriteLine("Mouse released.");
+        Console.WriteLine($"Mouse released {e.Pointer.Id}");
         if (currentlyScrolling)
             return;
-        Console.WriteLine("Handling...");
+        Console.WriteLine($"Handling ({e.Pointer.Id})");
         
         _isPointerPressed = false;
 
@@ -94,10 +94,10 @@ public partial class MainWindow : Window
 
     private void OnMouseMoved(object? sender, PointerEventArgs e)
     {
-        Console.WriteLine("Mouse moved.");
+        Console.WriteLine($"Mouse moved ({e.Pointer.Id})");
         if (!_isPointerPressed || currentlyScrolling)
             return;
-        Console.WriteLine("Handling...");
+        Console.WriteLine($"Handling ({e.Pointer.Id})");
         
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
         MainContentScroller.Offset = new Vector(MainContentScroller.Offset.X, _originalScroll + (deltaY));
