@@ -1,28 +1,23 @@
+using System;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Threading;
 using Avalonia.Markup.Xaml;
-
+using Avalonia.Threading;
 using RoundDisplayAppGUI.ViewModels;
-
-
-using System;
 
 namespace RoundDisplayAppGUI.Views;
 
-
-
-public partial class ClockView : UserControl
+public partial class WeatherStation : UserControl
 {
-    private IDisposable _timer;
+    private IDisposable? _timer;
     
-    public ClockView()
+    public WeatherStation()
     {
         InitializeComponent();
         
         _timer = DispatcherTimer.Run(OnTimerTick, TimeSpan.FromMilliseconds(100), DispatcherPriority.ApplicationIdle);
     }
-
+    
     public void OnWindowClosing()
     {
         // Timer je třeba zrušit během zavírání okna, protože se může dispatcher spustit po Disposenutí okna, což způsobí výjimku
@@ -32,7 +27,7 @@ public partial class ClockView : UserControl
     
     bool OnTimerTick()
     {
-        if (DataContext is not ClockViewModel viewModel)
+        if (DataContext is not WeatherStationViewModel  viewModel)
             return true;
         
         viewModel.SetTime(DateTime.Now);
@@ -40,5 +35,4 @@ public partial class ClockView : UserControl
         // Časovač potřebuje vědět, zda má tuto metodu zavolat znova
         // Nemáme důvod to přerušovat, takže vždycky dáváme true, a.k.a. pokračovat časování
         return true;
-    }
-}
+    }}

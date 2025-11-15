@@ -1,9 +1,11 @@
+using CommunicationLibrary.I2CSensors.DTOs;
+
 namespace CommunicationLibrary.I2CSensors;
 
 using Iot.Device.Sht3x;
 using System.Device.I2c;
 
-public class SHT3xHumidityTemperatureSensor : ISensorDataSource<Tuple<double,double>>
+public class SHT3xHumidityTemperatureSensor : ISensorDataSource<HumidityTemperatureDTO>
 {
     private Sht3x? SHT3xDevice { get; set; }
     private I2cDevice? I2CDevice { get; set; }
@@ -18,7 +20,7 @@ public class SHT3xHumidityTemperatureSensor : ISensorDataSource<Tuple<double,dou
         I2CDevice = null;
     }
     
-    public event SensorDataReceivedHandler<Tuple<double, double>>? OnDataReceived;
+    public event SensorDataReceivedHandler<HumidityTemperatureDTO>? OnDataReceived;
     public void StartListening()
     {
         if (SHT3xDevice is not null && I2CDevice is not null)
@@ -46,7 +48,7 @@ public class SHT3xHumidityTemperatureSensor : ISensorDataSource<Tuple<double,dou
             var temp = SHT3xDevice.Temperature.DegreesCelsius;
             var humidity = SHT3xDevice.Humidity.Percent;
             
-            OnDataReceived?.Invoke(this, new SensorDataEventArgs<Tuple<double, double>>(DateTime.Now, new Tuple<double,double>(temp, humidity)));
+            OnDataReceived?.Invoke(this, new SensorDataEventArgs<HumidityTemperatureDTO>(DateTime.Now, new HumidityTemperatureDTO(humidity, temp)));
             
             await Task.Delay(DurationBetweenReads);
         }

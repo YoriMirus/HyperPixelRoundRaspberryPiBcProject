@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:vm="clr-namespace:RoundDisplayAppGUI.ViewModels"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" Width="480" Height="480" x:DataType="vm:WeatherStationViewModel"
+             x:Class="RoundDisplayAppGUI.Views.WeatherStation">
+    <Grid RowDefinitions="1*,100,70,1*">
+        <Ellipse Grid.RowSpan="999" Width="480" Height="480" Stroke="#00CC66" StrokeThickness="10"></Ellipse>
+        <Grid ColumnDefinitions="1*,3*,1*" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Image Source="/Assets/humidity.png" Width="64" Height="64" />
+            <TextBlock Grid.Column="1" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One " FontSize="60" Margin="0,5,0,0" Text="{Binding HumidityString}" Foreground="#4DA6FF"/>
+            <TextBlock Grid.Column="2" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One " FontSize="60" Margin="0,5,0,0" Text="%" Foreground="#4DA6FF"/>
+        </Grid>
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="140" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One " Text="{Binding TimeString}"/>
+        <TextBlock Grid.Row="2" HorizontalAlignment="Center" FontSize="60" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One " Text="{Binding DateString}" Margin="0"/>
+        <Grid ColumnDefinitions="1*,3*,1*" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Image Source="/Assets/temperature.png" Width="64" Height="64" />
+            <TextBlock Grid.Column="1" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One " FontSize="60" Margin="0,5,0,0" Foreground="#FF6B5A" Text="{Binding TemperatureString}"/>
+            <TextBlock Grid.Column="2" FontFamily="avares://RoundDisplayAppGUI/Assets# Saira Stencil One " FontSize="60" Margin="0,5,0,0" Foreground="#FF6B5A" Text="°C"/>
+        </Grid>
+    </Grid>
+</UserControl>

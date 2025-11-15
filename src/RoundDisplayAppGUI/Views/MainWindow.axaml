@@ -24,7 +24,7 @@
             <views:Speedometer Grid.Row="1"></views:Speedometer>
             <views:SpeedometerSettings Grid.Row="2"></views:SpeedometerSettings>
             <views:TwoNeedleExample Grid.Row="3"></views:TwoNeedleExample>
-            <views:WeatherStation Grid.Row="4"></views:WeatherStation>
+            <views:WeatherStation x:Name="WeatherStationWidget" Grid.Row="4" DataContext="{Binding WeatherStationVM}"></views:WeatherStation>
             <views:MapWidget Grid.Row="5"></views:MapWidget>
         </Grid>
     </ScrollViewer>

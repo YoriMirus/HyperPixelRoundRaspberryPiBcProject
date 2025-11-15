@@ -10,19 +10,24 @@ public partial class MainWindowViewModel : ViewModelBase
     public ClockViewModel ClockVM
     {
         get => _clockVM;
-        set
-        {
-            _clockVM = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _clockVM, value);
     }
-
     private ClockViewModel _clockVM;
+
+    public WeatherStationViewModel WeatherStationVM
+    {
+        get => _weatherVM;
+        set => SetProperty(ref _weatherVM, value);
+    }
+    private WeatherStationViewModel _weatherVM;
     
     public MainWindowViewModel()
     {
         ClockVM = new ClockViewModel();
+        WeatherStationVM = new WeatherStationViewModel();
+        
         // Assignuju znova sama sebe, aby kompilátor ztichnul
+        _weatherVM = WeatherStationVM;
         _clockVM = ClockVM;
     }
 }

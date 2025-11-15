@@ -17,6 +17,7 @@
         <entry key="RoundDisplayAppGUI/Views/SpeedometerSettings.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/TwoNeedleExample.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
         <entry key="RoundDisplayAppGUI/Views/TwoNeedleExampleSettings.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
+        <entry key="RoundDisplayAppGUI/Views/WeatherStation.axaml" value="RoundDisplayAppGUI/RoundDisplayAppGUI.csproj" />
       </map>
     </option>
   </component>

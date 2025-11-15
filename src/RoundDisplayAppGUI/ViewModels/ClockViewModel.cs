@@ -11,44 +11,28 @@ public partial class ClockViewModel : ViewModelBase
     public ITransform SecondHandRotation
     {
         get => _secondHandRotation;
-        set
-        {
-            _secondHandRotation = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _secondHandRotation, value);
     }
     private ITransform _secondHandRotation;
 
     public ITransform MinuteHandRotation
     {
         get => _minuteHandRotation;
-        set
-        {
-            _minuteHandRotation = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _minuteHandRotation, value);
     }
     private ITransform _minuteHandRotation;
 
     public ITransform HourHandRotation
     {
         get => _hourHandRotation;
-        set
-        {
-            _hourHandRotation = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _hourHandRotation, value);
     }
     private ITransform _hourHandRotation;
 
     public string DayOfWeek
     {
         get => _dayOfWeek;
-        set
-        {
-            _dayOfWeek = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _dayOfWeek, value);
     }
 
     private string _dayOfWeek;
@@ -56,11 +40,7 @@ public partial class ClockViewModel : ViewModelBase
     public string DateStr
     {
         get => _dateStr;
-        set
-        {
-            _dateStr = value;
-            OnPropertyChanged();
-        }
+        set => SetProperty(ref _dateStr, value);
     }
     private string _dateStr;
 

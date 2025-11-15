@@ -6,6 +6,8 @@ using Avalonia;
 using Avalonia.Styling;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
+using CommunicationLibrary.I2CSensors;
+using RoundDisplayAppGUI.ViewModels;
 
 namespace RoundDisplayAppGUI.Views;
 
@@ -27,14 +29,23 @@ public partial class MainWindow : Window
 
         Console.WriteLine("Host name: " + hostName);
         Console.WriteLine("User name: " + userName);
-        
+
         if (hostName.Contains("raspberry") || hostName.Contains("rpi") || userName.Contains("raspberry") || userName.Contains("rpi"))
+        {
             WindowState = WindowState.FullScreen;
+            if (ClockWidget.DataContext is not WeatherStationViewModel vm)
+                return;
+            var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
+            
+            vm.Sensor = sensor;
+            sensor.StartListening();
+        }
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
         ClockWidget.OnWindowClosing();
+        WeatherStationWidget.OnWindowClosing();
     }
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)

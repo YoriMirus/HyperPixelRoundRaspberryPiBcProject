@@ -18,7 +18,7 @@ Console.WriteLine("1 = SHT30 (teplota, vlhkost)");
 Console.WriteLine("2 = MMA8452Q akcelerometr");
 
 ISensorDataSource<Tuple<double,double,double>>? BmpSensor = null;
-ISensorDataSource<Tuple<double, double>>? Sht30Sensor = null;
+ISensorDataSource<HumidityTemperatureDTO>? Sht30Sensor = null;
 ISensorDataSource<AccelerometerDTO> MMA8452Q = null;
 
 bool cancel = false;
@@ -71,10 +71,10 @@ void DataReceived(object sender, SensorDataEventArgs<Tuple<double, double, doubl
     Console.WriteLine("Teplota (°C): " + e.Value.Item3);
 }
 
-void Sht30SensorOnOnDataReceived(object sender, SensorDataEventArgs<Tuple<double, double>> e)
+void Sht30SensorOnOnDataReceived(object sender, SensorDataEventArgs<HumidityTemperatureDTO> e)
 {
-    Console.WriteLine("Teplota (°C): " + e.Value.Item1);
-    Console.WriteLine("Vlhkost (%): " + e.Value.Item2);
+    Console.WriteLine("Teplota (°C): " + e.Value.Temperature);
+    Console.WriteLine("Vlhkost (%): " + e.Value.Humidity);
 }
 
 void MMA8452QOnOnDataReceived(object sender, SensorDataEventArgs<AccelerometerDTO> e)
