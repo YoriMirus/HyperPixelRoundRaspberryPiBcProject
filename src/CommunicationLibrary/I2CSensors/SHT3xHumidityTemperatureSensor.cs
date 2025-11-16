@@ -33,7 +33,17 @@ public class SHT3xHumidityTemperatureSensor : ISensorDataSource<HumidityTemperat
         I2CDevice = I2cDevice.Create(i2CSettings);
         SHT3xDevice = new Sht3x(I2CDevice);
 
-        Task.Run(ReadingLoop);
+        Task.Run(async () =>
+        {
+            try
+            {
+                await ReadingLoop();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ReadingLoop exception: {ex.Message}");
+            }
+        });
     }
 
     public void StopListening()

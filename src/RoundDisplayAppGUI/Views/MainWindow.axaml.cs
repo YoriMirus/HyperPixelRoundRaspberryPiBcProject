@@ -13,6 +13,7 @@ namespace RoundDisplayAppGUI.Views;
 
 public partial class MainWindow : Window
 {
+    private IPointer? _mousePressPointer;
     private Point _mousePressPosition;
     private bool _isPointerPressed;
     private double _originalScroll;
@@ -49,24 +50,22 @@ public partial class MainWindow : Window
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
     {
-        Console.WriteLine($"Mouse pressed ({e.Pointer.Id})");
-        if (currentlyScrolling)
+        if (_mousePressPointer is not null || currentlyScrolling)
             return;
-        Console.WriteLine($"Handling ({e.Pointer.Id})");
         
         _isPointerPressed = true;
+        _mousePressPointer = e.Pointer;
         _originalScroll = MainContentScroller.Offset.Y;
         _mousePressPosition = e.GetPosition(this);
     }
 
     private async void OnMouseReleased(object? sender, PointerReleasedEventArgs e)
     {
-        Console.WriteLine($"Mouse released {e.Pointer.Id}");
-        if (currentlyScrolling)
+        if (_mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id || currentlyScrolling)
             return;
-        Console.WriteLine($"Handling ({e.Pointer.Id})");
         
         _isPointerPressed = false;
+        _mousePressPointer = null;
 
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
 
@@ -94,10 +93,8 @@ public partial class MainWindow : Window
 
     private void OnMouseMoved(object? sender, PointerEventArgs e)
     {
-        Console.WriteLine($"Mouse moved ({e.Pointer.Id})");
-        if (!_isPointerPressed || currentlyScrolling)
+        if (!_isPointerPressed || currentlyScrolling || _mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id)
             return;
-        Console.WriteLine($"Handling ({e.Pointer.Id})");
         
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
         MainContentScroller.Offset = new Vector(MainContentScroller.Offset.X, _originalScroll + (deltaY));
