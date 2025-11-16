@@ -18,28 +18,29 @@ public partial class MainWindow : Window
     private bool _isPointerPressed;
     private double _originalScroll;
 
-    private bool currentlyScrolling;
+    private bool _currentlyScrolling;
     
-    public MainWindow()
+    public MainWindow(bool isRaspberryPi = false)
     {
         this.Closing += OnClosing;
         InitializeComponent();
-        string hostName = Environment.MachineName;
-        string userName =  Environment.UserName;
 
-        Console.WriteLine("Host name: " + hostName);
-        Console.WriteLine("User name: " + userName);
-
-        if (hostName.Contains("raspberry") || hostName.Contains("rpi") || userName.Contains("raspberry") || userName.Contains("rpi"))
-        {
+        // Pokud App třída detekuje raspberry pi, nastavme WindowState na FullScreen
+        if (isRaspberryPi)
             WindowState = WindowState.FullScreen;
-            if (WeatherStationWidget.DataContext is not WeatherStationViewModel vm)
-                return;
-            var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
+
+    }
+
+    public void InitializeRaspberryPi()
+    {
+        // Samotná inicializace senzorů musí být oddělená a ne v konstruktoru, protože DataBinding, který spojí DataContext ve WeatherStationWidget probíhá až po dokončení konstruktoru
+        // Takže App třídá musí zavolat tuto metodu poté, co je MainWindow inicializace dokončena
+        if (WeatherStationWidget.DataContext is not WeatherStationViewModel vm)
+            return;
+        var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
             
-            vm.Sensor = sensor;
-            sensor.StartListening();
-        }
+        vm.Sensor = sensor;
+        sensor.StartListening();
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
@@ -51,7 +52,7 @@ public partial class MainWindow : Window
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
     {
         e.PreventGestureRecognition();
-        if (_mousePressPointer is not null || currentlyScrolling)
+        if (_mousePressPointer is not null || _currentlyScrolling)
             return;
         
         _isPointerPressed = true;
@@ -63,7 +64,7 @@ public partial class MainWindow : Window
     private async void OnMouseReleased(object? sender, PointerReleasedEventArgs e)
     {
         e.PreventGestureRecognition();
-        if (_mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id || currentlyScrolling)
+        if (_mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id || _currentlyScrolling)
             return;
         
         _isPointerPressed = false;
@@ -84,19 +85,19 @@ public partial class MainWindow : Window
 
         _originalScroll = newScroll;
 
-        currentlyScrolling = true;
+        _currentlyScrolling = true;
         
         // Vytvořme animaci, aby ten přechod byl plynulý
         var anim = CreateScrollAnimationTemplate(MainContentScroller.Offset, new Vector(MainContentScroller.Offset.X, newScroll));
         await anim.RunAsync(MainContentScroller, CancellationToken.None);
 
-        currentlyScrolling = false;
+        _currentlyScrolling = false;
     }
 
     private void OnMouseMoved(object? sender, PointerEventArgs e)
     {
         e.PreventGestureRecognition();
-        if (!_isPointerPressed || currentlyScrolling || _mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id)
+        if (!_isPointerPressed || _currentlyScrolling || _mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id)
             return;
         
         double deltaY = _mousePressPosition.Y - e.GetPosition(this).Y;
