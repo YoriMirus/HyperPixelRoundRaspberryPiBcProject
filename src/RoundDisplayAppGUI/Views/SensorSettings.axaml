@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" Width="480" Height="480"
+             x:Class="RoundDisplayAppGUI.Views.SensorSettings">
+    <Grid RowDefinitions="1*,1*,1*">
+        <TextBlock Text="Vyber senzor" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="30" Margin="20"></TextBlock>
+        <Button x:Name="TemperatureHumiditySensorButton" Click="TemperatureHumiditySensorButton_OnClick" Grid.Row="1" Content="Měřič teploty a vlhkosti" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"/>
+        <Button x:Name="AccelerometerButton" Click="AccelerometerButton_OnClick" Grid.Row="2" Content="Akcelerometr" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20" FontSize="30"/>
+    </Grid>
+</UserControl>

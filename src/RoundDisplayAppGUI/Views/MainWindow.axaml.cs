@@ -20,27 +20,14 @@ public partial class MainWindow : Window
 
     private bool _currentlyScrolling;
     
-    public MainWindow(bool isRaspberryPi = false)
+    public MainWindow()
     {
         this.Closing += OnClosing;
         InitializeComponent();
 
         // Pokud App třída detekuje raspberry pi, nastavme WindowState na FullScreen
-        if (isRaspberryPi)
+        if (App.IsRaspberryPi)
             WindowState = WindowState.FullScreen;
-
-    }
-
-    public void InitializeRaspberryPi()
-    {
-        // Samotná inicializace senzorů musí být oddělená a ne v konstruktoru, protože DataBinding, který spojí DataContext ve WeatherStationWidget probíhá až po dokončení konstruktoru
-        // Takže App třídá musí zavolat tuto metodu poté, co je MainWindow inicializace dokončena
-        if (WeatherStationWidget.DataContext is not WeatherStationViewModel vm)
-            return;
-        var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
-            
-        vm.Sensor = sensor;
-        sensor.StartListening();
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
@@ -141,5 +128,15 @@ public partial class MainWindow : Window
             // Defaultně z nějakého divného důvodu animace vždy svůj účinek zruší
             FillMode = FillMode.Forward
         };
+    }
+
+    public void ActivateTemperatureHumiditySensor()
+    {
+        if (WeatherStationWidget.DataContext is not WeatherStationViewModel vm) 
+            return;
+        
+        var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
+        vm.Sensor = sensor;
+        sensor.StartListening();
     }
 }

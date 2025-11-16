@@ -24,6 +24,7 @@ namespace RoundDisplayAppGUI;
 
 public partial class App : Application
 {
+    public static bool IsRaspberryPi { get; private set; }
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -36,26 +37,19 @@ public partial class App : Application
             string hostName = Environment.MachineName;
             string userName =  Environment.UserName;
 
-            bool isRaspberryPi = hostName.Contains("raspberry") || hostName.Contains("rpi") ||
+            IsRaspberryPi = hostName.Contains("raspberry") || hostName.Contains("rpi") ||
                                  userName.Contains("raspberry") || userName.Contains("rpi");
             
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new MainWindow(isRaspberryPi)
+            desktop.MainWindow = new MainWindow()
             {
                 DataContext = new MainWindowViewModel(),
             };
 
             Console.WriteLine("Host name: " + hostName);
             Console.WriteLine("User name: " + userName);
-
-            if (isRaspberryPi)
-            {
-                Console.WriteLine("Raspberry Pi detected. Connecting to sensor...");
-                if (desktop.MainWindow is MainWindow mw)
-                    mw.InitializeRaspberryPi();
-            }
         }
 
         base.OnFrameworkInitializationCompleted();
