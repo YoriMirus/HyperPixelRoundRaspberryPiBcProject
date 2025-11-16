@@ -33,7 +33,7 @@ public partial class MainWindow : Window
         if (hostName.Contains("raspberry") || hostName.Contains("rpi") || userName.Contains("raspberry") || userName.Contains("rpi"))
         {
             WindowState = WindowState.FullScreen;
-            if (ClockWidget.DataContext is not WeatherStationViewModel vm)
+            if (WeatherStationWidget.DataContext is not WeatherStationViewModel vm)
                 return;
             var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
             
