@@ -134,9 +134,15 @@ public partial class MainWindow : Window
     {
         if (WeatherStationWidget.DataContext is not WeatherStationViewModel vm) 
             return;
-        
-        var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
-        vm.Sensor = sensor;
-        sensor.StartListening();
+        try
+        {
+            var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
+            vm.Sensor = sensor;
+            sensor.StartListening();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }

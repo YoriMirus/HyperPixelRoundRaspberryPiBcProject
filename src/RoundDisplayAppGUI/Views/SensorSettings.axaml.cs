@@ -23,44 +23,10 @@ public partial class SensorSettings : UserControl
 
     void InitializeRaspberryPi()
     {
-        bus = I2cBus.Create(11);
-        DispatcherTimer.Run(CheckI2CBus, TimeSpan.FromMilliseconds(1000), DispatcherPriority.Background);
+        TemperatureHumiditySensorButton.IsEnabled = true;
+        AccelerometerButton.IsEnabled = true;
     }
-
-    bool CheckI2CBus()
-    {
-        if (bus is null)
-            return false;
-
-        TemperatureHumiditySensorButton.IsEnabled = false;
-        AccelerometerButton.IsEnabled = false;
-        
-        var devices = bus.PerformBusScan();
-        foreach (int device in devices)
-        {
-            // 0x15 je odkaz na samotný displej.
-            // c# by teoreticky toto zařízení vidět ani neměl, ale pro jistotu to sem dám.
-            if (device == 0x15)
-                continue;
-            
-            // SHT3x senzor vlhkosti a teploty
-            if (device == 0x45)
-            {
-                TemperatureHumiditySensorButton.IsEnabled = true;
-            }
-            // Akcelerometr
-            else if (device == 0x1C)
-            {
-                AccelerometerButton.IsEnabled = true;
-            }
-            else
-            {
-                Console.WriteLine($"Found an unrecognized sensor on address {device}.");
-            }
-        }
-        
-        return true;
-    }
+    
 
     private void AccelerometerButton_OnClick(object? sender, RoutedEventArgs e)
     {
