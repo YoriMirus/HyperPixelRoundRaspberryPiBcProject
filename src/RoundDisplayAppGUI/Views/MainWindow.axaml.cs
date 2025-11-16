@@ -50,6 +50,7 @@ public partial class MainWindow : Window
 
     private void OnMousePressed(object? sender, PointerPressedEventArgs e)
     {
+        e.PreventGestureRecognition();
         if (_mousePressPointer is not null || currentlyScrolling)
             return;
         
@@ -61,6 +62,7 @@ public partial class MainWindow : Window
 
     private async void OnMouseReleased(object? sender, PointerReleasedEventArgs e)
     {
+        e.PreventGestureRecognition();
         if (_mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id || currentlyScrolling)
             return;
         
@@ -93,6 +95,7 @@ public partial class MainWindow : Window
 
     private void OnMouseMoved(object? sender, PointerEventArgs e)
     {
+        e.PreventGestureRecognition();
         if (!_isPointerPressed || currentlyScrolling || _mousePressPointer is null || e.Pointer.Id != _mousePressPointer.Id)
             return;
         
@@ -102,6 +105,7 @@ public partial class MainWindow : Window
 
     private void InputElement_OnPointerWheelChanged(object? sender, PointerWheelEventArgs e)
     {
+        e.PreventGestureRecognition();
         // Musíme zahodit mouse wheel event, je to udělané pro displej after all
         // Důvod proč to zakazuju je protože je to bolest implementovat společně s gestama, aniž by vznikly bugy
         e.Handled = true;
