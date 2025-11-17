@@ -17,9 +17,7 @@ Console.WriteLine("0 = BMP180 GY-68 (nadmořská výška, atmosférický tlak, t
 Console.WriteLine("1 = SHT30 (teplota, vlhkost)");
 Console.WriteLine("2 = MMA8452Q akcelerometr");
 
-ISensorDataSource<Tuple<double,double,double>>? BmpSensor = null;
-ISensorDataSource<HumidityTemperatureDTO>? Sht30Sensor = null;
-ISensorDataSource<AccelerometerDTO> MMA8452Q = null;
+IDisposable? sensor = null;
 
 bool cancel = false;
 while (!cancel)
@@ -28,21 +26,24 @@ while (!cancel)
     switch (input)
     {
         case "0":
-            BmpSensor = new Bmp180Gy68PressureTemperatureSensor(i2CBusNumber, 1000);
+            var BmpSensor = new Bmp180Gy68PressureTemperatureSensor(i2CBusNumber, 1000);
             BmpSensor.OnDataReceived += DataReceived;
             BmpSensor.StartListening();
+            sensor = BmpSensor;
             cancel = true;
             break;
         case "1":
-            Sht30Sensor = new SHT3xHumidityTemperatureSensor(i2CBusNumber, 1000);
+            var Sht30Sensor = new SHT3xHumidityTemperatureSensor(i2CBusNumber, 1000);
             Sht30Sensor.OnDataReceived += Sht30SensorOnOnDataReceived;
             Sht30Sensor.StartListening();
+            sensor = Sht30Sensor;
             cancel = true;
             break;
         case "2":
-            MMA8452Q = new MMA8452QAccelerometer(i2CBusNumber, 100, 2);
+            var MMA8452Q = new MMA8452QAccelerometer(i2CBusNumber, 100, 2);
             MMA8452Q.OnDataReceived += MMA8452QOnOnDataReceived;
             MMA8452Q.StartListening();
+            sensor = MMA8452Q;
             cancel = true;
             break;
     }
@@ -53,22 +54,15 @@ while (!Console.KeyAvailable)
     
 }
 
-if (BmpSensor is not null)
-    BmpSensor.Dispose();
-
-if (Sht30Sensor is not null)
-    Sht30Sensor.Dispose();
-
-if (MMA8452Q is not null)
-    MMA8452Q.Dispose();
+sensor?.Dispose();
 
 return;
 
-void DataReceived(object sender, SensorDataEventArgs<Tuple<double, double, double>> e)
+void DataReceived(object sender, SensorDataEventArgs<PressureTemperatureAltitudeDTO> e)
 {
-    Console.WriteLine("Nadmořská výška (m): " + e.Value.Item1);
-    Console.WriteLine("Atmosférický tlak (atm): " + e.Value.Item2);
-    Console.WriteLine("Teplota (°C): " + e.Value.Item3);
+    Console.WriteLine("Nadmořská výška (m): " + e.Value.Altitude);
+    Console.WriteLine("Atmosférický tlak (atm): " + e.Value.Pressure);
+    Console.WriteLine("Teplota (°C): " + e.Value.Temperature);
 }
 
 void Sht30SensorOnOnDataReceived(object sender, SensorDataEventArgs<HumidityTemperatureDTO> e)

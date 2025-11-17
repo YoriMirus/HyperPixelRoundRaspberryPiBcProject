@@ -1,9 +1,10 @@
 using System.Device.I2c;
+using CommunicationLibrary.I2CSensors.DTOs;
 using Iot.Device.Bmp180;
 
 namespace CommunicationLibrary.I2CSensors;
 
-public class Bmp180Gy68PressureTemperatureSensor : ISensorDataSource<Tuple<double,double,double>>
+public class Bmp180Gy68PressureTemperatureSensor : ISensorDataSource<PressureTemperatureAltitudeDTO>
 {
     private Bmp180? Bmp180Device { get; set; }
     private I2cDevice? I2cDevice { get; set; }
@@ -17,7 +18,7 @@ public class Bmp180Gy68PressureTemperatureSensor : ISensorDataSource<Tuple<doubl
         I2cDevice = null;
     }
 
-    public event SensorDataReceivedHandler<Tuple<double, double,double>>? OnDataReceived;
+    public event SensorDataReceivedHandler<PressureTemperatureAltitudeDTO>? OnDataReceived;
     public void StartListening()
     {
         if (Bmp180Device is not null && I2cDevice is not null)
@@ -62,7 +63,7 @@ public class Bmp180Gy68PressureTemperatureSensor : ISensorDataSource<Tuple<doubl
             var press =  Bmp180Device.ReadPressure();
             var temp = Bmp180Device.ReadTemperature();
             
-            OnDataReceived?.Invoke(this, new SensorDataEventArgs<Tuple<double, double,double>>(DateTime.Now, new Tuple<double,double,double>(alt.Meters, press.Atmospheres, temp.DegreesCelsius)));
+            OnDataReceived?.Invoke(this, new SensorDataEventArgs<PressureTemperatureAltitudeDTO>(DateTime.Now, new PressureTemperatureAltitudeDTO(press.Atmospheres, temp.DegreesCelsius, alt.Meters)));
             
             await Task.Delay(DurationBetweenReads);
         }
