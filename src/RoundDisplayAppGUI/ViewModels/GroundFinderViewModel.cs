@@ -63,28 +63,27 @@ public class GroundFinderViewModel : ViewModelBase
         if (len < 1e-6) return; // avoid division by zero
         double gx = x / len;
         double gy = y / len;
-        //double gz = z / len;
+        double gz = z / len;
+        
+        // Tilt forward/back (X rotation)
+        double angleXRad = Math.Atan2(-gz, gy); // negative gz because screen Z points out
+        double angleXDeg = angleXRad * 180.0 / Math.PI;
 
-        // 2. Compute Euler angles (degrees) for Rotate3DTransform
-        // Pitch (rotation around X-axis) — tilt forward/back
-        double pitchRad = Math.Asin(-gx);
-        double pitchDeg = pitchRad * 180.0 / Math.PI;
+        // Tilt left/right (Y rotation)
+        double angleYRad = Math.Atan2(-gz, gx); // negative gz for correct tilt
+        double angleYDeg = angleYRad * 180.0 / Math.PI;
 
-        // Roll (rotation around Y-axis) — tilt left/right
-        double rollRad = Math.Asin(gy / Math.Cos(pitchRad));
-        double rollDeg = rollRad * 180.0 / Math.PI;
-
-        // Yaw (rotation around Z-axis) — leave 0 for now
-        double yawDeg = 0;
+        // Z rotation not needed for flat arrow
+        double angleZDeg = 0;
 
         // 3. Apply rotation on the UI thread
         Dispatcher.UIThread.Invoke(() =>
         {
             RotateTransform = new Rotate3DTransform()
             {
-                AngleX = pitchDeg,
-                AngleY = rollDeg,
-                AngleZ = yawDeg
+                AngleX = angleXDeg,
+                AngleY = angleYDeg,
+                AngleZ = angleZDeg
             };
         });
     }
