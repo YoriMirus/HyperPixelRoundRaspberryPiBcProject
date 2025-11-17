@@ -26,21 +26,21 @@ while (!cancel)
     switch (input)
     {
         case "0":
-            var BmpSensor = new Bmp180Gy68PressureTemperatureSensor(i2CBusNumber, 1000);
+            var BmpSensor = new Bmp180Gy68PressureTemperatureSensor(i2CBusNumber, TimeSpan.FromMilliseconds(1000));
             BmpSensor.OnDataReceived += DataReceived;
             BmpSensor.StartListening();
             sensor = BmpSensor;
             cancel = true;
             break;
         case "1":
-            var Sht30Sensor = new SHT3xHumidityTemperatureSensor(i2CBusNumber, 1000);
+            var Sht30Sensor = new SHT3xHumidityTemperatureSensor(i2CBusNumber, TimeSpan.FromMilliseconds(1000));
             Sht30Sensor.OnDataReceived += Sht30SensorOnOnDataReceived;
             Sht30Sensor.StartListening();
             sensor = Sht30Sensor;
             cancel = true;
             break;
         case "2":
-            var MMA8452Q = new MMA8452QAccelerometer(i2CBusNumber, 100, 2);
+            var MMA8452Q = new MMA8452QAccelerometer(i2CBusNumber, TimeSpan.FromMilliseconds(100), 2);
             MMA8452Q.OnDataReceived += MMA8452QOnOnDataReceived;
             MMA8452Q.StartListening();
             sensor = MMA8452Q;

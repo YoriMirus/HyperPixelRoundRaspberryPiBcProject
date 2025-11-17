@@ -136,7 +136,7 @@ public partial class MainWindow : Window
             return;
         try
         {
-            var sensor = new SHT3xHumidityTemperatureSensor(11, 100);
+            var sensor = new SHT3xHumidityTemperatureSensor(11, TimeSpan.FromMilliseconds(100));
             vm.Sensor = sensor;
             sensor.StartListening();
         }
