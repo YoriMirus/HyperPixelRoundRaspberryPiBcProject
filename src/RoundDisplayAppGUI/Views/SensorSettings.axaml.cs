@@ -13,7 +13,6 @@ namespace RoundDisplayAppGUI.Views;
 
 public partial class SensorSettings : UserControl
 {
-    private I2cBus? bus;
     public SensorSettings()
     {
         InitializeComponent();
@@ -30,7 +29,16 @@ public partial class SensorSettings : UserControl
 
     private void AccelerometerButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        
+        Visual? parent = this.GetVisualParent();
+        while (parent is not null && parent is not MainWindow)
+        {
+            parent = parent?.GetVisualParent();
+        }
+
+        if (parent is MainWindow mw)
+        {
+            mw.ActivateAccelerometer();
+        }
     }
 
     private void TemperatureHumiditySensorButton_OnClick(object? sender, RoutedEventArgs e)

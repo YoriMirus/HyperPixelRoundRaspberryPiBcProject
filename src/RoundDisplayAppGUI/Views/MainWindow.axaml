@@ -18,12 +18,13 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     <ScrollViewer x:Name="MainContentScroller" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-        <Grid RowDefinitions="1*,1*,1*,1*,1*,1*" PointerWheelChanged="InputElement_OnPointerWheelChanged">
+        <Grid RowDefinitions="1*,1*,1*,1*,1*,1*,1*" PointerWheelChanged="InputElement_OnPointerWheelChanged">
             <!--Avalonia defaultně dává pro potomky datacontext rodiče. Musíme ho tedy ručně přepsat. Nejlépe pomocí vlastnosti v datacontextu rodiče.-->
             <views:ClockView x:Name="ClockWidget" Grid.Row="0" DataContext="{Binding ClockVM}"/>
             <views:SensorSettings Grid.Row="1"></views:SensorSettings>
             <views:WeatherStation x:Name="WeatherStationWidget" Grid.Row="2" DataContext="{Binding WeatherStationVM}"></views:WeatherStation>
-            <views:MapWidget Grid.Row="3"></views:MapWidget>
+            <views:GroundFinder Grid.Row="3" x:Name="GroundFinderWidget" DataContext="{Binding GroundFinderVM}"></views:GroundFinder>
+            <views:MapWidget Grid.Row="4"></views:MapWidget>
         </Grid>
     </ScrollViewer>
 

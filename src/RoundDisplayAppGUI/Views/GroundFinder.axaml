@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:RoundDisplayAppGUI.ViewModels"
+             mc:Ignorable="d" Width="480" Height="480"
+             x:DataType="vm:GroundFinderViewModel"
+             x:Class="RoundDisplayAppGUI.Views.GroundFinder">
+    <Path x:Name="ArrowPath"
+          Stroke="White"
+          StrokeThickness="8"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          Stretch="None"
+          Data="
+                M 240 240
+                L 480 240
+                M 440 200
+                L 480 240
+                M 440 280
+                L 480 240
+              "
+          RenderTransform="{Binding Path=RotateTransform}"
+          RenderTransformOrigin="240,240">
+    </Path>
+</UserControl>

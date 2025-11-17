@@ -130,6 +130,23 @@ public partial class MainWindow : Window
         };
     }
 
+    public void ActivateAccelerometer()
+    {
+        if (GroundFinderWidget.DataContext is not GroundFinderViewModel vm)
+            return;
+
+        try
+        {
+            var sensor = new MMA8452QAccelerometer(11, TimeSpan.FromMilliseconds(50));
+            vm.Sensor = sensor;
+            sensor.StartListening();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
     public void ActivateTemperatureHumiditySensor()
     {
         if (WeatherStationWidget.DataContext is not WeatherStationViewModel vm) 
