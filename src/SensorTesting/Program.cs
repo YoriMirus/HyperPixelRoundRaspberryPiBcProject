@@ -8,9 +8,17 @@ Console.WriteLine("Tester senzorů. Zadej číslo i2c sběrnice (podívej se do 
 string? input = "...";
 int i2CBusNumber;
 while (!int.TryParse(input, out i2CBusNumber))
-{
     input = Console.ReadLine();
-}
+
+Console.WriteLine("Kolikkrát za sekundu mám vypsat data ze senzoru?");
+input = "...";
+int pollingFreq;
+while (!int.TryParse(input, out pollingFreq))
+    input = Console.ReadLine();
+
+TimeSpan pollingRate = TimeSpan.FromSeconds(1.0/pollingFreq);
+
+Console.WriteLine("Čas mezi sběry: " + pollingRate.TotalMilliseconds + " ms.");
 
 Console.WriteLine("Který senzor chceš použít?");
 Console.WriteLine("0 = BMP180 GY-68 (nadmořská výška, atmosférický tlak, teplota)");
@@ -26,21 +34,21 @@ while (!cancel)
     switch (input)
     {
         case "0":
-            var BmpSensor = new Bmp180Gy68PressureTemperatureSensor(i2CBusNumber, TimeSpan.FromMilliseconds(1000));
+            var BmpSensor = new Bmp180Gy68PressureTemperatureSensor(i2CBusNumber, pollingRate);
             BmpSensor.OnDataReceived += DataReceived;
             BmpSensor.StartListening();
             sensor = BmpSensor;
             cancel = true;
             break;
         case "1":
-            var Sht30Sensor = new SHT3xHumidityTemperatureSensor(i2CBusNumber, TimeSpan.FromMilliseconds(1000));
+            var Sht30Sensor = new SHT3xHumidityTemperatureSensor(i2CBusNumber, pollingRate);
             Sht30Sensor.OnDataReceived += Sht30SensorOnOnDataReceived;
             Sht30Sensor.StartListening();
             sensor = Sht30Sensor;
             cancel = true;
             break;
         case "2":
-            var MMA8452Q = new MMA8452QAccelerometer(i2CBusNumber, TimeSpan.FromMilliseconds(100), 2);
+            var MMA8452Q = new MMA8452QAccelerometer(i2CBusNumber, pollingRate, 2);
             MMA8452Q.OnDataReceived += MMA8452QOnOnDataReceived;
             MMA8452Q.StartListening();
             sensor = MMA8452Q;
