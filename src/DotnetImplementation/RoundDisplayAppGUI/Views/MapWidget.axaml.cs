@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 
 namespace RoundDisplayAppGUI.Views;
@@ -12,19 +14,17 @@ public partial class MapWidget : UserControl
 {
     public MapWidget()
     {
-        this.PointerPressed += (sender, args) =>
-        {
-            args.Handled = true;
-        };
         InitializeComponent();
-        var mapControl = new Mapsui.UI.Avalonia.MapControl();
         
-        mapControl.Map?.Layers.Add(Mapsui.Tiling.OpenStreetMap.CreateTileLayer());
+        Map.Map?.Layers.Add(OpenStreetMap.CreateTileLayer());
 
         var center = SphericalMercator.FromLonLat(18.1603213,49.8315196);
 
-        mapControl.Map?.Navigator.CenterOnAndZoomTo(new MPoint(center.x, center.y), 10);
-        
-        Content = mapControl;
+        Map.Map?.Navigator.CenterOnAndZoomTo(new MPoint(center.x, center.y), 10);
+    }
+
+    private void Map_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        e.Handled = true;
     }
 }
