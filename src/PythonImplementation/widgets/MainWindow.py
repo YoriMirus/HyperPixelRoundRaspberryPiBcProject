@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QStackedWidget, QVBoxLayout
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QRect, QEasingCurve, QEvent
 from widgets.ClockWidget import ClockWidget
 from widgets.WeatherStationWidget import WeatherStationWidget
+from widgets.MapWidget import MapWidget
 
 class MainWindow(QWidget):
     def __init__(self, is_raspberry_pi=False):
@@ -20,6 +21,7 @@ class MainWindow(QWidget):
         self.pages = [
             ClockWidget(),
             WeatherStationWidget(),
+            MapWidget(),
         ]
 
         for i, page in enumerate(self.pages):
