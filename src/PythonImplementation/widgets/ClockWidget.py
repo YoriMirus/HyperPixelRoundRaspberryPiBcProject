@@ -6,7 +6,8 @@ from PySide6.QtCore import Qt, QTimer
 class ClockWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.setFixedSize(480, 480)
+
+
         self.setStyleSheet("QWidget { background-color: black; }")
         self.bg = QPixmap("assets/clock.png").scaled(480, 480,
             Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
