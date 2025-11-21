@@ -12,6 +12,9 @@ class MMA8452Q:
     REG_XYZ_DATA_CFG = 0x0E
     REG_OUT_X_MSB = 0x01
 
+    REG_WHOAMI = 0x0D
+    WHOAMI_EXPECTED = 0x2A  # MMA8452Q ID value
+
     def __init__(self, bus=11, address=SLAVE_ADDR_LOW, scale=2):
         """
         :param bus: I2C bus number (11 on Raspberry Pi)
@@ -36,6 +39,29 @@ class MMA8452Q:
         self._enter_standby()
         self._configure_scale()
         self._enter_active()
+
+
+    @staticmethod
+    def detect(bus_number):
+        """
+        Returns True if an MMA8452Q sensor responds on the given bus.
+        """
+        try:
+            bus = smbus2.SMBus(bus_number)
+        except:
+            return False
+
+        for addr in (MMA8452Q.SLAVE_ADDR_LOW, MMA8452Q.SLAVE_ADDR_HIGH):
+            try:
+                whoami = bus.read_byte_data(addr, MMA8452Q.REG_WHOAMI)
+                if whoami == MMA8452Q.WHOAMI_EXPECTED:
+                    bus.close()
+                    return addr  # return the working address!
+            except:
+                pass
+
+        bus.close()
+        return None
 
     # -------------------------------------------------------
     # Initialization and power control

@@ -67,3 +67,32 @@ class SHT3x:
     def read_humidity(self):
         """Return % as float."""
         return self.read_measurement()[1]
+
+    @staticmethod
+    def detect(bus_number):
+        """
+        Returns True if a SHT3x sensor responds on the given bus.
+        Checks addresses 0x44 and 0x45 (both are used in different modules).
+        """
+        possible_addresses = [0x44, 0x45]
+
+        try:
+            bus = smbus2.SMBus(bus_number)
+        except:
+            return None
+
+        for addr in possible_addresses:
+            try:
+                # Soft measurement command (does not require CRC)
+                bus.write_i2c_block_data(addr, 0x2C, [0x06])
+                time.sleep(0.01)
+
+                # Try reading data — if it works, sensor is present
+                bus.read_i2c_block_data(addr, 0x00, 6)
+                bus.close()
+                return addr
+            except:
+                pass
+
+        bus.close()
+        return None

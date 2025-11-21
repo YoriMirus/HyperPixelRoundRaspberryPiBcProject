@@ -20,7 +20,7 @@ class MainWindow(QWidget):
         # Create all pages as children stacked vertically
         self.pages = [
             ClockWidget(),
-            WeatherStationWidget(),
+            WeatherStationWidget(is_raspberry_pi),
             MapWidget(),
         ]
 

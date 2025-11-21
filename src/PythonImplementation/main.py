@@ -15,7 +15,13 @@ def is_pi_environment():
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    w = MainWindow(is_pi_environment())
+
+    is_raspberry_pi = is_pi_environment()
+
+    if is_raspberry_pi:
+        print("Raspberry Pi detected! Applying modifications...")
+
+    w = MainWindow(is_raspberry_pi)
     w.pages[2].mapReady.connect(
         lambda: w.pages[2].setMapPosition(49.8322734, 18.1608531, 17)
     )

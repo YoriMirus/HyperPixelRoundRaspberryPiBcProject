@@ -2,9 +2,14 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QGridL
 from PySide6.QtGui import QPixmap, QPainter, QTransform, QPen, QColor, QFontDatabase, QFont
 from PySide6.QtCore import Qt, QTimer
 
+from sensors.SHT3x import SHT3x
+
+from datetime import datetime
+
 class WeatherStationWidget(QWidget):
-    def __init__(self):
+    def __init__(self, is_raspberry_pi = False):
         super().__init__()
+        self.sensor = None
         self.setFixedSize(480, 480)
         self.setStyleSheet("background-color: black;")
 
@@ -40,12 +45,13 @@ class WeatherStationWidget(QWidget):
         hum_icon.setPixmap(hum_pix)
 
         # humidity label
-        hum_label = QLabel("69%")
+        hum_label = QLabel("XX%")
         hum_label.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         hum_label.setStyleSheet("background-color: transparent;")
         hum_label.setStyleSheet("color: #4DA6FF;")
-        hum_label.setFont(QFontDatabase.font("Saira Stencil One", "", 50))
+        hum_label.setFont(QFontDatabase.font("Saira Stencil One", "", 40))
         hum_label.setAlignment(Qt.AlignCenter)
+        self.hum_label = hum_label
 
         top_row_layout.addWidget(hum_icon)
         top_row_layout.addWidget(hum_label)
@@ -60,8 +66,8 @@ class WeatherStationWidget(QWidget):
         row2.setFixedHeight(90)
         row2.setStyleSheet("color: white; background-color: transparent;")
         row2.setFont(QFontDatabase.font("Saira Stencil One", "", 100))
-        #row2.setFont(QFont("Arial", 70))
         layout.addWidget(row2)
+        self.time_label = row2
 
         # ───────────────────────────────
         # Row 3 (fixed 70 px)
@@ -71,8 +77,8 @@ class WeatherStationWidget(QWidget):
         row3.setFixedHeight(80)
         row3.setStyleSheet("color: white; background-color: transparent;")
         row3.setFont(QFontDatabase.font("Saira Stencil One", "", 50))
-        #row3.setFont(QFont("Arial", 50))
         layout.addWidget(row3)
+        self.date_label = row3
 
         # ───────────────────────────────
         # Row 4 (flexible height)
@@ -92,10 +98,11 @@ class WeatherStationWidget(QWidget):
         temp_icon.setPixmap(temp_pix)
 
         # humidity label
-        temp_label = QLabel("21,0 °C")
+        temp_label = QLabel("XX,X °C")
         temp_label.setStyleSheet("color: #FF6B5A; background-color: transparent;")
         temp_label.setFont(QFontDatabase.font("Saira Stencil One", "", 40))
         temp_label.setAlignment(Qt.AlignCenter)
+        self.temp_label = temp_label
 
         bottom_row_layout.addWidget(temp_icon)
         bottom_row_layout.addWidget(temp_label)
@@ -106,6 +113,52 @@ class WeatherStationWidget(QWidget):
         bottom_spacer.setStyleSheet("background-color: transparent;")
         bottom_spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         layout.addWidget(bottom_spacer, stretch=1)
+
+        # Poll sensor every 100 ms
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_sensor)
+        self.timer.start(100)
+
+        self.is_raspberry_pi = is_raspberry_pi
+
+    def update_sensor(self):
+        now = datetime.now()
+
+        CZECH_WEEKDAYS = {
+            0: "PO",  # Monday
+            1: "ÚT",  # Tuesday
+            2: "ST",  # Wednesday
+            3: "ČT",  # Thursday
+            4: "PÁ",  # Friday
+            5: "SO",  # Saturday
+            6: "NE",  # Sunday
+        }
+
+        weekday_cz = CZECH_WEEKDAYS[now.weekday()]
+
+        self.time_label.setText(now.strftime("%H:%M"))
+        self.date_label.setText(weekday_cz + " " + now.strftime("%d.%m") + "." + now.strftime("%Y")[2:])
+
+        if not self.is_raspberry_pi:
+            return
+
+        if self.sensor is None:
+            if SHT3x.detect(11) is None:
+                print("Trying to find SHT3x. Found nothing.")
+                return
+            self.sensor = SHT3x(11)
+
+        try:
+            temp, humidity = self.sensor.read_measurement()
+            self.hum_label = f"{humidity:.0f}%"
+            self.temp_label = f"{temp:.1f}%"
+        except:
+            print("Reading from sensor failed. Will try to reconnect again next time.")
+            self.sensor = None
+            pass
+
+
+
 
     def paintEvent(self, event):
         painter = QPainter(self)
