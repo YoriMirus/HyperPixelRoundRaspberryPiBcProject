@@ -1,0 +1,8 @@
+Pro zatím jsem si většinu obrázků vzal z internetu. V budoucnu je kdyžtak nahradím svými, pokud mi to copyright nedovolí.
+clock.png - https://illustoon.com/?id=5054
+
+second-hand.png - udělal jsem sám
+minute-hand.png a hour-hand.png - https://www.klockit.com/3-5-8-black-push-on-hour-and-minute-hand-set.html
+
+<a href="https://www.flaticon.com/free-icons/thermometer" title="thermometer icons">Thermometer icons created by Freepik - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/humidity" title="humidity icons">Humidity icons created by Pixel perfect - Flaticon</a>
