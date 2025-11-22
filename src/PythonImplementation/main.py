@@ -3,7 +3,7 @@ import getpass
 import socket
 from datetime import datetime
 from PySide6.QtWidgets import QApplication, QWidget
-from PySide6.QtGui import QPixmap, QPainter, QTransform
+from PySide6.QtGui import QPixmap, QPainter, QTransform, QFontDatabase
 from PySide6.QtCore import Qt, QTimer
 
 from widgets.MainWindow import MainWindow
@@ -20,6 +20,8 @@ if __name__ == "__main__":
 
     if is_raspberry_pi:
         print("Raspberry Pi detected! Applying modifications...")
+
+    QFontDatabase.addApplicationFont("assets/SairaStencilOne-Regular.ttf")
 
     w = MainWindow(is_raspberry_pi)
     w.pages[2].mapReady.connect(

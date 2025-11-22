@@ -27,7 +27,7 @@ class MapWidget(QWidget):
 
         # ---- Arrow label ----
         self.arrowLabel = QLabel("▲")
-        self.arrowLabel.setAlignment(Qt.AlignCenter)
+        self.arrowLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.arrowLabel.setStyleSheet("""
             font-size: 24px;
             color: white;
@@ -40,8 +40,8 @@ class MapWidget(QWidget):
         self.web = QWebEngineView()
 
         settings = self.web.page().profile().settings()
-        settings.setAttribute(QWebEngineSettings.LocalContentCanAccessRemoteUrls, True)
-        settings.setAttribute(QWebEngineSettings.LocalContentCanAccessFileUrls, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
 
         html_path = os.path.abspath("assets/map.html")
         self.web.load(QUrl.fromLocalFile(html_path))
@@ -50,29 +50,6 @@ class MapWidget(QWidget):
         self.map_ready = False
 
         layout.addWidget(self.web)
-
-    def old__init__(self):
-        super().__init__()
-        self.setFixedSize(480,480)
-
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0,0,0,0)
-
-        self.web = QWebEngineView()
-
-        # IMPORTANT: allow local HTML to load CDN resources
-        settings = self.web.page().profile().settings()
-        settings.setAttribute(QWebEngineSettings.LocalContentCanAccessRemoteUrls, True)
-        settings.setAttribute(QWebEngineSettings.LocalContentCanAccessFileUrls, True)
-
-        html_path = os.path.abspath("assets/map.html")
-        self.web.load(QUrl.fromLocalFile(html_path))
-
-        # Wait until HTML is fully loaded
-        self.web.loadFinished.connect(self._on_load_finished)
-
-        layout.addWidget(self.web)
-        self.map_ready = False
 
     def _on_load_finished(self):
         print("Map page loaded.")

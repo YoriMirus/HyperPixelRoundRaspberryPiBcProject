@@ -15,7 +15,7 @@ class MainWindow(QWidget):
         else:
             self.setFixedSize(480, 480)
         self.setStyleSheet("QWidget { background-color: black; }")
-        self.setAttribute(Qt.WA_AcceptTouchEvents)  # Enable multitouch
+        self.setAttribute(Qt.WidgetAttribute.WA_AcceptTouchEvents)  # Enable multitouch
 
         # Create all pages as children stacked vertically
         self.pages = [
@@ -42,7 +42,7 @@ class MainWindow(QWidget):
     # TOUCH EVENTS
     # ───────────────────────────────────────────────
     def event(self, event):
-        if event.type() == QEvent.TouchBegin:
+        if event.type() == QEvent.Type.TouchBegin:
             points = event.touchPoints()
             if not points:
                 return True
@@ -55,7 +55,7 @@ class MainWindow(QWidget):
             self.offset_y = 0
             return True
 
-        elif event.type() == QEvent.TouchUpdate:
+        elif event.type() == QEvent.Type.TouchUpdate:
             if self.primary_touch_id is None:
                 return True
 
@@ -66,7 +66,7 @@ class MainWindow(QWidget):
                     break
             return True
 
-        elif event.type() == QEvent.TouchEnd:
+        elif event.type() == QEvent.Type.TouchEnd:
             if self.primary_touch_id is not None:
                 for p in event.touchPoints():
                     if p.id() == self.primary_touch_id:
@@ -82,7 +82,7 @@ class MainWindow(QWidget):
     # MOUSE SUPPORT (optional but useful on PC)
     # ───────────────────────────────────────────────
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton and self.primary_touch_id is None:
+        if event.button() == Qt.MouseButton.LeftButton and self.primary_touch_id is None:
             self.drag_start = event.pos()
             self.dragging = True
             self.offset_y = 0
@@ -156,7 +156,7 @@ class MainWindow(QWidget):
             anim.setDuration(220)
             anim.setStartValue(QPoint(0, start_y))
             anim.setEndValue(QPoint(0, end_y))
-            anim.setEasingCurve(QEasingCurve.OutCubic)
+            anim.setEasingCurve(QEasingCurve.Type.OutCubic)
             anim.start()
 
             self.animations.append(anim)  # store to prevent GC

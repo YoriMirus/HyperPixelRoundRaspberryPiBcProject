@@ -13,8 +13,6 @@ class WeatherStationWidget(QWidget):
         self.setFixedSize(480, 480)
         self.setStyleSheet("background-color: black;")
 
-        QFontDatabase.addApplicationFont("assets/SairaStencilOne-Regular.ttf")
-
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
