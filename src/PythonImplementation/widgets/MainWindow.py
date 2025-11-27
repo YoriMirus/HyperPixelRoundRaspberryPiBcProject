@@ -1,6 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget, QStackedWidget, QVBoxLayout
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QRect, QEasingCurve, QEvent
+
+from widgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 from widgets.ClockWidget import ClockWidget
 from widgets.WeatherStationWidget import WeatherStationWidget
 from widgets.MapWidget import MapWidget
@@ -21,6 +23,7 @@ class MainWindow(QWidget):
         self.pages = [
             ClockWidget(),
             WeatherStationWidget(is_raspberry_pi),
+            ArtificialHorizonWidget(is_raspberry_pi),
             MapWidget(),
         ]
 

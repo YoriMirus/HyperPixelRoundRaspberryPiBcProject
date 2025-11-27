@@ -1,3 +1,5 @@
+from math import atan2, sqrt
+
 import smbus2
 import time
 
@@ -139,6 +141,15 @@ class MMA8452Q:
         az = z_raw / counts_per_g
 
         return ax, ay, az
+
+    def read_gyro(self):
+        x,y,z = self.read_acceleration()
+
+        roll = atan2(y, z) * 57.3
+        pitch = atan2((-x), sqrt(y*y + z*z)) * 57.3
+
+        return roll, pitch
+
 
     # -------------------------------------------------------
     # Cleanup
