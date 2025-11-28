@@ -112,10 +112,10 @@ class WeatherStationWidget(QWidget):
         bottom_spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         layout.addWidget(bottom_spacer, stretch=1)
 
-        # Poll sensor every 100 ms
+        # Poll sensor every 1000 ms
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_sensor)
-        self.timer.start(100)
+        self.timer.start(1000)
 
         self.is_raspberry_pi = is_raspberry_pi
 

@@ -6,6 +6,7 @@ from widgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 from widgets.ClockWidget import ClockWidget
 from widgets.WeatherStationWidget import WeatherStationWidget
 from widgets.MapWidget import MapWidget
+from widgets.QuitWidget import QuitWidget
 
 class MainWindow(QWidget):
     def __init__(self, is_raspberry_pi=False):
@@ -21,6 +22,7 @@ class MainWindow(QWidget):
 
         # Create all pages as children stacked vertically
         self.pages = [
+            QuitWidget(),
             ClockWidget(),
             WeatherStationWidget(is_raspberry_pi),
             ArtificialHorizonWidget(is_raspberry_pi),
