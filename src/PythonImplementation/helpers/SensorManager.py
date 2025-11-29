@@ -20,8 +20,7 @@ class SensorManager:
 
                 try:
                     print("Looking for SHT3x...")
-                    if SHT3x.detect(11):
-                        self.SHT3x = SHT3x(bus=11)
+                    self.SHT3x = SHT3x(bus=11)
                 except Exception as e:
                     print("Connecting to SHT3x failed.")
                     print(e)
@@ -29,8 +28,7 @@ class SensorManager:
 
                 try:
                     print("Looking for MMA8452Q...")
-                    if MMA8452Q.detect(11):
-                        self.MMA8452Q = MMA8452Q(bus=11)
+                    self.MMA8452Q = MMA8452Q(bus=11)
                 except Exception as e:
                     print("Connecting to MMA8452Q failed. No sensors found.")
                     print(e)
