@@ -140,9 +140,10 @@ class WeatherStationWidget(QWidget):
 
         try:
             temp, humidity = self.sensorManager.SHT3x.read_measurement()
-            self.hum_label = f"{humidity:.0f}%"
-            self.temp_label = f"{temp:.1f}%"
-        except:
+            self.hum_label.setText(f"{humidity:.0f}%")
+            self.temp_label.setText(f"{temp:.1f}°C")
+        except Exception as e:
+            print(e)
             pass
 
 
