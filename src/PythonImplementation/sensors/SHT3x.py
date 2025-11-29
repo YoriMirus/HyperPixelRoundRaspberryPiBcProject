@@ -2,7 +2,7 @@ import smbus2
 import time
 
 class SHT3x:
-    DEFAULT_I2C_ADDR = 0x44
+    DEFAULT_I2C_ADDR = 0x45
 
     # Commands
     CMD_MEASURE_HIGHREP_STRETCH = [0x2C, 0x06]   # High repeatability, clock stretching
