@@ -15,10 +15,10 @@ def is_pi_environment():
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
     is_raspberry_pi = is_pi_environment()
 
     if is_raspberry_pi:
+        app.setOverrideCursor(Qt.BlankCursor)
         print("Raspberry Pi detected! Applying modifications...")
 
     QFontDatabase.addApplicationFont("assets/SairaStencilOne-Regular.ttf")
