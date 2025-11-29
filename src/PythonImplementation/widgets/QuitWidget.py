@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt
 class QuitWidget(QWidget):
     def __init__(self):
         super().__init__()
+        self.setFixedSize(480,480)
 
         # Create the round exit button
         btn = QPushButton("✕")
