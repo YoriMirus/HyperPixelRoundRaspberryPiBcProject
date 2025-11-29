@@ -7,9 +7,9 @@ from sensors.SHT3x import SHT3x
 from datetime import datetime
 
 class WeatherStationWidget(QWidget):
-    def __init__(self, is_raspberry_pi = False):
+    def __init__(self, sensorManager):
         super().__init__()
-        self.sensor = None
+        self.sensorManager = sensorManager
         self.setFixedSize(480, 480)
         self.setStyleSheet("background-color: black;")
 
@@ -117,8 +117,6 @@ class WeatherStationWidget(QWidget):
         self.timer.timeout.connect(self.update_sensor)
         self.timer.start(1000)
 
-        self.is_raspberry_pi = is_raspberry_pi
-
     def update_sensor(self):
         now = datetime.now()
 
@@ -137,22 +135,14 @@ class WeatherStationWidget(QWidget):
         self.time_label.setText(now.strftime("%H:%M"))
         self.date_label.setText(weekday_cz + " " + now.strftime("%d.%m") + "." + now.strftime("%Y")[2:])
 
-        if not self.is_raspberry_pi:
+        if self.sensorManager.SHT3x is None:
             return
 
-        if self.sensor is None:
-            if SHT3x.detect(11) is None:
-                print("Trying to find SHT3x. Found nothing.")
-                return
-            self.sensor = SHT3x(11)
-
         try:
-            temp, humidity = self.sensor.read_measurement()
+            temp, humidity = self.sensorManager.SHT3x.read_measurement()
             self.hum_label = f"{humidity:.0f}%"
             self.temp_label = f"{temp:.1f}%"
         except:
-            print("Reading from sensor failed. Will try to reconnect again next time.")
-            self.sensor = None
             pass
 
 

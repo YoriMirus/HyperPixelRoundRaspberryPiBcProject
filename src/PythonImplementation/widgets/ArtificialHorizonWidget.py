@@ -124,10 +124,10 @@ class HorizonForeground(QWidget):
 
 
 class ArtificialHorizonWidget(QWidget):
-    def __init__(self, is_raspberry_pi = False):
+    def __init__(self, sensorManager):
         super().__init__()
         self.sensor = None
-        self.is_raspberry_pi = is_raspberry_pi
+        self.sensorManager = sensorManager
 
         self.surround_pix = QPixmap("assets/artificial-horizon-surroundings.png") \
                                 .scaled(480, 480, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -155,24 +155,16 @@ class ArtificialHorizonWidget(QWidget):
         self.timer.start(30)
 
     def animate(self):
-        if not self.is_raspberry_pi:
+        if self.sensorManager.MMA8452Q is None:
             return
 
-        if self.sensor is None:
-            if MMA8452Q.detect(11) is None:
-                print("Trying to find SHT3x. Found nothing.")
-                return
-            self.sensor = MMA8452Q(11)
-
         try:
-            roll, pitch = self.sensor.read_gyro()
+            roll, pitch = self.sensorManager.MMA8452Q.read_gyro()
             self.pitch = pitch
             self.roll = roll
             self.moving.setRoll(self.roll)
             self.moving.setPitch(self.pitch)
         except:
-            print("Reading from sensor failed. Will try to reconnect again next time.")
-            self.sensor = None
             pass
 
 

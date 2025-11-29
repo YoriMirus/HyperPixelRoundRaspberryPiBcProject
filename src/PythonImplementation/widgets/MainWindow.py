@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget, QStackedWidget, QVBoxLayout
-from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QRect, QEasingCurve, QEvent
+from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QRect, QEasingCurve, QEvent, QTimer
 
 from widgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 from widgets.ClockWidget import ClockWidget
@@ -8,9 +8,13 @@ from widgets.WeatherStationWidget import WeatherStationWidget
 from widgets.MapWidget import MapWidget
 from widgets.QuitWidget import QuitWidget
 
+from helpers.SensorManager import SensorManager
+
 class MainWindow(QWidget):
     def __init__(self, is_raspberry_pi=False):
         super().__init__()
+
+        self.sensorManager = SensorManager()
 
         if is_raspberry_pi:
             self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
@@ -24,8 +28,8 @@ class MainWindow(QWidget):
         self.pages = [
             QuitWidget(),
             ClockWidget(),
-            WeatherStationWidget(is_raspberry_pi),
-            ArtificialHorizonWidget(is_raspberry_pi),
+            WeatherStationWidget(self.sensorManager),
+            ArtificialHorizonWidget(self.sensorManager),
             MapWidget(),
         ]
 
@@ -42,6 +46,23 @@ class MainWindow(QWidget):
         self.offset_y = 0
         self.primary_touch_id = None  # The ID of the active finger
         self.animations = []
+
+        # Časovač pro kontrolu senzorů
+        if is_raspberry_pi:
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.checkForSensors)
+            self.timer.start(1000)
+
+    def checkForSensors(self):
+        # Sensor manager vrátí True, pokud se doporučuje zkusit kontrolu znova
+        # SensorManager má totiž nadefinované senzory, pokud ale selže komunikace, nastaví tento senzor na None
+        # V tento případ je nejlepší se zkusit znova připojit jestli to náhodou nepůjde
+        # Pokud to ale selže znova tak na to kašleme
+        result = self.sensorManager.CheckForSensors()
+        if result:
+            QTimer.singleShot(100, self.trySensorsAgain)
+    def trySensorsAgain(self):
+        self.sensorManager.CheckForSensors()
 
     # ───────────────────────────────────────────────
     # TOUCH EVENTS
