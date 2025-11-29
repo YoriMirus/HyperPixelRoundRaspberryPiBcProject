@@ -60,14 +60,6 @@ class MainWindow(QWidget):
             self.timer.start(1000)
 
     def checkForSensors(self):
-        # Sensor manager vrátí True, pokud se doporučuje zkusit kontrolu znova
-        # SensorManager má totiž nadefinované senzory, pokud ale selže komunikace, nastaví tento senzor na None
-        # V tento případ je nejlepší se zkusit znova připojit jestli to náhodou nepůjde
-        # Pokud to ale selže znova tak na to kašleme
-        result = self.sensorManager.CheckForSensors()
-        if result:
-            QTimer.singleShot(100, self.trySensorsAgain)
-    def trySensorsAgain(self):
         self.sensorManager.CheckForSensors()
 
     # ───────────────────────────────────────────────
