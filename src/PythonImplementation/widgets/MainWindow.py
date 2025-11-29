@@ -47,6 +47,11 @@ class MainWindow(QWidget):
     # TOUCH EVENTS
     # ───────────────────────────────────────────────
     def event(self, event):
+        # Let children (buttons, sliders, labels) receive touch first
+        if event.type() in (QEvent.TouchBegin, QEvent.TouchUpdate, QEvent.TouchEnd):
+            if super().event(event):
+                return True
+
         if event.type() == QEvent.Type.TouchBegin:
             points = event.touchPoints()
             if not points:
