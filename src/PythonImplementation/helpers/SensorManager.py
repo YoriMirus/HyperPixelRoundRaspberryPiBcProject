@@ -21,10 +21,12 @@ class SensorManager:
                 try:
                     print("Looking for SHT3x...")
                     self.SHT3x = SHT3x(bus=11)
+                    return False
                 except Exception as e:
                     print("Connecting to SHT3x failed.")
                     print(e)
                     print("Let's try the accelerometer.")
+
 
                 try:
                     print("Looking for MMA8452Q...")
