@@ -1,4 +1,5 @@
 import sys
+import signal
 import getpass
 import socket
 from datetime import datetime
@@ -13,9 +14,15 @@ def is_pi_environment():
     host = socket.gethostname().lower()
     return user in ("rpi", "raspberrypi") or host in ("rpi", "raspberrypi")
 
+def handle_sigint(sig, frame):
+    print("Caught SIGINT, quitting...")
+    QApplication.quit()
+    sys.exit(0)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     is_raspberry_pi = is_pi_environment()
+    signal.signal(signal.SIGINT, handle_sigint)
 
     if is_raspberry_pi:
         app.setOverrideCursor(Qt.BlankCursor)
