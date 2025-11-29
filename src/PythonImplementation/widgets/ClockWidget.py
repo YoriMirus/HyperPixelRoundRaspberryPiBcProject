@@ -64,7 +64,7 @@ class ClockWidget(QWidget):
 
         self.date_time_label = QLabel(self.date_time_frame)
         self.date_time_label.setFont(QFontDatabase.font("Saira Stencil One", "", 30))
-        self.date_time_label.setStyleSheet("border: none; background-color: transparent;")
+        self.date_time_label.setStyleSheet("border: none; background-color: transparent; color:white;")
         self.date_time_label.setGeometry(0, 0, self.date_time_frame.width(), self.date_time_frame.height())
         self.date_time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
