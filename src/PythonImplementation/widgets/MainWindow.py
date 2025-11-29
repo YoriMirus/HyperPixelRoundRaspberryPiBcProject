@@ -13,14 +13,20 @@ from helpers.SensorManager import SensorManager
 class MainWindow(QWidget):
     def __init__(self, is_raspberry_pi=False):
         super().__init__()
-
         self.sensorManager = SensorManager()
 
         if is_raspberry_pi:
+            # Ano některé parametry zde nedávají moc smysl
+            # Z nějakého důvodu čistý fullscreen je trošičku mimo od prostředku
+            # move by prý měl vypnout fullScreen ale bez FullScreen tento fix nefunguje
+            # setFixedSize jenom vypíná window resizing, protože i fullscreen aplikace evidentně jde resizovat z nějakého záhadného důvodu
             self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+            self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+            self.setWindowFlag(Qt.CustomizeWindowHint)
             self.showFullScreen()
-        else:
-            self.setFixedSize(480, 480)
+            self.move(0,7)
+
+        self.setFixedSize(480, 480)
         self.setStyleSheet("QWidget { background-color: black; }")
         self.setAttribute(Qt.WidgetAttribute.WA_AcceptTouchEvents)  # Enable multitouch
 
