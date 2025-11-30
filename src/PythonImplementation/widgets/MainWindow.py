@@ -1,9 +1,9 @@
-import sys
-from PySide6.QtWidgets import QApplication, QWidget, QStackedWidget, QVBoxLayout
-from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QRect, QEasingCurve, QEvent, QTimer
+from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent, QTimer
 
 from widgets.ArtificialHorizonWidget import ArtificialHorizonWidget
-from widgets.ClockWidget import ClockWidget
+from widgets.ClockDesigns.AnalogClock import AnalogClock
+from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
 from widgets.WeatherStationWidget import WeatherStationWidget
 from widgets.MapWidget import MapWidget
 from widgets.QuitWidget import QuitWidget
@@ -33,7 +33,8 @@ class MainWindow(QWidget):
         # Create all pages as children stacked vertically
         self.pages = [
             QuitWidget(),
-            ClockWidget(),
+            #AnalogClock(),
+            DigitalClockDesignA(),
             WeatherStationWidget(self.sensorManager),
             ArtificialHorizonWidget(self.sensorManager),
             MapWidget(),

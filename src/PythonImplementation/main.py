@@ -29,6 +29,7 @@ if __name__ == "__main__":
         print("Raspberry Pi detected! Applying modifications...")
 
     QFontDatabase.addApplicationFont("assets/SairaStencilOne-Regular.ttf")
+    QFontDatabase.addApplicationFont("assets/Seven Segment.ttf")
 
     w = MainWindow(is_raspberry_pi)
     w.pages[4].mapReady.connect(

@@ -48,7 +48,7 @@ class ClockHandsWidget(QWidget):
         p.setTransform(minute_transform)
         p.drawPixmap(0,0, self.minute_pix)
 
-class ClockWidget(QWidget):
+class AnalogClock(QWidget):
     def __init__(self):
         super().__init__()
 
