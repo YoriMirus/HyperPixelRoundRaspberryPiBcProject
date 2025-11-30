@@ -7,6 +7,7 @@ from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
 from widgets.WeatherStationWidget import WeatherStationWidget
 from widgets.MapWidget import MapWidget
 from widgets.QuitWidget import QuitWidget
+from widgets.ZoomCarousel import ZoomCarousel
 
 from helpers.SensorManager import SensorManager
 
@@ -30,11 +31,14 @@ class MainWindow(QWidget):
         self.setStyleSheet("QWidget { background-color: black; }")
         self.setAttribute(Qt.WidgetAttribute.WA_AcceptTouchEvents)  # Enable multitouch
 
+        clock_container = ZoomCarousel()
+        clock_container.addWidget(AnalogClock())
+        clock_container.addWidget(DigitalClockDesignA())
+
         # Create all pages as children stacked vertically
         self.pages = [
             QuitWidget(),
-            #AnalogClock(),
-            DigitalClockDesignA(),
+            clock_container,
             WeatherStationWidget(self.sensorManager),
             ArtificialHorizonWidget(self.sensorManager),
             MapWidget(),
