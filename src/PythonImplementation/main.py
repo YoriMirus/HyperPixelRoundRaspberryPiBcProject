@@ -30,6 +30,8 @@ if __name__ == "__main__":
 
     QFontDatabase.addApplicationFont("assets/SairaStencilOne-Regular.ttf")
     QFontDatabase.addApplicationFont("assets/Seven Segment.ttf")
+    QFontDatabase.addApplicationFont("assets/digital-7 (mono).ttf")
+    QFontDatabase.addApplicationFont("assets/digital-7.ttf")
 
     w = MainWindow(is_raspberry_pi)
     w.pages[4].mapReady.connect(
