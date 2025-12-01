@@ -4,11 +4,11 @@ from PySide6.QtCore import Qt, QTimer
 
 from math import sin, cos, pi
 from datetime import datetime
-
 class DigitalClockDesignA(QWidget):
     def __init__(self):
         super().__init__()
         self.setFixedSize(480,480)
+        self.setStyleSheet("background-color: black")
 
         self.date_label = QLabel("01 Jan 2025", parent=self)
         self.date_label.setStyleSheet("color: #E0E0E0; background-color: transparent; margin-top: -10px; margin-bottom: -10px;")
@@ -83,12 +83,8 @@ class DigitalClockDesignA(QWidget):
         self.minute_label.setText(now.strftime("%M"))
         self.date_label.setText(now.strftime("%d-%m"))   # e.g. "10 Jan 2025"
 
-        days_of_week = ["po", "út", "st", "čt", "pá", "so", "ne"]
-        current_dof = now.strftime("%a")
-        index = days_of_week.index(current_dof)
-
         for i in range(len(self.day_labels)):
-            if i == index:
+            if i == now.weekday():
                 self.day_labels[i].setStyleSheet("color: #E0E0E0; background-color: transparent")
             else:
                 self.day_labels[i].setStyleSheet("color: #666666; background-color: transparent")
@@ -105,8 +101,6 @@ class DigitalClockDesignA(QWidget):
         dark_red_pen = QPen(QColor("#7c0101"), 3)
         blue_pen = QPen(QColor("#1F6FEB"), 5)
         dark_blue_pen = QPen(QColor("#1F6FEB").darker(150), 5)
-
-        painter.fillRect(self.rect(), QColor("#000000"))
 
         angle_increments = 6
         short_tick_start = 220
