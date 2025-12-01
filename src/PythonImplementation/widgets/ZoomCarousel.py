@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import (
-    QWidget, QGraphicsView, QGraphicsScene, QGraphicsProxyWidget, QVBoxLayout
+    QWidget, QGraphicsView, QGraphicsScene, QVBoxLayout
 )
 from PySide6.QtCore import (
     Qt, QTimer, QPointF, QEvent, QPropertyAnimation, QEasingCurve
 )
-from PySide6.QtGui import QMouseEvent, QPainter
+from PySide6.QtGui import QMouseEvent, QTouchEvent, QPainter
 
 
 class ZoomCarousel(QWidget):
@@ -17,14 +17,14 @@ class ZoomCarousel(QWidget):
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setRenderHints(self.view.renderHints() | QPainter.Antialiasing)
 
-        # By default: transparent, MainWindow handles touch
+        # MainWindow handles touch until zoom-out
         self.view.viewport().setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self.view.viewport().setAttribute(Qt.WA_AcceptTouchEvents, True)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.view)
 
-        # We receive events when zoomed out only
         self.view.viewport().installEventFilter(self)
 
         self.proxies = []
@@ -37,15 +37,16 @@ class ZoomCarousel(QWidget):
         self.longPressTimer.setSingleShot(True)
         self.longPressTimer.timeout.connect(self._on_long_press)
 
-        # touch/mouse dragging state
+        # interaction state
         self._dragging = False
         self._press_view_x = 0
         self._tap_start_pos = None
+        self._primary_touch_id = None
         self._min_drag_to_switch = 120
 
-        self.drag_speed = 1.0
+        # drag multiplier
+        self.drag_speed = 2.0
 
-        # animations
         self._scroll_anim = None
         self._scale_anims = []
 
@@ -67,8 +68,6 @@ class ZoomCarousel(QWidget):
         self._center_on_current()
 
     def _center_on_current(self):
-        if not self.proxies:
-            return
         target_x = self.current_index * 480 + 240
         self.view.centerOn(target_x, 240)
 
@@ -83,24 +82,19 @@ class ZoomCarousel(QWidget):
         if self.is_zoomed_out:
             return
 
-        # Allow the carousel to receive events
         self.view.viewport().setAttribute(Qt.WA_TransparentForMouseEvents, False)
 
         for proxy in self.proxies:
-            proxy.setTransformOriginPoint(proxy.boundingRect().center())
             self._run_scale_animation(proxy, proxy.scale(), 0.7)
 
         self.is_zoomed_out = True
 
     def zoom_in_to_current(self):
         for proxy in self.proxies:
-            proxy.setTransformOriginPoint(proxy.boundingRect().center())
             self._run_scale_animation(proxy, proxy.scale(), 1.0)
 
         self.is_zoomed_out = False
         self._animate_scroll_to_current()
-
-        # Give control back to MainWindow
         self.view.viewport().setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
     def _run_scale_animation(self, proxy, start, end):
@@ -109,83 +103,108 @@ class ZoomCarousel(QWidget):
         anim.setStartValue(start)
         anim.setEndValue(end)
         anim.setEasingCurve(QEasingCurve.OutCubic)
-
         self._scale_anims.append(anim)
         anim.finished.connect(lambda: self._scale_anims.remove(anim))
         anim.start()
 
     # ---------------------------------------------------------------
-    # Event Filter: Handling swipe / tap in zoomed-out mode
+    # Event Filter: Mouse + Touch Support
     # ---------------------------------------------------------------
     def eventFilter(self, obj, ev):
         if obj is not self.view.viewport():
             return False
 
-        # Only handle input when zoomed out
         if not self.is_zoomed_out:
             return False
 
         et = ev.type()
 
-        # -----------------------------------------
-        # Press
-        # -----------------------------------------
-        if et == QEvent.MouseButtonPress:
-            if isinstance(ev, QMouseEvent):
+        # -----------------------------------------------------------
+        # TOUCH HANDLING
+        # -----------------------------------------------------------
+        if et == QEvent.TouchBegin:
+            points = ev.touchPoints()
+            if not points:
+                return False
+
+            p = points[0]
+            self._primary_touch_id = p.id()
+            self._dragging = True
+            self._press_view_x = self.view.horizontalScrollBar().value()
+            self._tap_start_pos = p.pos().toPoint()
+
+            return True
+
+        elif et == QEvent.TouchUpdate and self._primary_touch_id is not None:
+            for p in ev.touchPoints():
+                if p.id() == self._primary_touch_id:
+                    view_dx = p.pos().x() - self._tap_start_pos.x()
+                    delta = view_dx * self.drag_speed
+
+                    self.view.horizontalScrollBar().setValue(
+                        int(self._press_view_x - delta)
+                    )
+                    return True
+
+        elif et == QEvent.TouchEnd and self._primary_touch_id is not None:
+            for p in ev.touchPoints():
+                if p.id() == self._primary_touch_id:
+                    self._finish_drag(p.pos().toPoint())
+                    break
+
+            self._primary_touch_id = None
+            return True
+
+        # -----------------------------------------------------------
+        # MOUSE HANDLING
+        # -----------------------------------------------------------
+        if isinstance(ev, QMouseEvent):
+
+            if et == QEvent.MouseButtonPress:
                 self._dragging = True
                 self._press_view_x = self.view.horizontalScrollBar().value()
                 self._tap_start_pos = ev.pos()
+                return True
 
-            return True
-
-        # -----------------------------------------
-        # Move  (drag)
-        # -----------------------------------------
-        elif et == QEvent.MouseMove and self._dragging:
-            if isinstance(ev, QMouseEvent):
-                # Use *view space* delta
+            elif et == QEvent.MouseMove and self._dragging:
                 view_dx = ev.pos().x() - self._tap_start_pos.x()
-
-                # Apply multiplier
                 delta = view_dx * self.drag_speed
-
-                # Update scrollbar directly
                 self.view.horizontalScrollBar().setValue(
                     int(self._press_view_x - delta)
                 )
-            return True
-
-        # -----------------------------------------
-        # Release
-        # -----------------------------------------
-        elif et == QEvent.MouseButtonRelease and self._dragging:
-            self._dragging = False
-
-            scrollbar = self.view.horizontalScrollBar()
-            delta = scrollbar.value() - self._press_view_x
-
-            # Tap?
-            if self._tap_start_pos is not None and \
-               (ev.pos() - self._tap_start_pos).manhattanLength() < 15:
-                self.zoom_in_to_current()
                 return True
 
-            # Swipe?
-            if delta > self._min_drag_to_switch and self.current_index < len(self.proxies) - 1:
-                self._go_next()
-
-            elif delta < -self._min_drag_to_switch and self.current_index > 0:
-                self._go_prev()
-
-            else:
-                self._animate_scroll_to_current()
-
-            return True
+            elif et == QEvent.MouseButtonRelease and self._dragging:
+                self._finish_drag(ev.pos())
+                return True
 
         return False
 
     # ---------------------------------------------------------------
-    # Navigation helpers
+    # Shared drag-release logic (mouse + touch)
+    # ---------------------------------------------------------------
+    def _finish_drag(self, end_pos):
+        self._dragging = False
+        scrollbar = self.view.horizontalScrollBar()
+        delta = scrollbar.value() - self._press_view_x
+
+        # Tap?
+        if (end_pos - self._tap_start_pos).manhattanLength() < 15:
+            self.zoom_in_to_current()
+            return
+
+        # Swipe?
+        if delta > self._min_drag_to_switch and self.current_index < len(self.proxies) - 1:
+            self._go_next()
+
+        elif delta < -self._min_drag_to_switch and self.current_index > 0:
+            self._go_prev()
+
+        else:
+            self._animate_scroll_to_current()
+
+    # ---------------------------------------------------------------
+    # Navigation
     # ---------------------------------------------------------------
     def _go_next(self):
         self.current_index += 1
