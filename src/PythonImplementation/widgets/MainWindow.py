@@ -57,6 +57,12 @@ class MainWindow(QWidget):
         self.primary_touch_id = None  # The ID of the active finger
         self.animations = []
 
+        # long press
+        self.longPressTimer = QTimer(self)
+        self.longPressTimer.setInterval(1000)
+        self.longPressTimer.setSingleShot(True)
+        self.longPressTimer.timeout.connect(self.on_long_press)
+
         # Časovač pro kontrolu senzorů
         if is_raspberry_pi:
             self.timer = QTimer()
@@ -83,9 +89,7 @@ class MainWindow(QWidget):
             # First finger pressed becomes the primary finger
             p = points[0]
             self.primary_touch_id = p.id()
-            self.drag_start = p.pos()
-            self.dragging = True
-            self.offset_y = 0
+            self.handle_press(p.pos())
             return True
 
         elif event.type() == QEvent.Type.TouchUpdate:
@@ -116,9 +120,7 @@ class MainWindow(QWidget):
     # ───────────────────────────────────────────────
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton and self.primary_touch_id is None:
-            self.drag_start = event.pos()
-            self.dragging = True
-            self.offset_y = 0
+            self.handle_press(event.pos())
 
     def mouseMoveEvent(self, event):
         if self.dragging and self.primary_touch_id is None:
@@ -131,6 +133,23 @@ class MainWindow(QWidget):
     # ───────────────────────────────────────────────
     # CORE DRAG LOGIC (shared by mouse + touch)
     # ───────────────────────────────────────────────
+    def on_long_press(self):
+        threshold = 20
+        if self.offset_y > threshold:
+            return
+
+        self.handle_release()
+
+        possible_carousel = self.pages[self.current_index]
+        if isinstance(possible_carousel, ZoomCarousel):
+            possible_carousel.zoom_out()
+
+    def handle_press(self, pos):
+        self.drag_start = pos
+        self.dragging = True
+        self.offset_y = 0
+        self.longPressTimer.start()
+
     def handle_drag(self, pos):
         dy = pos.y() - self.drag_start.y()
 
@@ -152,6 +171,7 @@ class MainWindow(QWidget):
     # RELEASE LOGIC (snap or change page)
     # ───────────────────────────────────────────────
     def handle_release(self):
+        self.longPressTimer.stop()
         dy = self.offset_y
         threshold = 120
 
