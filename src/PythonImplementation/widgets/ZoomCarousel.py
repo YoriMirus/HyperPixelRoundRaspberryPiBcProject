@@ -191,18 +191,6 @@ class ZoomCarousel(QWidget):
                     elif delta < -self._min_drag_to_switch and self.current_index > 0:
                         self._go_prev()
 
-                    else:
-                        # -------------------------
-                        # 3. OVERSCROLL? → bounce
-                        # -------------------------
-                        # If user tried to drag beyond bounds, trigger a bounce animation.
-                        # This will animate the scrollbar back to the selected index center.
-                        if (self.current_index == 0 and delta < 0) or \
-                                (self.current_index == len(self.proxies) - 1 and delta > 0):
-                            self._bounce_back()
-                        else:
-                            self._snap_back()
-
                     return True
 
             return super().eventFilter(obj, ev)
@@ -211,21 +199,6 @@ class ZoomCarousel(QWidget):
             import traceback;
             traceback.print_exc()
             return False
-
-    def _bounce_back(self):
-        """Bounce the scrollbar back to the nearest valid position."""
-        target_center_x = self.current_index * 480 + 240
-        target_scroll = target_center_x - (self.view.width() // 2)
-
-        scrollbar = self.view.horizontalScrollBar()
-
-        anim = QPropertyAnimation(scrollbar, b"value")
-        anim.setDuration(self._bounce_duration)
-        anim.setStartValue(scrollbar.value())
-        anim.setEndValue(target_scroll)
-        anim.setEasingCurve(QEasingCurve.OutElastic)
-        anim.start()
-        self._scroll_anim = anim
 
     # ---------------------------------------------------------------
     # Navigation
