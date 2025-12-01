@@ -19,6 +19,7 @@ class ZoomCarousel(QWidget):
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setRenderHints(self.view.renderHints() | QPainter.Antialiasing)
+        self.view.viewport().setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -88,6 +89,8 @@ class ZoomCarousel(QWidget):
         if self.is_zoomed_out:
             return
 
+        self.view.viewport().setAttribute(Qt.WA_TransparentForMouseEvents, False)
+
         for proxy in self.proxies:
             proxy.setTransformOriginPoint(proxy.boundingRect().center())
             self._run_scale_animation(proxy, proxy.scale(), 0.7)
@@ -104,6 +107,7 @@ class ZoomCarousel(QWidget):
 
         self.is_zoomed_out = False
         self._animate_scroll_to_current()
+        self.view.viewport().setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
     # ---------------------------------------------------------------
     # Scaling animation
@@ -128,70 +132,64 @@ class ZoomCarousel(QWidget):
     # ---------------------------------------------------------------
     def eventFilter(self, obj, ev):
         try:
-            if obj is self.view.viewport():
-                et = ev.type()
+            if obj is not self.view.viewport():
+                return False
 
-                # ----------------------------------------------------------
-                # NOT ZOOMED OUT → only detect long-press
-                # ----------------------------------------------------------
-                if not self.is_zoomed_out:
-                    if et == QEvent.MouseButtonPress:
-                        self.longPressTimer.start()
-                    if et == QEvent.MouseButtonRelease:
-                        self.longPressTimer.stop()
-                    return False
+            et = ev.type()
 
-                # ----------------------------------------------------------
-                # ZOOMED OUT → swipe / tap mode
-                # ----------------------------------------------------------
-                if et == QEvent.MouseButtonPress:
-                    if isinstance(ev, QMouseEvent):
-                        self._dragging = True
-                        self._press_scene_x = self.view.mapToScene(ev.pos()).x()
-                        self._press_view_x = self.view.horizontalScrollBar().value()
+            # ----------------------------------------------------------
+            # ZOOMED OUT → swipe / tap mode
+            # ----------------------------------------------------------
+            if et == QEvent.MouseButtonPress:
+                if isinstance(ev, QMouseEvent):
+                    self._dragging = True
+                    self._press_scene_x = self.view.mapToScene(ev.pos()).x()
+                    self._press_view_x = self.view.horizontalScrollBar().value()
 
-                        # tap detection begins here
-                        self._tap_start_pos = ev.pos()
+                    # tap detection begins here
+                    self._tap_start_pos = ev.pos()
 
-                    self.longPressTimer.stop()
+                self.longPressTimer.stop()
+                return True
+
+            elif et == QEvent.MouseMove and self._dragging:
+                if isinstance(ev, QMouseEvent):
+                    cur_scene_x = self.view.mapToScene(ev.pos()).x()
+                    delta = (self._press_scene_x - cur_scene_x)
+
+                    # live dragging — clamp via scrollbar's natural bounds
+                    self.view.horizontalScrollBar().setValue(
+                        int(self._press_view_x + delta)
+                    )
+                return True
+
+            elif et == QEvent.MouseButtonRelease and self._dragging:
+                self._dragging = False
+
+                current_scroll = self.view.horizontalScrollBar().value()
+                delta = current_scroll - self._press_view_x
+
+                # -------------------------
+                # 1. TAP?  (short movement)
+                # -------------------------
+                if self._tap_start_pos is not None and \
+                        (ev.pos() - self._tap_start_pos).manhattanLength() < self._tap_threshold:
+                    # tap-to-zoom-in behavior
+                    self.zoom_in_to_current()
                     return True
 
-                elif et == QEvent.MouseMove and self._dragging:
-                    if isinstance(ev, QMouseEvent):
-                        cur_scene_x = self.view.mapToScene(ev.pos()).x()
-                        delta = (self._press_scene_x - cur_scene_x)
+                # -------------------------
+                # 2. SWIPE LEFT / RIGHT?
+                # -------------------------
+                if delta > self._min_drag_to_switch and self.current_index < len(self.proxies) - 1:
+                    self._go_next()
 
-                        # live dragging — clamp via scrollbar's natural bounds
-                        self.view.horizontalScrollBar().setValue(
-                            int(self._press_view_x + delta)
-                        )
-                    return True
+                elif delta < -self._min_drag_to_switch and self.current_index > 0:
+                    self._go_prev()
+                else:
+                    self._animate_scroll_to_current()
 
-                elif et == QEvent.MouseButtonRelease and self._dragging:
-                    self._dragging = False
-
-                    current_scroll = self.view.horizontalScrollBar().value()
-                    delta = current_scroll - self._press_view_x
-
-                    # -------------------------
-                    # 1. TAP?  (short movement)
-                    # -------------------------
-                    if self._tap_start_pos is not None and \
-                            (ev.pos() - self._tap_start_pos).manhattanLength() < self._tap_threshold:
-                        # tap-to-zoom-in behavior
-                        self.zoom_in_to_current()
-                        return True
-
-                    # -------------------------
-                    # 2. SWIPE LEFT / RIGHT?
-                    # -------------------------
-                    if delta > self._min_drag_to_switch and self.current_index < len(self.proxies) - 1:
-                        self._go_next()
-
-                    elif delta < -self._min_drag_to_switch and self.current_index > 0:
-                        self._go_prev()
-
-                    return True
+                return True
 
             return super().eventFilter(obj, ev)
 
