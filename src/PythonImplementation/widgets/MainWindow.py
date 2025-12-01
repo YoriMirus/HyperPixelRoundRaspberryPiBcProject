@@ -25,7 +25,6 @@ class MainWindow(QWidget):
             self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
             self.setWindowFlag(Qt.CustomizeWindowHint)
             self.showFullScreen()
-            self.move(0,7)
 
         self.setFixedSize(480, 480)
         self.setStyleSheet("QWidget { background-color: black; }")
