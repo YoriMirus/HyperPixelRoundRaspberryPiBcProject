@@ -1,5 +1,4 @@
 from math import atan2, sqrt
-
 import smbus2
 import time
 
@@ -36,6 +35,11 @@ class MMA8452Q:
         else:
             self.scale_bits = 0b00
             self.scale = 2  # default
+
+        self.bufferX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.bufferY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.bufferZ = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.bufferIndex = 0
 
         # Initialize sensor
         self._enter_standby()
@@ -140,6 +144,17 @@ class MMA8452Q:
         ay = y_raw / counts_per_g
         az = z_raw / counts_per_g
 
+        self.bufferX[self.bufferIndex] = ax
+        self.bufferY[self.bufferIndex] = ay
+        self.bufferZ[self.bufferIndex] = az
+        self.bufferIndex += 1
+        if self.bufferIndex >= len(self.bufferX):
+            self.bufferIndex = 0
+
+        ax = sum(self.bufferX) / len(self.bufferX)
+        ay = sum(self.bufferY) / len(self.bufferY)
+        az = sum(self.bufferZ) / len(self.bufferZ)
+
         return ax, ay, az
 
     def read_gyro(self):
@@ -148,7 +163,7 @@ class MMA8452Q:
         roll = atan2(y, z) * 57.3
         pitch = atan2((-x), sqrt(y*y + z*z)) * 57.3
 
-        return roll, (pitch+90)
+        return roll, (pitch * (-1))
 
 
     # -------------------------------------------------------
