@@ -148,7 +148,7 @@ class MMA8452Q:
         roll = atan2(y, z) * 57.3
         pitch = atan2((-x), sqrt(y*y + z*z)) * 57.3
 
-        return roll, pitch
+        return roll, (pitch+90)
 
 
     # -------------------------------------------------------
