@@ -39,6 +39,31 @@ class MMA8452Q:
         ]
 
     # -------------------------------------------------------
+    # Detection
+    # -------------------------------------------------------
+
+    @staticmethod
+    def detect(bus_number):
+        """
+        Returns the I2C address if an MMA8452Q responds on the given bus.
+        """
+        try:
+            bus = smbus2.SMBus(bus_number)
+        except:
+            return None
+
+        for addr in (MMA8452Q.SLAVE_ADDR_LOW, MMA8452Q.SLAVE_ADDR_HIGH):
+            try:
+                whoami = bus.read_byte_data(addr, MMA8452Q.REG_WHOAMI)
+                if whoami == MMA8452Q.WHOAMI_EXPECTED:
+                    bus.close()
+                    return addr
+            except:
+                pass
+
+        bus.close()
+        return None
+    # -------------------------------------------------------
     # Low-level I2C
     # -------------------------------------------------------
 
