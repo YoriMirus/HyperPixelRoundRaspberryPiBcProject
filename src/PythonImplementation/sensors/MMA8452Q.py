@@ -27,6 +27,12 @@ class MMA8452Q:
             self.scale_bits = 0b00
             self.scale = 2
 
+        self.filter_len = 10
+        self.bufX = [0.0] * self.filter_len
+        self.bufY = [0.0] * self.filter_len
+        self.bufZ = [0.0] * self.filter_len
+        self.buf_i = 0
+
         self._enter_standby()
         self._configure_scale()
         self._enter_active()
@@ -110,11 +116,22 @@ class MMA8452Q:
 
         counts_per_g = 1024.0 * 2 / self.scale
 
-        return (
-            x / counts_per_g,
-            y / counts_per_g,
-            z / counts_per_g
-        )
+        ax = x / counts_per_g
+        ay = y / counts_per_g
+        az = z / counts_per_g
+
+        # ---- moving average filter ----
+        self.bufX[self.buf_i] = ax
+        self.bufY[self.buf_i] = ay
+        self.bufZ[self.buf_i] = az
+
+        self.buf_i = (self.buf_i + 1) % self.filter_len
+
+        ax = sum(self.bufX) / self.filter_len
+        ay = sum(self.bufY) / self.filter_len
+        az = sum(self.bufZ) / self.filter_len
+
+        return ax, ay, az
 
     # -------------------------------------------------------
     # Calibration & rotation math
