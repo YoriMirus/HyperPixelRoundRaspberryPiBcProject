@@ -21,5 +21,6 @@ class SensorManager:
             else:
                 if MMA8452Q.detect(11):
                     self.MMA8452Q = MMA8452Q(bus=11)
+                    self.MMA8452Q.calibrate_level()
         except Exception as e:
             print(e)
