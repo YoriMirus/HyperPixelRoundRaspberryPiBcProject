@@ -8,6 +8,7 @@ from widgets.WeatherStationWidget import WeatherStationWidget
 from widgets.MapWidget import MapWidget
 from widgets.QuitWidget import QuitWidget
 from widgets.ZoomCarousel import ZoomCarousel
+from widgets.DebugInfo import DebugInfo
 
 from helpers.SensorManager import SensorManager
 
@@ -37,11 +38,11 @@ class MainWindow(QWidget):
 
         # Create all pages as children stacked vertically
         self.pages = [
+            DebugInfo(),
             QuitWidget(),
             clock_container,
             WeatherStationWidget(self.sensorManager),
             ArtificialHorizonWidget(self.sensorManager),
-            MapWidget(),
         ]
 
         for i, page in enumerate(self.pages):

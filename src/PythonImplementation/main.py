@@ -34,8 +34,5 @@ if __name__ == "__main__":
     QFontDatabase.addApplicationFont("assets/digital-7.ttf")
 
     w = MainWindow(is_raspberry_pi)
-    w.pages[4].mapReady.connect(
-        lambda: w.pages[4].setMapPosition(49.8322734, 18.1608531, 17)
-    )
     w.show()
     sys.exit(app.exec())

@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QHBoxLayout
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QCoreApplication
 
 class QuitWidget(QWidget):
     def __init__(self):
@@ -11,6 +11,7 @@ class QuitWidget(QWidget):
         btn = QPushButton("✕")
         btn.setFixedSize(160, 160)   # size of the round button (change if needed)
         btn.clicked.connect(QApplication.quit)
+
 
         # Style it
         btn.setStyleSheet("""
