@@ -23,6 +23,8 @@ class TcpListener(QThread):
 
         conn = None
 
+        client_ip = "unknown"
+
         # ---- Wait for a client (interruptible) ----
         while self._running:
             try:
@@ -50,7 +52,7 @@ class TcpListener(QThread):
 
                 while "\n" in buffer:
                     line, buffer = buffer.split("\n", 1)
-                    self._handle_message(line)
+                    self._handle_message(line, client_ip)
 
             except socket.timeout:
                 continue
@@ -60,13 +62,14 @@ class TcpListener(QThread):
         conn.close()
         server.close()
 
-    def _handle_message(self, raw_message: str):
+    def _handle_message(self, raw_message: str, client_ip: str):
         try:
             parsed = json.loads(raw_message)
 
             command = CommandDTO(
                 name=str(parsed["name"]),
                 args=tuple(parsed["args"]),
+                ip=client_ip
             )
 
             self.command_received.emit(command)

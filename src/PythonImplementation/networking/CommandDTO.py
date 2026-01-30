@@ -5,4 +5,5 @@ from typing import Tuple
 class CommandDTO:
     name: str
     args: Tuple[str, ...]
+    ip: str
 
