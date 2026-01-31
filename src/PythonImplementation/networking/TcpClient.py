@@ -3,6 +3,8 @@ import json
 
 from PySide6.QtCore import QThread, Signal, Slot
 
+from networking.CommandDTO import CommandDTO
+
 
 class TcpClient(QThread):
     connected = Signal()
@@ -41,7 +43,7 @@ class TcpClient(QThread):
         self._cleanup()
 
     @Slot(object)
-    def send_command(self, command):
+    def send_command(self, command: CommandDTO):
         if not self._socket:
             return
 
