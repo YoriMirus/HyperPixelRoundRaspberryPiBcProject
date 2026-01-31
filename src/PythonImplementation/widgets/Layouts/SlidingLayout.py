@@ -1,29 +1,18 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent, QTimer
 
-from widgets.ArtificialHorizonWidget import ArtificialHorizonWidget
+from widgets.SensorWidgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 from widgets.ClockDesigns.AnalogClock import AnalogClock
 from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
-from widgets.WeatherStationWidget import WeatherStationWidget
-from widgets.MapWidget import MapWidget
-from widgets.QuitWidget import QuitWidget
-from widgets.ZoomCarousel import ZoomCarousel
-from widgets.DebugInfo import DebugInfo
+from widgets.SensorWidgets.WeatherStationWidget import WeatherStationWidget
+from widgets.Other.QuitWidget import QuitWidget
+from widgets.Layouts.ZoomCarousel import ZoomCarousel
+from widgets.Other.DebugInfo import DebugInfo
 
-class DefaultWindow(QWidget):
+class SlidingLayout(QWidget):
     def __init__(self, is_raspberry_pi=False, sensorManager=None):
         super().__init__()
         self.sensorManager = sensorManager
-        if is_raspberry_pi:
-            # Ano některé parametry zde nedávají moc smysl
-            # Z nějakého důvodu čistý fullscreen je trošičku mimo od prostředku
-            # move by prý měl vypnout fullScreen ale bez FullScreen tento fix nefunguje
-            # setFixedSize jenom vypíná window resizing, protože i fullscreen aplikace evidentně jde resizovat z nějakého záhadného důvodu
-            self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
-            self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
-            self.setWindowFlag(Qt.CustomizeWindowHint)
-            self.showFullScreen()
-            self.move(0,7)
 
         self.setFixedSize(480, 480)
         self.setStyleSheet("QWidget { background-color: black; }")

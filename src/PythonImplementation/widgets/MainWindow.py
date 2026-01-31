@@ -5,18 +5,30 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent, QTimer,QCoreApplication
 
 from helpers.SensorManager import SensorManager
-from widgets.DefaultWindow import DefaultWindow
+from widgets.Layouts.SlidingLayout import SlidingLayout
 
 
 class MainWindow(QWidget):
     def __init__(self, is_raspberry_pi=False):
         super().__init__()
+
+        if is_raspberry_pi:
+            # Ano některé parametry zde nedávají moc smysl
+            # Z nějakého důvodu čistý fullscreen je trošičku mimo od prostředku
+            # move by prý měl vypnout fullScreen ale bez FullScreen tento fix nefunguje
+            # setFixedSize jenom vypíná window resizing, protože i fullscreen aplikace evidentně jde resizovat z nějakého záhadného důvodu
+            self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+            self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+            self.setWindowFlag(Qt.CustomizeWindowHint)
+            self.showFullScreen()
+            self.move(0,7)
+
         self.sensorManager = SensorManager()
 
         self.setStyleSheet("background-color: black")
 
         layout = QVBoxLayout()
-        layout.addWidget(DefaultWindow(is_raspberry_pi=is_raspberry_pi, sensorManager=self.sensorManager))
+        layout.addWidget(SlidingLayout(is_raspberry_pi=is_raspberry_pi, sensorManager=self.sensorManager))
         layout.setContentsMargins(0,0,0,0)
         self.setLayout(layout)
 
