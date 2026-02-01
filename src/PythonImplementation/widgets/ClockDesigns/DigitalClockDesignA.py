@@ -76,6 +76,8 @@ class DigitalClockDesignA(QWidget):
         self.timer.timeout.connect(self.updateTime)
         self.timer.start(500)
 
+        self.updateTime()
+
     def updateTime(self):
         now = datetime.now()
 
