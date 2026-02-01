@@ -1,10 +1,11 @@
 from networking.TcpListener import TcpListener
 from networking.CommandDTO import CommandDTO
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QStackedLayout
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent, QTimer,QCoreApplication
 
 from helpers.SensorManager import SensorManager
+from widgets.Layouts.ManualModeLayout import ManualModeLayout
 from widgets.Layouts.SlidingLayout import SlidingLayout
 
 
@@ -24,13 +25,17 @@ class MainWindow(QWidget):
             self.move(0,7)
 
         self.sensorManager = SensorManager()
-
         self.setStyleSheet("background-color: black")
 
-        layout = QVBoxLayout()
-        layout.addWidget(SlidingLayout(is_raspberry_pi=is_raspberry_pi, sensorManager=self.sensorManager))
-        layout.setContentsMargins(0,0,0,0)
-        self.setLayout(layout)
+        self.manual_mode = False
+        self.sliding_layout = SlidingLayout(is_raspberry_pi=is_raspberry_pi, sensorManager=self.sensorManager)
+        self.manual_mode_layout = ManualModeLayout(self.sensorManager)
+
+        self.stacked = QStackedLayout()
+        self.stacked.addWidget(self.sliding_layout)
+        self.stacked.addWidget(self.manual_mode_layout)
+        self.stacked.setCurrentWidget(self.sliding_layout)
+        self.setLayout(self.stacked)
 
         # Časovač pro kontrolu senzorů
         if is_raspberry_pi:
@@ -55,6 +60,24 @@ class MainWindow(QWidget):
             # Jakékoliv číslo jiné než 0 je v run.sh skriptu na raspberry pi vnímáno jako error a samotný OS se nevypne
             # Hodí se pro debug účely kdy je potřeba vypnout program, ale nevypnout samotné raspberry pi
             QCoreApplication.exit(2)
+        elif command.name == "enter_default_window":
+            self.stacked.setCurrentWidget(self.sliding_layout)
+        elif command.name == "enter_manual_window":
+            self.stacked.setCurrentWidget(self.manual_mode_layout)
+        elif command.name == "change_display":
+            index = command.args[0]
+            if index.isnumeric():
+                index_int = int(index)
+                self.manual_mode_layout.setDisplayedWidget(index_int)
+            else:
+                print("Invalid index. Doing nothing.")
+        elif command.name == "change_clock_style":
+            index = command.args[0]
+            if index.isnumeric():
+                index_int = int(index)
+                self.manual_mode_layout.changeWidgetStyle(0, index_int)
+            else:
+                print("Invalid index. Doing nothing.")
         else:
             print("I have no idea what that means. Doing nothing.")
 
