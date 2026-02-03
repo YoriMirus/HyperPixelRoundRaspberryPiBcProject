@@ -31,12 +31,6 @@ class ZoomCarousel(QWidget):
         self.current_index = 0
         self.is_zoomed_out = False
 
-        # long press
-        self.longPressTimer = QTimer(self)
-        self.longPressTimer.setInterval(1000)
-        self.longPressTimer.setSingleShot(True)
-        self.longPressTimer.timeout.connect(self._on_long_press)
-
         # interaction state
         self._dragging = False
         self._press_view_x = 0
@@ -74,7 +68,7 @@ class ZoomCarousel(QWidget):
     # ---------------------------------------------------------------
     # Zooming
     # ---------------------------------------------------------------
-    def _on_long_press(self):
+    def on_long_press(self):
         if not self.is_zoomed_out:
             self.zoom_out()
 

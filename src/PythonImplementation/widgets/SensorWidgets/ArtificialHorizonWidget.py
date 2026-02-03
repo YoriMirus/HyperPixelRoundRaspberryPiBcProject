@@ -94,8 +94,6 @@ class HorizonForeground(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
 
-
-
         painter.drawPixmap(0, 0, self.surround)
 
         w = self.width()
@@ -154,6 +152,14 @@ class ArtificialHorizonWidget(QWidget):
         self.timer.timeout.connect(self.animate)
         self.timer.start(30)
 
+    def on_long_press(self):
+        try:
+            self.sensorManager.MMA8452Q.calibrate_level()
+        except:
+            # Tato výjimka nastane, pokud kód neběží na raspberry pi nebo selhalo spojení k senzoru
+            # V obou případech není na výjimku nutné nějak reagovat
+            pass
+
     def animate(self):
         if self.sensorManager.MMA8452Q is None:
             return
@@ -165,6 +171,8 @@ class ArtificialHorizonWidget(QWidget):
             self.moving.setRoll(self.roll)
             self.moving.setPitch(self.pitch)
         except:
+            # Pokud toto selhalo, tak buď kód neběží na raspberry pi (a.k.a. tohle nevadí)
+            # Anebo připojení k senzoru bylo odpojeno (to nám taky nevadí, o opětovné pripojení se stará sensorManager, to není náš problém)
             pass
 
 

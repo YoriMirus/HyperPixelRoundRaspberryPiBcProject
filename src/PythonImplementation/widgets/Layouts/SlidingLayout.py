@@ -119,9 +119,12 @@ class SlidingLayout(QWidget):
 
         self.handle_release()
 
-        possible_carousel = self.pages[self.current_index]
-        if isinstance(possible_carousel, ZoomCarousel):
-            possible_carousel.zoom_out()
+        active_widget = self.pages[self.current_index]
+        try:
+            active_widget.on_long_press()
+        except AttributeError:
+            print("This widget does not support long presses")
+            pass
 
     def handle_press(self, pos):
         self.drag_start = pos
