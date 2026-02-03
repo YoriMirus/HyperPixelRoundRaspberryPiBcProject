@@ -11,6 +11,11 @@ class DebugInfo(QWidget):
         main_layout.setContentsMargins(0,0,0,0)
         self.setLayout(main_layout)
 
+        # Povol úpravu pozadí + nastav ho na černé
+        # Ve výchozím je totiž průhledné a jenom labely mají něco za sebou
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setStyleSheet("background-color: black")
+
         spacerLabel = QLabel("")
         spacerLabel.setMinimumSize(50,50)
         main_layout.addWidget(spacerLabel)

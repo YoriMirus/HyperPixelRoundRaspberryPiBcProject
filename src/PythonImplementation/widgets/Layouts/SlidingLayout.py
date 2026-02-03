@@ -23,7 +23,6 @@ class SlidingLayout(QWidget):
         clock_container.addWidget(DigitalClockDesignA())
 
         self.pages = [
-            DebugInfo(),
             QuitWidget(),
             clock_container,
             WeatherStationWidget(self.sensorManager),
