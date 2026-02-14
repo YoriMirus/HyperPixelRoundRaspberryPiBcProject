@@ -27,6 +27,7 @@ class TcpClient(QThread):
             self.connected.emit()
         except OSError as e:
             self.error.emit(str(e))
+            self._cleanup()
             return
 
         # Optional receive loop (can be removed if you don't expect replies)
