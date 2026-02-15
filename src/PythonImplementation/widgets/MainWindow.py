@@ -1,3 +1,4 @@
+from networking.CommandTypes import create_status_dto
 from networking.TcpListener import TcpListener
 from networking.CommandDTO import CommandDTO
 
@@ -78,6 +79,8 @@ class MainWindow(QWidget):
                 self.manual_mode_layout.changeWidgetStyle(0, index_int)
             else:
                 print("Invalid index. Doing nothing.")
+        elif command.name == "get_status":
+            self.listener.send_command(create_status_dto())
         else:
             print("I have no idea what that means. Doing nothing.")
 

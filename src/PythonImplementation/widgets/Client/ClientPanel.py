@@ -8,9 +8,29 @@ class ClientPanel(QWidget):
     def __init__(self, parent=None):
         super(ClientPanel, self).__init__(parent)
 
+        self.red_hex = "#c30101"
+        self.green_hex = "#00b34d"
+
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10,10,10,10)
 
+        main_layout.addLayout(self.create_shutdown_buttons_layout())
+
+        render_style_lbl = QLabel("Styl vykreslování")
+        render_style_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(render_style_lbl)
+
+        main_layout.addLayout(self.create_rendering_style_layout())
+        main_layout.addLayout(self.create_widget_styles_layout())
+
+        render_style_lbl = QLabel("Stav senzorů")
+        render_style_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(render_style_lbl)
+
+        main_layout.addLayout(self.create_sensor_status_layout())
+        main_layout.addWidget(self.create_filler_widget())
+
+    def create_shutdown_buttons_layout(self):
         # Tlačítka pro vypnutí programu
         layout = QHBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
@@ -23,15 +43,9 @@ class ClientPanel(QWidget):
         layout.addWidget(shutdown_btn)
         layout.addWidget(debug_btn)
 
-        main_layout.addLayout(layout)
+        return layout
 
-        # Styl vykreslování label
-        render_style_lbl = QLabel("Styl vykreslování")
-        render_style_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        main_layout.addWidget(render_style_lbl)
-
-        # Režim vykreslování
+    def create_rendering_style_layout(self):
         layout = QHBoxLayout()
         layout.setContentsMargins(10,10,10,10)
         layout.setSpacing(10)
@@ -43,8 +57,9 @@ class ClientPanel(QWidget):
         layout.addWidget(default_btn)
         layout.addWidget(manual_btn)
 
-        main_layout.addLayout(layout)
+        return layout
 
+    def create_widget_styles_layout(self):
         # Nastavení stylů stránek
         page_style_grid = QGridLayout()
 
@@ -70,13 +85,34 @@ class ClientPanel(QWidget):
         btn.clicked.connect(self.send_set_accelerometer_artificial_horizon_command)
         page_style_grid.addWidget(btn, 2, 1)
 
-        main_layout.addLayout(page_style_grid)
+        return page_style_grid
 
+    def create_sensor_status_layout(self):
+        layout = QGridLayout()
+
+        sht3_label = QLabel("SHT3x")
+        sht3_status_label = QLabel("Odpojen")
+        sht3_status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        sht3_status_label.setStyleSheet(f"color: {self.red_hex}")
+
+        mma5452q_label = QLabel("MMA5452")
+        mma5452_status_label = QLabel("Odpojen")
+        mma5452_status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        mma5452_status_label.setStyleSheet(f"color: {self.red_hex}")
+
+        layout.addWidget(sht3_label, 0, 0)
+        layout.addWidget(sht3_status_label, 0, 1)
+
+        layout.addWidget(mma5452q_label, 1, 0)
+        layout.addWidget(mma5452_status_label, 1, 1)
+
+        return layout
+
+    def create_filler_widget(self):
         filler_label = QLabel("")
         filler_label.setStyleSheet("background-color: transparent")
         filler_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-
-        main_layout.addWidget(filler_label)
+        return filler_label
 
 # KOMUNIKACE PŘES TCP
     # Zde se nacházejí všechny instrukce, které je tento klient schopný poslat
@@ -88,6 +124,7 @@ class ClientPanel(QWidget):
         self.on_command_send_request.emit(SHUTDOWN_DEBUG_DTO)
 
     def send_default_window_command(self):
+        self.on_command_send_request.emit(create_status_dto())
         self.on_command_send_request.emit(ENTER_DEFAULT_WINDOW_DTO)
 
     def send_manual_window_command(self):

@@ -1,5 +1,7 @@
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QWidget, QMessageBox, QStackedLayout
 
+from networking.CommandTypes import GET_STATUS_DTO
 from networking.TcpClient import TcpClient
 
 from widgets.Client.ConnectionWidget import ConnectionWidget
@@ -40,9 +42,9 @@ class ClientWindow(QWidget):
         self.tcp_client.error.connect(self.on_connection_error)
         self.tcp_client.connected.connect(self.on_connection_success)
         self.tcp_client.disconnected.connect(self.on_connection_closed)
+        self.tcp_client.command_received.connect(self.on_data_received)
 
         self.tcp_client.start()
-
     def on_command_send_request(self, DTO):
         self.tcp_client.send_command(DTO)
 
@@ -50,16 +52,21 @@ class ClientWindow(QWidget):
         QMessageBox.critical(self, "Error", "Připojení selhalo")
 
     def on_connection_success(self):
+        # Dal jsem sem QTimer kvůli race condition. Z nějakého důvodu změna widgetu způsobí, že okno nereaguje na setFixedSize
         self.stacked.setCurrentWidget(self.panel_widget)
-        self.setFixedSize(400, 600)
+        QTimer.singleShot(20, lambda: self.setFixedSize(400,600))
 
     def on_connection_closed(self):
+        # Dal jsem sem QTimer kvůli race condition. Z nějakého důvodu změna widgetu způsobí, že okno nereaguje na setFixedSize
         self.stacked.setCurrentWidget(self.connect_widget)
-        self.setFixedSize(300, 50)
-
+        QTimer.singleShot(20, lambda: self.setFixedSize(300, 50))
     def closeEvent(self, event):
         if self.tcp_client is None:
             return
 
         self.tcp_client.stop()
         event.accept()
+
+    def on_data_received(self, DTO):
+        print("Received data")
+        print(f"Message: {DTO.args[0]}")

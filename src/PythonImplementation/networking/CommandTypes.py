@@ -11,4 +11,8 @@ CHANGE_CLOCK_STYLE_DIGITAL_A_DTO = CommandDTO(name="change_clock_style", args=tu
 DISPLAY_CLOCK_DTO = CommandDTO(name="change_display", args=tuple("0"))
 DISPLAY_WEATHER_STATION_DTO = CommandDTO(name="change_display", args=tuple("1"))
 DISPLAY_ARTIFICIAL_HORIZON_DTO = CommandDTO(name="change_display", args=tuple("2"))
+GET_STATUS_DTO = CommandDTO(name="get_status")
+
+def create_status_dto():
+    return CommandDTO(name="get_status", args=("im fine",))
 

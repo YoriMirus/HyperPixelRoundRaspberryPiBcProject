@@ -1,6 +1,6 @@
 import socket
 import json
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal, Slot
 
 from networking.CommandDTO import CommandDTO
 
@@ -13,6 +13,7 @@ class TcpListener(QThread):
         self.port = port
         self.timeout = timeout
         self._running = True
+        self._socket = None
 
     def run(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,6 +30,7 @@ class TcpListener(QThread):
         while self._running:
             try:
                 conn, addr = server.accept()
+                self._socket = conn
                 client_ip = addr[0]
                 break
             except socket.timeout:
@@ -80,3 +82,16 @@ class TcpListener(QThread):
     def stop(self):
         self._running = False
         self.wait()
+
+    @Slot(object)
+    def send_command(self, command: CommandDTO):
+        if not self._socket:
+            return
+
+        payload = {
+            "name": command.name,
+            "args": list(command.args)
+        }
+
+        message = json.dumps(payload) + "\n"
+        self._socket.sendall(message.encode())
