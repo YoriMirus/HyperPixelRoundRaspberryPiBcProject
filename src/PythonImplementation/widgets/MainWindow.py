@@ -9,6 +9,9 @@ from helpers.SensorManager import SensorManager
 from widgets.Layouts.ManualModeLayout import ManualModeLayout
 from widgets.Layouts.SlidingLayout import SlidingLayout
 
+import json
+
+from dataclasses import asdict
 
 class MainWindow(QWidget):
     def __init__(self, is_raspberry_pi=False):
@@ -80,7 +83,9 @@ class MainWindow(QWidget):
             else:
                 print("Invalid index. Doing nothing.")
         elif command.name == "get_status":
-            self.listener.send_command(create_status_dto())
+            status = self.sensorManager.get_sensor_status()
+            # status je DataClass, musíme ho převést na Dictionary, aby json věděl, co s tím má dělat
+            self.listener.send_command(create_status_dto(json.dumps(asdict(status))))
         else:
             print("I have no idea what that means. Doing nothing.")
 

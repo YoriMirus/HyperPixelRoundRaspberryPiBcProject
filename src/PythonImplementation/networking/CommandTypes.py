@@ -13,6 +13,6 @@ DISPLAY_WEATHER_STATION_DTO = CommandDTO(name="change_display", args=tuple("1"))
 DISPLAY_ARTIFICIAL_HORIZON_DTO = CommandDTO(name="change_display", args=tuple("2"))
 GET_STATUS_DTO = CommandDTO(name="get_status")
 
-def create_status_dto():
-    return CommandDTO(name="get_status", args=("im fine",))
+def create_status_dto(status_str: str) -> CommandDTO:
+    return CommandDTO(name="get_status_response", args=(status_str,))
 

@@ -3,6 +3,10 @@ from smbus2 import SMBus
 from sensors.MMA8452Q import MMA8452Q
 from sensors.SHT3x import SHT3x
 
+from dataclasses import asdict
+
+from networking.GetStatusDTO import *
+
 
 class SensorManager:
     def __init__(self):
@@ -24,3 +28,77 @@ class SensorManager:
                     self.MMA8452Q.calibrate_level()
         except Exception as e:
             print(e)
+
+    def get_sensor_status(self) -> GetStatusDTO:
+        self.CheckForSensors()
+
+        # --- SHT3x ---
+        if self.SHT3x is not None:
+            meas = self.SHT3x.read_measurement()
+            sht3x_status = SHT3x(
+                connected=True,
+                values=TempData(
+                    temperature=meas.temperature,
+                    humidity=meas.humidity
+                )
+            )
+        else:
+            sht3x_status = SHT3x(
+                connected=False,
+                values=None
+            )
+
+        # --- MMA5452Q ---
+        if self.MMA8452Q is not None:
+            accel = self.MMA8452Q.read_acceleration()
+            gyro = self.MMA8452Q.read_gyro()
+
+            mma_status = MMA5452Q(
+                connected=True,
+                values_accel=AccelData(
+                    x=accel.x,
+                    y=accel.y,
+                    z=accel.z
+                ),
+                values_gyro=GyroData(
+                    roll=gyro.roll,
+                    pitch=gyro.pitch
+                )
+            )
+        else:
+            mma_status = MMA5452Q(
+                connected=False,
+                values_accel=None,
+                values_gyro=None
+            )
+
+        return GetStatusDTO(
+            SHT3x=sht3x_status,
+            MMA5452Q=mma_status
+        )
+
+    def get_sensor_status_old(self):
+        self.CheckForSensors()
+
+        result = {
+            "SHT3x": {
+                "connected": self.SHT3x is not None
+            },
+            "MMA8452Q": {
+                "connected": self.MMA8452Q is not None
+            }
+        }
+
+        if result["SHT3x"]["connected"]:
+            meas = self.SHT3x.read_measurement()
+            result["SHT3x"]["temperature"] = meas.temperature
+            result["SHT3x"]["humidity"] = meas.humidity
+
+        if result["MMA8452Q"]["connected"]:
+            meas_accel = self.MMA8452Q.read_acceleration()
+            meas_gyro = self.MMA8452Q.read_gyro()
+
+            result["MMA8452Q"]["acceleration"] = meas_accel
+            result["MMA8452Q"]["gyro"] = meas_gyro
+
+        return result

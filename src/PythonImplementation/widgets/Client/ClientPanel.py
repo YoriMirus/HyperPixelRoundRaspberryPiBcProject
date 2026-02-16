@@ -124,7 +124,7 @@ class ClientPanel(QWidget):
         self.on_command_send_request.emit(SHUTDOWN_DEBUG_DTO)
 
     def send_default_window_command(self):
-        self.on_command_send_request.emit(create_status_dto())
+        self.on_command_send_request.emit(GET_STATUS_DTO)
         self.on_command_send_request.emit(ENTER_DEFAULT_WINDOW_DTO)
 
     def send_manual_window_command(self):
