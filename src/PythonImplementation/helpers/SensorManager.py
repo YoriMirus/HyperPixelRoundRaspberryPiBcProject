@@ -29,8 +29,9 @@ class SensorManager:
         except Exception as e:
             print(e)
 
-    def get_sensor_status(self) -> GetStatusDTO:
-        self.CheckForSensors()
+    def get_sensor_status(self, is_raspberry_pi: bool = False) -> GetStatusDTO:
+        if is_raspberry_pi:
+            self.CheckForSensors()
 
         # --- SHT3x ---
         if self.SHT3x is not None:
@@ -74,31 +75,6 @@ class SensorManager:
 
         return GetStatusDTO(
             SHT3x=sht3x_status,
-            MMA5452Q=mma_status
+            MMA5452Q=mma_status,
+            is_raspberry_pi=is_raspberry_pi
         )
-
-    def get_sensor_status_old(self):
-        self.CheckForSensors()
-
-        result = {
-            "SHT3x": {
-                "connected": self.SHT3x is not None
-            },
-            "MMA8452Q": {
-                "connected": self.MMA8452Q is not None
-            }
-        }
-
-        if result["SHT3x"]["connected"]:
-            meas = self.SHT3x.read_measurement()
-            result["SHT3x"]["temperature"] = meas.temperature
-            result["SHT3x"]["humidity"] = meas.humidity
-
-        if result["MMA8452Q"]["connected"]:
-            meas_accel = self.MMA8452Q.read_acceleration()
-            meas_gyro = self.MMA8452Q.read_gyro()
-
-            result["MMA8452Q"]["acceleration"] = meas_accel
-            result["MMA8452Q"]["gyro"] = meas_gyro
-
-        return result

@@ -52,8 +52,6 @@ class MainWindow(QWidget):
         self.listener.start()
 
     def on_command_received(self, command: CommandDTO):
-        print(f"{command.ip} is requesting {command.name} with args {command.args}")
-
         if command.name == "shutdown":
             self.listener.stop()
             self.listener.wait()
@@ -74,6 +72,7 @@ class MainWindow(QWidget):
                 index_int = int(index)
                 self.manual_mode_layout.setDisplayedWidget(index_int)
             else:
+                print(f"{command.ip} is requesting {command.name} with args {command.args}")
                 print("Invalid index. Doing nothing.")
         elif command.name == "change_clock_style":
             index = command.args[0]
@@ -81,12 +80,14 @@ class MainWindow(QWidget):
                 index_int = int(index)
                 self.manual_mode_layout.changeWidgetStyle(0, index_int)
             else:
+                print(f"{command.ip} is requesting {command.name} with args {command.args}")
                 print("Invalid index. Doing nothing.")
         elif command.name == "get_status":
             status = self.sensorManager.get_sensor_status()
             # status je DataClass, musíme ho převést na Dictionary, aby json věděl, co s tím má dělat
             self.listener.send_command(create_status_dto(json.dumps(asdict(status))))
         else:
+            print(f"{command.ip} is requesting {command.name} with args {command.args}")
             print("I have no idea what that means. Doing nothing.")
 
     def closeEvent(self, event):

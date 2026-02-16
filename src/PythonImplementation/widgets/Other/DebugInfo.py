@@ -22,13 +22,13 @@ class DebugInfo(QWidget):
 
         hostnameLabel = QLabel(get_hostname())
         hostnameLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        hostnameLabel.setStyleSheet("font-size:40px;")
+        hostnameLabel.setStyleSheet("font-size:40px; color: white")
         main_layout.addWidget(hostnameLabel)
 
         ip_addresses = get_all_ip_addresses()
         for ip_address in ip_addresses:
             ip_label = QLabel(ip_address)
-            ip_label.setStyleSheet("font-size:40px;")
+            ip_label.setStyleSheet("font-size:40px; color: white")
             ip_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             main_layout.addWidget(ip_label)
 

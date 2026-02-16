@@ -39,3 +39,4 @@ class MMA5452Q:
 class GetStatusDTO:
     SHT3x: SHT3x
     MMA5452Q: MMA5452Q
+    is_raspberry_pi: bool

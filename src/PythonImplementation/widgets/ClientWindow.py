@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox, QStackedLayout
 
 from networking.TcpClient import TcpClient
 from networking.GetStatusDTO import *
+from networking.CommandTypes import *
 
 from widgets.Client.ConnectionWidget import ConnectionWidget
 from widgets.Client.ClientPanel import ClientPanel
@@ -33,6 +34,15 @@ class ClientWindow(QWidget):
 
         self.stacked.setCurrentWidget(self.connect_widget)
 
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.on_timer_tick)
+        self.timer.start()
+
+    def on_timer_tick(self):
+        if self.tcp_client is None:
+            return
+
+        self.tcp_client.send_command(GET_STATUS_DTO)
 
     def on_connection_attempt(self, ip):
         if self.tcp_client is not None:
@@ -56,6 +66,7 @@ class ClientWindow(QWidget):
     def on_connection_success(self):
         # Dal jsem sem QTimer kvůli race condition. Z nějakého důvodu změna widgetu způsobí, že okno nereaguje na setFixedSize
         self.stacked.setCurrentWidget(self.panel_widget)
+        self.tcp_client.error.disconnect(self.on_connection_error)
         QTimer.singleShot(20, lambda: self.setFixedSize(400,600))
 
     def on_connection_closed(self):
@@ -116,7 +127,8 @@ class ClientWindow(QWidget):
 
         result = GetStatusDTO(
             SHT3x=sht3x,
-            MMA5452Q=mma
+            MMA5452Q=mma,
+            is_raspberry_pi=data["is_raspberry_pi"]
         )
 
-        print(result)
+        self.panel_widget.update_status(result)

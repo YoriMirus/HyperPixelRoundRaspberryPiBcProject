@@ -107,7 +107,7 @@ class MMA8452Q:
             val |= 0xF000
         return val if val < 32768 else val - 65536
 
-    def read_acceleration(self):
+    def read_acceleration_raw(self):
         d = self.read_raw_6bytes()
 
         x = self._convert_msb_lsb(d[0], d[1])
@@ -133,6 +133,13 @@ class MMA8452Q:
 
         return ax, ay, az
 
+    def read_acceleration(self):
+        ax, ay, az = self.read_acceleration_raw()
+        ax, ay, az = self._rotate(ax, ay, az)
+
+        return ax, ay, az
+
+
     # -------------------------------------------------------
     # Calibration & rotation math
     # -------------------------------------------------------
@@ -145,7 +152,7 @@ class MMA8452Q:
         sx = sy = sz = 0.0
 
         for _ in range(samples):
-            ax, ay, az = self.read_acceleration()
+            ax, ay, az = self.read_acceleration_raw()
             sx += ax
             sy += ay
             sz += az
@@ -212,7 +219,7 @@ class MMA8452Q:
     # -------------------------------------------------------
 
     def read_gyro(self):
-        ax, ay, az = self.read_acceleration()
+        ax, ay, az = self.read_acceleration_raw()
         ax, ay, az = self._rotate(ax, ay, az)
 
         roll  = atan2(ay, az) * 57.2958

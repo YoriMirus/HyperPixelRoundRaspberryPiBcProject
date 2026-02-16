@@ -2,11 +2,24 @@ from PySide6.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QHBoxLa
 from PySide6.QtCore import Qt, Signal
 
 from networking.CommandTypes import *
+from networking.GetStatusDTO import *
 
 class ClientPanel(QWidget):
     on_command_send_request = Signal(object)
     def __init__(self, parent=None):
         super(ClientPanel, self).__init__(parent)
+
+        self.MMA5452Q_status_label = QLabel()
+        self.SHT3x_status_label = QLabel()
+        self.SHT3x_temp_label = QLabel("0 °C")
+        self.SHT3x_humidity_label = QLabel("0 %")
+
+        self.MMA5452Q_x_label = QLabel("0")
+        self.MMA5452Q_y_label = QLabel("0")
+        self.MMA5452Q_z_label = QLabel("0")
+
+        self.MMA5452Q_roll_label = QLabel("0°")
+        self.MMA5452Q_pitch_label = QLabel("0°")
 
         self.red_hex = "#c30101"
         self.green_hex = "#00b34d"
@@ -94,17 +107,51 @@ class ClientPanel(QWidget):
         sht3_status_label = QLabel("Odpojen")
         sht3_status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         sht3_status_label.setStyleSheet(f"color: {self.red_hex}")
+        self.SHT3x_status_label = sht3_status_label
+
+        sht3_meas_label = QLabel("Naměřené hodnoty")
+
+        self.SHT3x_temp_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.SHT3x_humidity_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        sht3_sub_layout = QHBoxLayout()
+        sht3_sub_layout.addWidget(self.SHT3x_temp_label)
+        sht3_sub_layout.addWidget(self.SHT3x_humidity_label)
 
         mma5452q_label = QLabel("MMA5452")
         mma5452_status_label = QLabel("Odpojen")
         mma5452_status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         mma5452_status_label.setStyleSheet(f"color: {self.red_hex}")
+        self.MMA5452Q_status_label = mma5452_status_label
+
+        mma5452q_meas_label = QLabel("Naměřené hodnoty (x,y,z)")
+
+        self.MMA5452Q_x_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.MMA5452Q_y_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.MMA5452Q_z_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        mma5452q_accel_sub_layout = QHBoxLayout()
+        mma5452q_accel_sub_layout.addWidget(self.MMA5452Q_x_label)
+        mma5452q_accel_sub_layout.addWidget(self.MMA5452Q_y_label)
+        mma5452q_accel_sub_layout.addWidget(self.MMA5452Q_z_label)
+
+        self.MMA5452Q_roll_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.MMA5452Q_pitch_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        mma5452q_gyro_sub_layout = QHBoxLayout()
+        mma5452q_gyro_sub_layout.addWidget(self.MMA5452Q_roll_label)
+        mma5452q_gyro_sub_layout.addWidget(self.MMA5452Q_pitch_label)
 
         layout.addWidget(sht3_label, 0, 0)
         layout.addWidget(sht3_status_label, 0, 1)
+        layout.addWidget(sht3_meas_label, 1, 0)
+        layout.addLayout(sht3_sub_layout, 1, 1)
 
-        layout.addWidget(mma5452q_label, 1, 0)
-        layout.addWidget(mma5452_status_label, 1, 1)
+        layout.addWidget(mma5452q_label, 2, 0)
+        layout.addWidget(mma5452_status_label, 2, 1)
+        layout.addWidget(mma5452q_meas_label, 3, 0)
+        layout.addLayout(mma5452q_accel_sub_layout, 3, 1)
+        layout.addLayout(mma5452q_gyro_sub_layout, 4, 1)
 
         return layout
 
@@ -114,7 +161,38 @@ class ClientPanel(QWidget):
         filler_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         return filler_label
 
-# KOMUNIKACE PŘES TCP
+    def update_status(self, DTO: GetStatusDTO):
+        if not DTO.is_raspberry_pi and False:
+            return
+
+        mma_connected = DTO.MMA5452Q.connected
+        if mma_connected:
+            self.MMA5452Q_status_label.setText("Připojen")
+            self.MMA5452Q_status_label.setStyleSheet(f"color: {self.green_hex}")
+
+            self.MMA5452Q_x_label.setText(str(DTO.MMA5452Q.values_accel.x))
+            self.MMA5452Q_y_label.setText(str(DTO.MMA5452Q.values_accel.y))
+            self.MMA5452Q_z_label.setText(str(DTO.MMA5452Q.values_accel.z))
+
+            self.MMA5452Q_roll_label.setText(str(DTO.MMA5452Q.values_gyro.roll))
+            self.MMA5452Q_pitch_label.setText(str(DTO.MMA5452Q.values_gyro.pitch))
+        else:
+            self.MMA5452Q_status_label.setText("Odpojen")
+            self.MMA5452Q_status_label.setStyleSheet(f"color: {self.red_hex}")
+
+        sht_connected = DTO.SHT3x.connected
+        if sht_connected:
+            self.SHT3x_status_label.setText("Připojen")
+            self.SHT3x_status_label.setStyleSheet(f"color: {self.green_hex}")
+
+            self.SHT3x_temp_label.setText(str(DTO.SHT3x.values.temperature))
+            self.SHT3x_humidity_label.setText(str(DTO.SHT3x.values.humidity))
+        else:
+            self.SHT3x_status_label.setText("Odpojen")
+            self.SHT3x_status_label.setStyleSheet(f"color: {self.red_hex}")
+
+
+    # KOMUNIKACE PŘES TCP
     # Zde se nacházejí všechny instrukce, které je tento klient schopný poslat
 
     def send_shutdown_command(self):
