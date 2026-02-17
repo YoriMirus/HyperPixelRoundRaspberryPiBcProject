@@ -222,8 +222,8 @@ class MMA8452Q:
         ax, ay, az = self.read_acceleration_raw()
         ax, ay, az = self._rotate(ax, ay, az)
 
-        roll  = atan2(ay, az) * 57.2958
-        pitch = -atan2(-ax, sqrt(ay*ay + az*az)) * 57.2958
+        roll  =atan2(ay, az) * 57.2958
+        pitch = atan2(-ax, sqrt(ay*ay + az*az)) * 57.2958
 
         return roll, pitch
 
