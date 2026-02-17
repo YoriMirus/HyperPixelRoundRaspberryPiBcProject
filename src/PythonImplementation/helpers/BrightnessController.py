@@ -3,7 +3,7 @@ import pigpio
 
 
 class BrightnessController:
-    PWM_PIN = 18
+    PWM_PIN = 19
     PWM_RANGE = 255
 
     # Adjust after testing your specific unit
