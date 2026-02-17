@@ -96,7 +96,7 @@ class ClientWindow(QWidget):
                 humidity=sht_data["values"]["humidity"]
             )
 
-        sht3x = SHT3x(
+        sht3x = SHT3x_status(
             connected=sht_data["connected"],
             values=sht_values
         )
@@ -119,7 +119,7 @@ class ClientWindow(QWidget):
                 pitch=mma_data["values_gyro"]["pitch"]
             )
 
-        mma = MMA5452Q(
+        mma = MMA5452Q_status(
             connected=mma_data["connected"],
             values_accel=accel_values,
             values_gyro=gyro_values

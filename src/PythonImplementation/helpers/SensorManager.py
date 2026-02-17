@@ -33,7 +33,7 @@ class SensorManager:
         # --- SHT3x ---
         if self.SHT3x is not None:
             meas = self.SHT3x.read_measurement()
-            sht3x_status = SHT3x(
+            sht3x_status = SHT3x_status(
                 connected=True,
                 values=TempData(
                     temperature=meas.temperature,
@@ -41,7 +41,7 @@ class SensorManager:
                 )
             )
         else:
-            sht3x_status = SHT3x(
+            sht3x_status = SHT3x_status(
                 connected=False,
                 values=None
             )
@@ -51,7 +51,7 @@ class SensorManager:
             accel = self.MMA8452Q.read_acceleration()
             gyro = self.MMA8452Q.read_gyro()
 
-            mma_status = MMA5452Q(
+            mma_status = MMA5452Q_status(
                 connected=True,
                 values_accel=AccelData(
                     x=accel.x,
@@ -64,7 +64,7 @@ class SensorManager:
                 )
             )
         else:
-            mma_status = MMA5452Q(
+            mma_status = MMA5452Q_status(
                 connected=False,
                 values_accel=None,
                 values_gyro=None

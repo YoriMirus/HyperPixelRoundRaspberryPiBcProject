@@ -23,13 +23,13 @@ class GyroData:
 
 
 @dataclass(frozen=True)
-class SHT3x:
+class SHT3x_status:
     connected: bool
     values: Optional[TempData] = None
 
 
 @dataclass(frozen=True)
-class MMA5452Q:
+class MMA5452Q_status:
     connected: bool
     values_accel: Optional[AccelData] = None
     values_gyro: Optional[GyroData] = None
@@ -37,6 +37,6 @@ class MMA5452Q:
 
 @dataclass(frozen=True)
 class GetStatusDTO:
-    SHT3x: SHT3x
-    MMA5452Q: MMA5452Q
+    SHT3x: SHT3x_status
+    MMA5452Q: MMA5452Q_status
     is_raspberry_pi: bool
