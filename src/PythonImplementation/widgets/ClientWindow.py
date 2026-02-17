@@ -36,7 +36,7 @@ class ClientWindow(QWidget):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.on_timer_tick)
-        self.timer.start()
+        self.timer.start(100)
 
     def on_timer_tick(self):
         if self.tcp_client is None:

@@ -30,9 +30,6 @@ class SensorManager:
             print(e)
 
     def get_sensor_status(self, is_raspberry_pi: bool = False) -> GetStatusDTO:
-        if is_raspberry_pi:
-            self.CheckForSensors()
-
         # --- SHT3x ---
         if self.SHT3x is not None:
             meas = self.SHT3x.read_measurement()
