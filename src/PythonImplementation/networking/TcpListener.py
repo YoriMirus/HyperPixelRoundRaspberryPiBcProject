@@ -15,24 +15,29 @@ class TcpListener(BaseTcpThread):
         server.listen(1)
         server.settimeout(self.timeout)
 
-        conn = None
-        client_ip = "unknown"
-
         while self._running:
             try:
                 conn, addr = server.accept()
-                self._socket = conn
-                client_ip = addr[0]
-                break
             except socket.timeout:
                 continue
+            except OSError:
+                break
 
-        if not conn:
-            server.close()
-            return
+            self._socket = conn
+            client_ip = addr[0]
 
-        conn.settimeout(self.timeout)
+            conn.settimeout(self.timeout)
 
-        self._receive_loop(client_ip)
+            # Handle this client
+            self._receive_loop(client_ip)
+
+            # Clean up connection
+            try:
+                conn.close()
+            except OSError:
+                pass
+
+            self._socket = None
 
         server.close()
+
