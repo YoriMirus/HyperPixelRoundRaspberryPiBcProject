@@ -66,6 +66,8 @@ class ClientWindow(QWidget):
     def on_connection_success(self):
         # Dal jsem sem QTimer kvůli race condition. Z nějakého důvodu změna widgetu způsobí, že okno nereaguje na setFixedSize
         self.stacked.setCurrentWidget(self.panel_widget)
+        # Musíme vynutit změnu jasu, protože panel_widget nemá tušení kdy je aktivní a kdy ne
+        self.panel_widget.send_change_brightness_command()
         self.tcp_client.error.disconnect(self.on_connection_error)
         QTimer.singleShot(20, lambda: self.setFixedSize(400,600))
 

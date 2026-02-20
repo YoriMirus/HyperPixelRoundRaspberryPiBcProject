@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QWidget, QGridLayout, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QSlider
+from PySide6.QtCore import Qt, Signal, QTimer
 
 from networking.CommandTypes import *
 from networking.GetStatusDTO import *
@@ -36,12 +36,30 @@ class ClientPanel(QWidget):
         main_layout.addLayout(self.create_rendering_style_layout())
         main_layout.addLayout(self.create_widget_styles_layout())
 
+        lbl, slider = self.create_brightness_slider()
+        self.brightness_slider = slider
+        main_layout.addWidget(lbl)
+        main_layout.addWidget(slider)
+
         render_style_lbl = QLabel("Stav senzorů")
         render_style_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         main_layout.addWidget(render_style_lbl)
 
         main_layout.addLayout(self.create_sensor_status_layout())
         main_layout.addWidget(self.create_filler_widget())
+
+        # Zkusme vynutit aktualizaci jasu
+        # Pravděpodobně to ale nic neudělá jelikož nevíme, zda je aktuálně připojeno zařízení nebo ne
+        self.current_brightness = self.brightness_slider.value()
+        self.brightness_timer = QTimer(self)
+        self.brightness_timer.timeout.connect(self.on_timer_tick)
+        self.brightness_timer.start(50)
+
+    def on_timer_tick(self):
+        val = self.brightness_slider.value()
+        if val != self.current_brightness:
+            self.send_change_brightness_command()
+
 
     def create_shutdown_buttons_layout(self):
         # Tlačítka pro vypnutí programu
@@ -99,6 +117,19 @@ class ClientPanel(QWidget):
         page_style_grid.addWidget(btn, 2, 1)
 
         return page_style_grid
+
+    def create_brightness_slider(self):
+        lbl = QLabel("Jas")
+        lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        slider = QSlider()
+        slider.setOrientation(Qt.Orientation.Horizontal)
+        slider.setMinimum(0)
+        slider.setMaximum(100)
+        slider.setValue(50)
+
+        return lbl, slider
+
 
     def create_sensor_status_layout(self):
         layout = QGridLayout()
@@ -221,4 +252,9 @@ class ClientPanel(QWidget):
 
     def send_set_accelerometer_artificial_horizon_command(self):
         self.on_command_send_request.emit(DISPLAY_ARTIFICIAL_HORIZON_DTO)
+
+    def send_change_brightness_command(self):
+        self.on_command_send_request.emit(create_change_brightness_dto(self.brightness_slider.value()))
+        self.current_brightness = self.brightness_slider.value()
+
 

@@ -16,3 +16,7 @@ GET_STATUS_DTO = CommandDTO(name="get_status")
 def create_status_dto(status_str: str) -> CommandDTO:
     return CommandDTO(name="get_status_response", args=(status_str,))
 
+def create_change_brightness_dto(value: int):
+    percent = max(0, min(100, value))
+    return CommandDTO(name="change_brightness", args=(str(percent),))
+
