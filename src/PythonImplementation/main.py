@@ -16,7 +16,7 @@ def is_pi_environment():
 
 def handle_sigint(sig, frame):
     print("Caught SIGINT, quitting...")
-    QCoreApplication.exit(0)
+    QCoreApplication.quit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

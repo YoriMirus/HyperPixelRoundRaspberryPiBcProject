@@ -147,8 +147,7 @@ class ArtificialHorizonWidget(QWidget):
 
         # test animation
         self.roll, self.pitch = 0, 0
-        from PySide6.QtCore import QTimer
-        self.timer = QTimer()
+        self.timer = QTimer(self)
         self.timer.timeout.connect(self.animate)
         self.timer.start(30)
 

@@ -72,7 +72,7 @@ class DigitalClockDesignA(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-        self.timer = QTimer()
+        self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateTime)
         self.timer.start(500)
 
