@@ -5,6 +5,7 @@ from widgets.SensorWidgets.ArtificialHorizonWidget import ArtificialHorizonWidge
 from widgets.ClockDesigns.AnalogClock import AnalogClock
 from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
 from widgets.SensorWidgets.WeatherStationWidget import WeatherStationWidget
+from widgets.SensorWidgets.AltimeterWidget import AltimeterWidget
 from widgets.Other.QuitWidget import QuitWidget
 from widgets.Layouts.ZoomCarousel import ZoomCarousel
 from widgets.Other.DebugInfo import DebugInfo
@@ -27,6 +28,7 @@ class SlidingLayout(QWidget):
             clock_container,
             WeatherStationWidget(self.sensorManager),
             ArtificialHorizonWidget(self.sensorManager),
+            AltimeterWidget()
         ]
 
         for i, page in enumerate(self.pages):
