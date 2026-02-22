@@ -4,11 +4,32 @@ from PySide6.QtCore import Qt, QTimer, QPoint, QRect
 from PySide6.QtGui import QPainter, QPen, QColor, QFont, QFontMetrics, QBrush, QPainterPath
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 
+from helpers.SensorManager import SensorManager
+
+
 class AltimeterWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, sensorManager: SensorManager = None, parent=None):
         super(AltimeterWidget, self).__init__(parent)
 
+        self.sensorManager = sensorManager
+
         self.setFixedSize(480,480)
+        self.altitude = 0
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update)
+        self.timer.start(100)
+
+    def onTimerTick(self):
+        if self.sensorManager.Bmp180 is None:
+            return
+
+        alt = self.sensorManager.Bmp180.get_altitude()
+        # Převeď na ft
+        alt_feet = alt * 3.2808399
+        self.altitude = alt_feet
+
+        self.update()
 
     def paintEvent(self, event, /):
         painter = QPainter(self)
@@ -19,9 +40,10 @@ class AltimeterWidget(QWidget):
         painter.translate(240, 240)
 
         drawAltimeterBackground(painter)
-        drawHundrethsHand(painter)
-        drawThousandthHand(painter)
-        drawTenThousandthHand(painter)
+        drawUnitsText(painter)
+        drawHundrethsHand(painter, self.altitude)
+        drawThousandthHand(painter, self.altitude)
+        drawTenThousandthHand(painter, self.altitude)
         drawCenterCircles(painter)
 
 
@@ -89,18 +111,56 @@ def drawAltimeterBackground(painter: QPainter):
         descent = metrics.descent()
 
         painter.drawText(
-            x - width / 2,
-            y + (ascent - descent) / 2,
+            int(x - width / 2),
+            int(y + (ascent - descent) / 2),
             text
         )
 
-        #painter.drawEllipse(-125, -125, 250, 250)
-        #painter.drawEllipse(-240, -240, 480, 480)
+def drawUnitsText(painter: QPainter):
+    painter.save()
 
-def drawHundrethsHand(painter: QPainter):
+    font = QFont("Arial", 32)
+    font.setBold(True)
+    painter.setFont(font)
+
+    painter.setPen(QPen(QColor("white")))
+
+    text = "Ft"
+    metrics = QFontMetrics(font)
+
+    width = metrics.horizontalAdvance(text)
+    ascent = metrics.ascent()
+    descent = metrics.descent()
+
+    x = -width / 2
+    y = -110 + (ascent - descent) / 2
+
+    painter.drawText(int(x), int(y), text)
+
+    text = "ALT"
+    metrics = QFontMetrics(font)
+
+    width = metrics.horizontalAdvance(text)
+    ascent = metrics.ascent()
+    descent = metrics.descent()
+
+    # Center horizontally
+    x = -width / 2
+
+    # Position below hands but above bottom digit
+    y = 110 + (ascent - descent) / 2
+
+    painter.drawText(int(x), int(y), text)
+
+    painter.restore()
+
+def drawHundrethsHand(painter: QPainter, altitude: int):
     painter.save()
     painter.setBrush(QBrush(QColor("white")))
     painter.setPen(QPen(QColor("black"), 2))
+
+    angle = ((altitude % 1000)/1000) * 360
+    painter.rotate(angle - 90)
 
     # Ručička je 200 pixelů široká v ukazujícím směru
     # Pro symetrii udělejme ji 100 px širokou v opačném
@@ -121,9 +181,11 @@ def drawHundrethsHand(painter: QPainter):
 
     painter.restore()
 
-def drawThousandthHand(painter: QPainter):
+def drawThousandthHand(painter: QPainter, altitude: int):
     painter.save()
-    painter.rotate(90)
+
+    angle = ((altitude % 10000)/10000) * 360
+    painter.rotate(angle - 90)
 
     painter.setPen(QPen(QColor("black"), 2))
     painter.setBrush(QBrush(QColor("white")))
@@ -148,9 +210,11 @@ def drawThousandthHand(painter: QPainter):
 
     painter.restore()
 
-def drawTenThousandthHand(painter: QPainter):
+def drawTenThousandthHand(painter: QPainter, altitude: int):
     painter.save()
-    painter.rotate(120)
+
+    angle = ((altitude % 100000)/100000) * 360
+    painter.rotate(angle - 90)
 
     painter.setPen(QPen(QColor("black"), 2))
     painter.setBrush(QBrush(QColor("white")))
