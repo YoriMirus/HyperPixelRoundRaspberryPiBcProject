@@ -1,5 +1,8 @@
+from sqlite3 import connect
+
 from smbus2 import SMBus
 
+from sensors.Bmp180 import Bmp180
 from sensors.MMA8452Q import MMA8452Q
 from sensors.SHT3x import SHT3x
 
@@ -12,6 +15,7 @@ class SensorManager:
     def __init__(self):
         self.SHT3x = None
         self.MMA8452Q = None
+        self.Bmp180 = None
 
     def CheckForSensors(self):
         try:
@@ -20,12 +24,21 @@ class SensorManager:
             else:
                 if SHT3x.detect(11):
                     self.SHT3x = SHT3x(bus=11)
+
             if self.MMA8452Q is not None:
                 self.MMA8452Q.read_acceleration()
             else:
                 if MMA8452Q.detect(11):
                     self.MMA8452Q = MMA8452Q(bus=11)
                     self.MMA8452Q.calibrate_level()
+
+            if self.Bmp180 is not None:
+                self.Bmp180.read_measurement()
+            else:
+                if Bmp180.detect(11):
+                    self.Bmp180 = Bmp180(bus=11)
+
+
         except Exception as e:
             print(e)
 
@@ -70,8 +83,24 @@ class SensorManager:
                 values_gyro=None
             )
 
+        if self.Bmp180 is not None:
+            temp, press, alt = self.Bmp180.read_measurement()
+            bmp180_status = Bmp180_status(
+                connected=True,
+                values=Bmp180Data(
+                    temperature=temp,
+                    pressure=press,
+                    altitude=alt
+                )
+            )
+        else:
+            bmp180_status = Bmp180_status(
+                connected=False
+            )
+
         return GetStatusDTO(
             SHT3x=sht3x_status,
             MMA5452Q=mma_status,
+            Bmp180=bmp180_status,
             is_raspberry_pi=is_raspberry_pi
         )

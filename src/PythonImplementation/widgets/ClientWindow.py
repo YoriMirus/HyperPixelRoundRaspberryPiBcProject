@@ -127,9 +127,25 @@ class ClientWindow(QWidget):
             values_gyro=gyro_values
         )
 
+        # --- BMP180 ---
+        bmp_data = data["Bmp180"]
+        values = None
+        if bmp_data["values"] is not None:
+            values = Bmp180Data(
+                temperature=bmp_data["values"]["temperature"],
+                pressure=bmp_data["values"]["pressure"],
+                altitude=bmp_data["values"]["altitude"]
+            )
+
+        bmp = Bmp180_status(
+            connected=bmp_data["connected"],
+            values=values
+        )
+
         result = GetStatusDTO(
             SHT3x=sht3x,
             MMA5452Q=mma,
+            Bmp180=bmp,
             is_raspberry_pi=data["is_raspberry_pi"]
         )
 

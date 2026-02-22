@@ -10,10 +10,10 @@ import smbus2
 import math
 from time import sleep
 
-class bmp180:
+class Bmp180:
     # Global variables
     address = None
-    bus = smbus2.SMBus(1)
+    bus = None
     mode = 1 # TODO: Add a way to change the mode
 
     # BMP180 registers
@@ -47,8 +47,9 @@ class bmp180:
     calMD = 0
 
 
-    def __init__(self, address):
+    def __init__(self, bus=11, address=0x77):
         self.address = address
+        self.bus = smbus2.SMBus(bus)
 
         # Get the calibration data from the BMP180
         self.read_calibration_data()
@@ -218,8 +219,30 @@ class bmp180:
 
         return altitude
 
+    def read_measurement(self):
+        # TODO: Rozděl všechny tři měření do jedné metody
+        return self.get_temp(), self.get_pressure(), self.get_altitude()
+
+    @staticmethod
+    def detect(bus_number):
+        try:
+            bus = smbus2.SMBus(bus_number)
+        except:
+            return None
+
+        try:
+            chip_id = bus.read_byte_data(0x77, 0xD0)
+            bus.close()
+            if chip_id == 0x55:
+                return 0x77
+        except:
+            pass
+
+        bus.close()
+        return None
+
 if __name__ == "__main__":
-    bmp = bmp180(0x77)
+    bmp = Bmp180(0x77)
     print(bmp.get_temp())
     print(bmp.get_pressure())
     print(bmp.get_altitude())

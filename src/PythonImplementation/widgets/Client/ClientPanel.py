@@ -9,6 +9,7 @@ class ClientPanel(QWidget):
     def __init__(self, parent=None):
         super(ClientPanel, self).__init__(parent)
 
+        self.BMP180_status_label = QLabel()
         self.MMA5452Q_status_label = QLabel()
         self.SHT3x_status_label = QLabel()
         self.SHT3x_temp_label = QLabel("0 °C")
@@ -20,6 +21,10 @@ class ClientPanel(QWidget):
 
         self.MMA5452Q_roll_label = QLabel("0°")
         self.MMA5452Q_pitch_label = QLabel("0°")
+
+        self.bmp180_temp_label = QLabel("0 °C")
+        self.bmp180_pressure_label = QLabel("0 Pa")
+        self.bmp180_altitude_label = QLabel("0 m")
 
         self.red_hex = "#c30101"
         self.green_hex = "#00b34d"
@@ -134,6 +139,8 @@ class ClientPanel(QWidget):
     def create_sensor_status_layout(self):
         layout = QGridLayout()
 
+        # SHT3x
+
         sht3_label = QLabel("SHT3x")
         sht3_status_label = QLabel("Odpojen")
         sht3_status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -148,6 +155,8 @@ class ClientPanel(QWidget):
         sht3_sub_layout = QHBoxLayout()
         sht3_sub_layout.addWidget(self.SHT3x_temp_label)
         sht3_sub_layout.addWidget(self.SHT3x_humidity_label)
+
+        # MMA5452Q
 
         mma5452q_label = QLabel("MMA5452")
         mma5452_status_label = QLabel("Odpojen")
@@ -173,6 +182,25 @@ class ClientPanel(QWidget):
         mma5452q_gyro_sub_layout.addWidget(self.MMA5452Q_roll_label)
         mma5452q_gyro_sub_layout.addWidget(self.MMA5452Q_pitch_label)
 
+        # BMP180
+
+        bmp_label =QLabel("BMP180")
+        bmp_status_label = QLabel("Odpojen")
+        bmp_status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        bmp_status_label.setStyleSheet(f"color: {self.red_hex}")
+        self.BMP180_status_label = bmp_status_label
+
+        bmp_meas_label = QLabel("Naměřené hodnoty (°C, Pa, m)")
+
+        self.bmp180_temp_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.bmp180_pressure_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.bmp180_altitude_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        bmp_sub_layout = QHBoxLayout()
+        bmp_sub_layout.addWidget(self.bmp180_temp_label)
+        bmp_sub_layout.addWidget(self.bmp180_pressure_label)
+        bmp_sub_layout.addWidget(self.bmp180_altitude_label)
+
         layout.addWidget(sht3_label, 0, 0)
         layout.addWidget(sht3_status_label, 0, 1)
         layout.addWidget(sht3_meas_label, 1, 0)
@@ -183,6 +211,11 @@ class ClientPanel(QWidget):
         layout.addWidget(mma5452q_meas_label, 3, 0)
         layout.addLayout(mma5452q_accel_sub_layout, 3, 1)
         layout.addLayout(mma5452q_gyro_sub_layout, 4, 1)
+
+        layout.addWidget(bmp_label, 5, 0)
+        layout.addWidget(bmp_status_label, 5, 1)
+        layout.addWidget(bmp_meas_label, 6, 0)
+        layout.addLayout(bmp_sub_layout, 6, 1)
 
         return layout
 

@@ -21,6 +21,12 @@ class GyroData:
     roll: float
     pitch: float
 
+@dataclass(frozen=True)
+class Bmp180Data:
+    temperature: float
+    pressure: float
+    altitude: float
+
 
 @dataclass(frozen=True)
 class SHT3x_status:
@@ -34,9 +40,15 @@ class MMA5452Q_status:
     values_accel: Optional[AccelData] = None
     values_gyro: Optional[GyroData] = None
 
+@dataclass(frozen=True)
+class Bmp180_status:
+    connected: bool
+    values: Optional[Bmp180Data] = None
+
 
 @dataclass(frozen=True)
 class GetStatusDTO:
     SHT3x: SHT3x_status
     MMA5452Q: MMA5452Q_status
+    Bmp180: Bmp180_status
     is_raspberry_pi: bool
