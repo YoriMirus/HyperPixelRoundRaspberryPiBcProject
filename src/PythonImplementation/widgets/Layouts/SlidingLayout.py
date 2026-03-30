@@ -4,6 +4,7 @@ from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent,
 from widgets.SensorWidgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 from widgets.ClockDesigns.AnalogClock import AnalogClock
 from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
+from widgets.SensorWidgets.Level import LevelWidget
 from widgets.SensorWidgets.WeatherStationWidget import WeatherStationWidget
 from widgets.SensorWidgets.AltimeterWidget import AltimeterWidget
 from widgets.Other.QuitWidget import QuitWidget
@@ -24,6 +25,7 @@ class SlidingLayout(QWidget):
         clock_container.addWidget(DigitalClockDesignA())
 
         self.pages = [
+            LevelWidget(sensor_manager=self.sensorManager),
             QuitWidget(),
             clock_container,
             WeatherStationWidget(self.sensorManager),
