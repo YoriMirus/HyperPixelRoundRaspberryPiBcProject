@@ -8,6 +8,7 @@ from widgets.SensorWidgets.Level import LevelWidget
 from widgets.SensorWidgets.WeatherStationWidget import WeatherStationWidget
 from widgets.SensorWidgets.AltimeterWidget import AltimeterWidget
 from widgets.Other.QuitWidget import QuitWidget
+from widgets.Other.CircularOverlay import CircularOverlay
 from widgets.Layouts.ZoomCarousel import ZoomCarousel
 from widgets.Other.DebugInfo import DebugInfo
 
@@ -52,6 +53,10 @@ class SlidingLayout(QWidget):
         self.longPressTimer.setInterval(1000)
         self.longPressTimer.setSingleShot(True)
         self.longPressTimer.timeout.connect(self.on_long_press)
+
+        self.overlay = CircularOverlay(self)
+        self.overlay.raise_()
+        self.overlay.show()
 
 
     # ───────────────────────────────────────────────

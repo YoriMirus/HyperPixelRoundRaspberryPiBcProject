@@ -9,6 +9,8 @@ from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
 from widgets.SensorWidgets.WeatherStationWidget import WeatherStationWidget
 from widgets.SensorWidgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 
+from widgets.Other.CircularOverlay import CircularOverlay
+
 class ManualModeLayout(QWidget):
     def __init__(self,
                  sensor_manager: SensorManager,
@@ -26,6 +28,10 @@ class ManualModeLayout(QWidget):
         self.accelerometer_style_index = 0
 
         self.setClock()
+
+        self.overlay = CircularOverlay(self)
+        self.overlay.raise_()
+        self.overlay.show()
 
     def setDisplayedWidget(self, index: int):
         prev_index = self.widget_index

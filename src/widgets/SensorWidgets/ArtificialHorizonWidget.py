@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout
-from PySide6.QtGui import QPixmap, QPainter, QTransform, QFontDatabase, QPen, QColor
+from PySide6.QtGui import QPixmap, QPainter, QTransform, QFontDatabase, QPen, QColor, QPainterPath
 from PySide6.QtCore import Qt, QTimer, QPointF, QRectF
 import math
 
@@ -118,6 +118,25 @@ class HorizonForeground(QWidget):
 
         painter.drawLine(cx + 100, cy, cx + 30, cy)
         painter.drawLine(cx + 30, cy, cx + 30, cy + 20)
+
+        path = QPainterPath()
+        path.setFillRule(Qt.OddEvenFill)
+
+        # celý widget
+        path.addRect(self.rect())
+
+        # kruh uprostřed (díra)
+        diameter = 480
+        cx, cy = self.width() / 2, self.height() / 2
+        x = cx - diameter / 2
+        y = cy - diameter / 2
+
+        path.addEllipse(x, y, diameter, diameter)
+
+        # vykreslení "masky"
+        painter.setBrush(QColor("black"))
+        painter.setPen(Qt.NoPen)
+        painter.drawPath(path)
 
 
 
