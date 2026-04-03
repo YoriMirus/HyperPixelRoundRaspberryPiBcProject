@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent, QTimer
 
+from widgets.SensorWidgets.Barometer import Barometer
 from widgets.SensorWidgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 from widgets.ClockDesigns.AnalogClock import AnalogClock
 from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
@@ -25,13 +26,20 @@ class SlidingLayout(QWidget):
         clock_container.addWidget(AnalogClock())
         clock_container.addWidget(DigitalClockDesignA())
 
+        bmp180_container = ZoomCarousel()
+        bmp180_container.addWidget(Barometer(sensor_manager=sensorManager))
+        bmp180_container.addWidget(AltimeterWidget())
+
+        accelerometer_container = ZoomCarousel()
+        accelerometer_container.addWidget(LevelWidget(sensor_manager=sensorManager))
+        accelerometer_container.addWidget(ArtificialHorizonWidget(self.sensorManager))
+
         self.pages = [
-            LevelWidget(sensor_manager=self.sensorManager),
+            bmp180_container,
             QuitWidget(),
             clock_container,
             WeatherStationWidget(self.sensorManager),
-            ArtificialHorizonWidget(self.sensorManager),
-            AltimeterWidget()
+            accelerometer_container
         ]
 
         for i, page in enumerate(self.pages):
@@ -54,9 +62,10 @@ class SlidingLayout(QWidget):
         self.longPressTimer.setSingleShot(True)
         self.longPressTimer.timeout.connect(self.on_long_press)
 
-        self.overlay = CircularOverlay(self)
-        self.overlay.raise_()
-        self.overlay.show()
+        if not is_raspberry_pi:
+            self.overlay = CircularOverlay(self)
+            self.overlay.raise_()
+            self.overlay.show()
 
 
     # ───────────────────────────────────────────────

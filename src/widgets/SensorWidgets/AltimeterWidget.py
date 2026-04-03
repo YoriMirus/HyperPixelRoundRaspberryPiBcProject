@@ -11,6 +11,9 @@ class AltimeterWidget(QWidget):
     def __init__(self, sensorManager: SensorManager = None, parent=None):
         super(AltimeterWidget, self).__init__(parent)
 
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setStyleSheet("background-color: transparent;")
+
         self.sensorManager = sensorManager
 
         self.setFixedSize(480,480)

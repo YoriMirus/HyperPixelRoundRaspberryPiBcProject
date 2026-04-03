@@ -13,6 +13,9 @@ class LevelWidget(QWidget):
         self.setFixedSize(480, 480)
         self.sensor_manager = sensor_manager
 
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setStyleSheet("background-color: black;")
+
         # Timer
         self.timer_refresh_rate = 120
         if sensor_manager is not None:
@@ -92,9 +95,6 @@ class LevelWidget(QWidget):
             y = 240 - y
 
             painter.drawEllipse(x, y, i * px_per_degree * 2, i * px_per_degree * 2)
-
-
-
 
     def on_timer_tick(self):
         if self.sensor_manager.MMA8452Q is None:
