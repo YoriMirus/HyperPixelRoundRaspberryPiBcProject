@@ -2,7 +2,7 @@ import math
 
 from PySide6.QtCore import QTimer, QPoint, QRectF
 from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPixmap, QPainter, QColor, Qt, QPen
+from PySide6.QtGui import QPixmap, QPainter, QColor, Qt, QPen, QFontMetrics
 
 from helpers.SensorManager import SensorManager
 
@@ -28,8 +28,8 @@ class LevelWidget(QWidget):
         )
 
         # Aktuální hodnoty (ve stupních)
-        self.roll = -5
-        self.pitch = -0
+        self.roll = -3
+        self.pitch = 4
 
     def set_bubble_position(self, roll, pitch):
         self.roll = roll
@@ -38,15 +38,10 @@ class LevelWidget(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
 
-        # --- 1) Overlay ---
-        painter.setBrush(QColor(255,255,255))
-        painter.drawEllipse(0, 0, 480, 480)
-
-        painter.setBrush(QColor(120, 255, 80, 120))
+        painter.setBrush(QColor(180, 255, 120))
         painter.setPen(Qt.NoPen)
         painter.drawEllipse(0, 0, 480, 480)
 
-        # --- 2) Výpočet pozice bubliny ---
         # rozsah ±5°, 42 px na stupeň
         px_per_degree = 34
 
@@ -71,53 +66,60 @@ class LevelWidget(QWidget):
         top_left_x = x + center_x - bubble_w / 2
         top_left_y = y + center_y - bubble_h / 2
 
-        # --- 3) Vykreslení bubliny ---
+        # Vykreslení bubliny
         painter.drawPixmap(int(top_left_x), int(top_left_y), self.bubble_pixmap)
 
         painter.setPen(QPen(QColor(0,0,0), 5))
         painter.setBrush(Qt.NoBrush)
 
-        # Vykreslení velkých a malých čár
-        for i in range(7):
-            if i == 0:
-                continue
-
-            small_tick_width = 30
-
-            # Malé čáry
-            if i % 2 == 0:
-                x_12_start = 240 - (small_tick_width/2)
-                x_12_end = 240 + (small_tick_width/2)
-
-                y_1 = 240 - (px_per_degree * i)
-                y_2 = 240 + (px_per_degree * i)
-
-                y_34_start = 240 - (small_tick_width/2)
-                y_34_end = 240 + (small_tick_width/2)
-
-                x_3 = 240 - (px_per_degree * i)
-                x_4 = 240 + (px_per_degree * i)
-
-                painter.drawLine(x_3, y_34_start, x_3, y_34_end)
-                painter.drawLine(x_4, y_34_start, x_4, y_34_end)
-
-                painter.drawLine(x_12_start, y_1, x_12_end, y_1)
-                painter.drawLine(x_12_start, y_2, x_12_end, y_2)
-
-                continue
-
-
-            x = int(px_per_degree * i)
-            y = int(px_per_degree * i)
-
-            x = 240 - x
-            y = 240 - y
-
-            painter.drawEllipse(x, y, i * px_per_degree * 2, i * px_per_degree * 2)
-
         # Vykreslení kříže
         painter.drawLine(240, 0, 240, 480)
         painter.drawLine(0, 240, 480, 240)
+
+        # Vykreslení velkých a malých čár
+        # Velké čáry
+        painter.translate(240, 240)
+        painter.drawEllipse(-px_per_degree, -px_per_degree, px_per_degree * 2, px_per_degree * 2)
+        painter.drawEllipse(-px_per_degree * 3, -px_per_degree * 3, px_per_degree * 3 * 2, px_per_degree * 3 * 2)
+        painter.drawEllipse(-px_per_degree * 5, -px_per_degree * 5, px_per_degree * 5 * 2, px_per_degree * 5 * 2)
+
+        # Malé čáry
+        font = painter.font()
+        font.setPointSize(24)
+        painter.setFont(font)
+        fm = QFontMetrics(painter.font())
+        small_tick_width = 30
+        for i in range(4):
+            x_start = -small_tick_width/2
+            x_end = small_tick_width/2
+
+            y_1 = -px_per_degree * 2
+            y_2 = -px_per_degree * 4
+            y_3 = -px_per_degree * 6
+
+            painter.drawLine(x_start, y_1, x_end, y_1)
+            painter.drawLine(x_start, y_2, x_end, y_2)
+            painter.drawLine(x_start, y_3, x_end, y_3)
+
+            # --- TEXT DRAWING ---
+            labels = [("2°", y_1), ("4°", y_2), ("6°", y_3)]
+
+            for text, y in labels:
+                text_width = fm.horizontalAdvance(text)
+                text_height = fm.height()
+
+                # Position text slightly to the right of the tick
+                x_text = x_end + 5
+
+                # Align vertically: shift by half height, but compensate for baseline
+                y_text = y + text_height / 2 - fm.descent()
+
+                painter.drawText(x_text, y_text, text)
+
+            painter.rotate(90)
+
+        return
+
     def on_timer_tick(self):
         if self.sensor_manager.MMA8452Q is None:
             return
