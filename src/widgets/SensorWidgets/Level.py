@@ -1,6 +1,6 @@
 import math
 
-from PySide6.QtCore import QTimer, QPoint
+from PySide6.QtCore import QTimer, QPoint, QRectF
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPixmap, QPainter, QColor, Qt, QPen
 
@@ -12,9 +12,6 @@ class LevelWidget(QWidget):
         super(LevelWidget, self).__init__(parent)
         self.setFixedSize(480, 480)
         self.sensor_manager = sensor_manager
-
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setStyleSheet("background-color: black;")
 
         # Timer
         self.timer_refresh_rate = 120
@@ -51,7 +48,7 @@ class LevelWidget(QWidget):
 
         # --- 2) Výpočet pozice bubliny ---
         # rozsah ±5°, 42 px na stupeň
-        px_per_degree = 42
+        px_per_degree = 34
 
         center_x = self.width() / 2
         center_y = self.height() / 2
@@ -80,22 +77,47 @@ class LevelWidget(QWidget):
         painter.setPen(QPen(QColor(0,0,0), 5))
         painter.setBrush(Qt.NoBrush)
 
-        # Vykreslení čár
-        for i in range(6):
+        # Vykreslení velkých a malých čár
+        for i in range(7):
             if i == 0:
                 continue
 
+            small_tick_width = 30
 
-            step_px = px_per_degree
+            # Malé čáry
+            if i % 2 == 0:
+                x_12_start = 240 - (small_tick_width/2)
+                x_12_end = 240 + (small_tick_width/2)
 
-            x = int(step_px * i)
-            y = int(step_px * i)
+                y_1 = 240 - (px_per_degree * i)
+                y_2 = 240 + (px_per_degree * i)
+
+                y_34_start = 240 - (small_tick_width/2)
+                y_34_end = 240 + (small_tick_width/2)
+
+                x_3 = 240 - (px_per_degree * i)
+                x_4 = 240 + (px_per_degree * i)
+
+                painter.drawLine(x_3, y_34_start, x_3, y_34_end)
+                painter.drawLine(x_4, y_34_start, x_4, y_34_end)
+
+                painter.drawLine(x_12_start, y_1, x_12_end, y_1)
+                painter.drawLine(x_12_start, y_2, x_12_end, y_2)
+
+                continue
+
+
+            x = int(px_per_degree * i)
+            y = int(px_per_degree * i)
 
             x = 240 - x
             y = 240 - y
 
             painter.drawEllipse(x, y, i * px_per_degree * 2, i * px_per_degree * 2)
 
+        # Vykreslení kříže
+        painter.drawLine(240, 0, 240, 480)
+        painter.drawLine(0, 240, 480, 240)
     def on_timer_tick(self):
         if self.sensor_manager.MMA8452Q is None:
             return
