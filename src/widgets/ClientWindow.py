@@ -60,8 +60,8 @@ class ClientWindow(QWidget):
     def on_command_send_request(self, DTO):
         self.tcp_client.send_command(DTO)
 
-    def on_connection_error(self):
-        QMessageBox.critical(self, "Error", "Připojení selhalo")
+    def on_connection_error(self, message):
+        QMessageBox.critical(self, "Error", message)
 
     def on_connection_success(self):
         # Dal jsem sem QTimer kvůli race condition. Z nějakého důvodu změna widgetu způsobí, že okno nereaguje na setFixedSize
