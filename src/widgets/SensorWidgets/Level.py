@@ -8,7 +8,7 @@ from helpers.SensorManager import SensorManager
 
 
 class LevelWidget(QWidget):
-    def __init__(self, parent=None, sensor_manager=None|SensorManager):
+    def __init__(self, parent=None, sensor_manager=None):
         super(LevelWidget, self).__init__(parent)
         self.setFixedSize(480, 480)
         self.sensor_manager = sensor_manager

@@ -31,7 +31,7 @@ class Barometer(QWidget):
             press = 1025
         else:
             # Tlak je v Pa, my potřebujeme hPa
-            press = self.sensor_manager.Bmp180.read_measurement() / 100
+            press = self.sensor_manager.Bmp180.get_pressure() / 100
 
         val_diff = self.max_pressure - self.min_pressure
 
