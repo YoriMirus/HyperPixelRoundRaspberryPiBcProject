@@ -13,6 +13,9 @@ class LevelWidget(QWidget):
         self.setFixedSize(480, 480)
         self.sensor_manager = sensor_manager
 
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setStyleSheet("background-color: transparent;")
+
         # Timer
         self.timer_refresh_rate = 120
         if sensor_manager is not None:

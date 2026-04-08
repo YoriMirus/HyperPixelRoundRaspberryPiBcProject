@@ -14,7 +14,7 @@ class Barometer(QWidget):
         self.sensor_manager = sensor_manager
 
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setStyleSheet("background-color: black;")
+        self.setStyleSheet("background-color: transparent;")
 
         self.min_pressure = 975
         self.max_pressure = 1045

@@ -51,6 +51,11 @@ class ClientPanel(QWidget):
         main_layout.addWidget(render_style_lbl)
 
         main_layout.addLayout(self.create_sensor_status_layout())
+
+        calibration_button = QPushButton("Kalibruj gyroskop")
+        calibration_button.clicked.connect(self.send_gyro_calibrate_command)
+        main_layout.addWidget(calibration_button)
+
         main_layout.addWidget(self.create_filler_widget())
 
         # Zkusme vynutit aktualizaci jasu
@@ -289,5 +294,8 @@ class ClientPanel(QWidget):
     def send_change_brightness_command(self):
         self.on_command_send_request.emit(create_change_brightness_dto(self.brightness_slider.value()))
         self.current_brightness = self.brightness_slider.value()
+
+    def send_gyro_calibrate_command(self):
+        self.on_command_send_request.emit(CALIBRATE_GYRO_DTO)
 
 

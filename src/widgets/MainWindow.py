@@ -98,6 +98,16 @@ class MainWindow(QWidget):
             else:
                 print(f"{command.ip} is requesting {command.name} with args {command.args}")
                 print("This isn't a raspberry pi. No brightness controls available here.")
+        elif command.name == "calibrate_gyro":
+            if self.is_raspberry_pi:
+                if self.sensorManager.MMA8452Q is not None:
+                    self.sensorManager.MMA8452Q.calibrate_level()
+                else:
+                    print(f"{command.ip} is requesting {command.name} with args {command.args}")
+                    print("MMA8452Q is not connected. Doing nothing.")
+            else:
+                print(f"{command.ip} is requesting {command.name} with args {command.args}")
+                print("This isn't a raspberry pi. No sensor present here.")
         else:
             print(f"{command.ip} is requesting {command.name} with args {command.args}")
             print("I have no idea what that means. Doing nothing.")
