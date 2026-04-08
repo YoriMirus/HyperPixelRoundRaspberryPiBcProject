@@ -128,6 +128,6 @@ class LevelWidget(QWidget):
             return
 
         roll, pitch = self.sensor_manager.MMA8452Q.read_gyro()
-        self.roll = -roll
+        self.roll = roll
         self.pitch = -pitch
         self.update()
