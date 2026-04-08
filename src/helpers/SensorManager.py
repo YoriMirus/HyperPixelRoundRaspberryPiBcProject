@@ -24,23 +24,27 @@ class SensorManager:
             else:
                 if SHT3x.detect(11):
                     self.SHT3x = SHT3x(bus=11)
+        except:
+            self.SHT3x = None
 
+        try:
             if self.MMA8452Q is not None:
                 self.MMA8452Q.read_acceleration()
             else:
                 if MMA8452Q.detect(11):
                     self.MMA8452Q = MMA8452Q(bus=11)
                     self.MMA8452Q.calibrate_level()
+        except:
+            self.MMA8452Q = None
 
+        try:
             if self.Bmp180 is not None:
                 self.Bmp180.read_measurement()
             else:
                 if Bmp180.detect(11):
                     self.Bmp180 = Bmp180(bus=11)
-
-
-        except Exception as e:
-            print(e)
+        except:
+            self.Bmp180 = None
 
     def get_sensor_status(self, is_raspberry_pi: bool = False) -> GetStatusDTO:
         # --- SHT3x ---

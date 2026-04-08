@@ -18,6 +18,8 @@ class BrightnessController:
         self.pi.set_PWM_frequency(self.PWM_PIN, 1000)
         self.pi.set_PWM_range(self.PWM_PIN, self.PWM_RANGE)
 
+        self.set_brightness_percent(50)
+
     # ---------- Public API ----------
 
     def set_brightness_percent(self, percent: int):
