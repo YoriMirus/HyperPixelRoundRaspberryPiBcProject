@@ -7,9 +7,9 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout
 from helpers.SensorManager import SensorManager
 
 
-class AltimeterWidget(QWidget):
+class AltimeterWidgetGood(QWidget):
     def __init__(self, sensorManager: SensorManager = None, parent=None):
-        super(AltimeterWidget, self).__init__(parent)
+        super(AltimeterWidgetGood, self).__init__(parent)
 
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setStyleSheet("background-color: transparent;")
@@ -17,7 +17,7 @@ class AltimeterWidget(QWidget):
         self.sensorManager = sensorManager
 
         self.setFixedSize(480,480)
-        self.altitude = 0
+        self.altitude = 1181
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
@@ -44,9 +44,7 @@ class AltimeterWidget(QWidget):
 
         drawAltimeterBackground(painter)
         drawUnitsText(painter)
-        drawHundrethsHand(painter, self.altitude)
-        drawThousandthHand(painter, self.altitude)
-        drawTenThousandthHand(painter, self.altitude)
+        drawHand(painter, self.altitude)
         drawCenterCircles(painter)
 
 
@@ -157,12 +155,13 @@ def drawUnitsText(painter: QPainter):
 
     painter.restore()
 
-def drawHundrethsHand(painter: QPainter, altitude: int):
+
+def drawHand(painter: QPainter, altitude: int):
     painter.save()
     painter.setBrush(QBrush(QColor("white")))
     painter.setPen(QPen(QColor("black"), 2))
 
-    angle = ((altitude % 1000)/1000) * 360
+    angle = ((altitude % 100000)/100000) * 360
     painter.rotate(angle - 90)
 
     # Ručička je 200 pixelů široká v ukazujícím směru
@@ -182,52 +181,6 @@ def drawHundrethsHand(painter: QPainter, altitude: int):
     painter.drawRect(-100, -10, 100, 20)
     painter.drawEllipse(-115, -15, 30, 30)
 
-    painter.restore()
-
-def drawThousandthHand(painter: QPainter, altitude: int):
-    painter.save()
-
-    angle = ((altitude % 10000)/10000) * 360
-    painter.rotate(angle - 90)
-
-    painter.setPen(QPen(QColor("black"), 2))
-    painter.setBrush(QBrush(QColor("white")))
-
-    painter.drawPolygon([
-        QPoint(0, -10),
-        QPoint(1, 10),
-        QPoint(67, 15),
-        QPoint(125, 0),
-        QPoint(67, -15)
-    ])
-
-    painter.setPen(QPen(QColor("white")))
-    painter.setBrush(Qt.NoBrush)
-
-    paths = QPainterPath()
-    paths.moveTo(0, 5)
-    paths.lineTo(-67, 20)
-    paths.quadTo(-77, 0, -67, -20)
-    paths.lineTo(0, -5)
-    painter.drawPath(paths)
-
-    painter.restore()
-
-def drawTenThousandthHand(painter: QPainter, altitude: int):
-    painter.save()
-
-    angle = ((altitude % 100000)/100000) * 360
-    painter.rotate(angle - 90)
-
-    painter.setPen(QPen(QColor("black"), 2))
-    painter.setBrush(QBrush(QColor("white")))
-    painter.drawPolygon([
-        QPoint(0, 5),
-        QPoint(110, 5),
-        QPoint(125, 0),
-        QPoint(110, -5),
-        QPoint(0, -5)
-    ])
     painter.restore()
 
 def drawCenterCircles(painter: QPainter):

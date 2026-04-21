@@ -60,14 +60,6 @@ class SHT3x:
 
         return temperature, humidity
 
-    def read_temperature(self):
-        """Return °C as float."""
-        return self.read_measurement()[0]
-
-    def read_humidity(self):
-        """Return % as float."""
-        return self.read_measurement()[1]
-
     @staticmethod
     def detect(bus_number):
         """

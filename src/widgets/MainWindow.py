@@ -7,8 +7,11 @@ from PySide6.QtCore import Qt, QTimer,QCoreApplication
 
 from helpers.SensorManager import SensorManager
 from helpers.BrightnessController import BrightnessController
+from sensors.VirtualTemperatureSensor import VirtualTemperatureSensor
 from widgets.Layouts.ManualModeLayout import ManualModeLayout
 from widgets.Layouts.SlidingLayout import SlidingLayout
+
+from sensors.VirtualAccelerometer import VirtualAccelerometer
 
 import json
 
@@ -45,10 +48,11 @@ class MainWindow(QWidget):
         self.setLayout(self.stacked)
 
         # Časovač pro kontrolu senzorů
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.checkForSensors)
+        self.timer.start(1000)
+
         if is_raspberry_pi:
-            self.timer = QTimer()
-            self.timer.timeout.connect(self.checkForSensors)
-            self.timer.start(1000)
             self.brightness_controller = BrightnessController()
 
 
@@ -119,4 +123,10 @@ class MainWindow(QWidget):
         event.accept()
 
     def checkForSensors(self):
+        if not self.is_raspberry_pi and self.sensorManager.MMA8452Q is None:
+            self.sensorManager.MMA8452Q = VirtualAccelerometer()
+
+        if not self.is_raspberry_pi and self.sensorManager.SHT3x is None:
+            self.sensorManager.SHT3x = VirtualTemperatureSensor()
+
         self.sensorManager.CheckForSensors()

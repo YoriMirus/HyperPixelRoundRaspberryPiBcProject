@@ -1,13 +1,17 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent, QTimer
 
+from widgets.SensorWidgets.ColorCodingExample import ColorCodingExample
+from widgets.SensorWidgets.DigitalAccelerometer import DigitalAccelerometerExample
 from widgets.SensorWidgets.Barometer import Barometer
 from widgets.SensorWidgets.ArtificialHorizonWidget import ArtificialHorizonWidget
 from widgets.ClockDesigns.AnalogClock import AnalogClock
 from widgets.ClockDesigns.DigitalClockDesignA import DigitalClockDesignA
 from widgets.SensorWidgets.Level import LevelWidget
 from widgets.SensorWidgets.WeatherStationWidget import WeatherStationWidget
-from widgets.SensorWidgets.AltimeterWidget import AltimeterWidget
+from widgets.SensorWidgets.WeatherRadialWidget import WeatherRadialWidget
+from widgets.SensorWidgets.AltimeterWidgetGood import AltimeterWidgetGood
+from widgets.SensorWidgets.AltimeterWidgetBad import AltimeterWidgetBad
 from widgets.Other.QuitWidget import QuitWidget
 from widgets.Other.CircularOverlay import CircularOverlay
 from widgets.Layouts.ZoomCarousel import ZoomCarousel
@@ -28,17 +32,24 @@ class SlidingLayout(QWidget):
 
         bmp180_container = ZoomCarousel()
         bmp180_container.addWidget(Barometer(sensor_manager=sensorManager))
-        bmp180_container.addWidget(AltimeterWidget())
+        bmp180_container.addWidget(AltimeterWidgetGood())
+        bmp180_container.addWidget(AltimeterWidgetBad())
 
         accelerometer_container = ZoomCarousel()
+        accelerometer_container.addWidget(DigitalAccelerometerExample(sensor_manager=sensorManager))
         accelerometer_container.addWidget(LevelWidget(sensor_manager=sensorManager))
         accelerometer_container.addWidget(ArtificialHorizonWidget(self.sensorManager))
 
+        temperature_container = ZoomCarousel()
+        temperature_container.addWidget(WeatherRadialWidget(self.sensorManager))
+        temperature_container.addWidget(WeatherStationWidget(self.sensorManager))
+        temperature_container.addWidget(ColorCodingExample())
+
         self.pages = [
-            bmp180_container,
             QuitWidget(),
+            bmp180_container,
             clock_container,
-            WeatherStationWidget(self.sensorManager),
+            temperature_container,
             accelerometer_container
         ]
 

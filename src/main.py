@@ -1,7 +1,6 @@
 import sys
 import signal
-import getpass
-import socket
+import getpass, socket
 from datetime import datetime
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtGui import QPixmap, QPainter, QTransform, QFontDatabase
@@ -34,4 +33,4 @@ if __name__ == "__main__":
 
     w = MainWindow(is_raspberry_pi)
     w.show()
-    sys.exit(app.exec())
+    app.exec()
