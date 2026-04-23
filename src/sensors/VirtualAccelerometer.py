@@ -51,6 +51,10 @@ class VirtualAccelerometer:
         # Return noisy orientation as well
         return self._noisy_angles()
 
+    def set_gyro(self, roll, pitch):
+        self.true_roll = roll
+        self.true_pitch = pitch
+
     # -------------------------------------------------------
     # Compatibility stubs
     # -------------------------------------------------------

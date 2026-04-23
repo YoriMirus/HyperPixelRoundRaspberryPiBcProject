@@ -17,7 +17,7 @@ class WeatherRadialWidget(QWidget):
         # Poll sensor every second
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_sensor)
-        self.timer.start(1000)
+        self.timer.start(500)
 
     # ---------- Sensor ----------
     def update_sensor(self):

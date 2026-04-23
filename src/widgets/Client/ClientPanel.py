@@ -9,6 +9,9 @@ class ClientPanel(QWidget):
     def __init__(self, parent=None):
         super(ClientPanel, self).__init__(parent)
 
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setFocus()
+
         self.BMP180_status_label = QLabel()
         self.MMA5452Q_status_label = QLabel()
         self.SHT3x_status_label = QLabel()
@@ -28,6 +31,16 @@ class ClientPanel(QWidget):
 
         self.red_hex = "#c30101"
         self.green_hex = "#00b34d"
+
+        self.current_roll = 0.0
+        self.current_pitch = 0.0
+
+        self.target_roll = 0.0
+        self.target_pitch = 0.0
+
+        self.current_altitude = 1000
+
+        self.alpha = 0.02
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10,10,10,10)
@@ -52,9 +65,26 @@ class ClientPanel(QWidget):
 
         main_layout.addLayout(self.create_sensor_status_layout())
 
-        calibration_button = QPushButton("Kalibruj gyroskop")
+        calibration_button = QPushButton("Definuj rovinu (vodováha)")
         calibration_button.clicked.connect(self.send_gyro_calibrate_command)
         main_layout.addWidget(calibration_button)
+
+        main_layout.addWidget(QPushButton("Definuj rovinu (umělý horizont)"))
+
+        rolllbl, rollslider = self.create_gyro_roll_slider()
+        self.roll_slider = rollslider
+        main_layout.addWidget(rolllbl)
+        main_layout.addWidget(rollslider)
+
+        pitchlbl, pitchslider = self.create_gyro_pitch_slider()
+        self.pitch_slider = pitchslider
+        main_layout.addWidget(pitchlbl)
+        main_layout.addWidget(pitchslider)
+
+        altlbl, altslider = self.create_altitude_slider()
+        self.altitude_slider = altslider
+        main_layout.addWidget(altlbl)
+        main_layout.addWidget(altslider)
 
         main_layout.addWidget(self.create_filler_widget())
 
@@ -70,6 +100,19 @@ class ClientPanel(QWidget):
         if val != self.current_brightness:
             self.send_change_brightness_command()
 
+        rollval = self.roll_slider.value()
+        pitchval = self.pitch_slider.value()
+
+        if rollval != self.current_roll or pitchval != self.current_pitch:
+            self.current_roll = rollval
+            self.current_pitch = pitchval
+            self.send_update_virtual_gyro_command()
+
+        # --- NEW: altitude handling ---
+        alt_val = self.altitude_slider.value()
+        if alt_val != self.current_altitude:
+            self.current_altitude = alt_val
+            self.send_update_virtual_altitude_command()
 
     def create_shutdown_buttons_layout(self):
         # Tlačítka pro vypnutí programu
@@ -105,8 +148,9 @@ class ClientPanel(QWidget):
         page_style_grid = QGridLayout()
 
         page_style_grid.addWidget(QLabel("Hodiny"), 0, 0)
-        page_style_grid.addWidget(QLabel("Meteostanice"), 1, 0)
-        page_style_grid.addWidget(QLabel("Akcelerometr"), 2, 0)
+        page_style_grid.addWidget(QLabel("Teplota"), 1, 0)
+        page_style_grid.addWidget(QLabel("Zrychlení"), 2, 0)
+        page_style_grid.addWidget(QLabel("Tlak"))
 
         btn = QPushButton("Klasické")
         btn.clicked.connect(self.send_set_clock_style_analog_command)
@@ -116,15 +160,25 @@ class ClientPanel(QWidget):
         btn.clicked.connect(self.send_set_clock_style_digital_a_command)
         page_style_grid.addWidget(btn, 0, 2)
 
-        page_style_grid.addWidget(QPushButton("Digitální 2"), 0, 3)
+        #page_style_grid.addWidget(QPushButton("Digitální 2"), 0, 3)
 
-        btn = QPushButton("Digitální")
+        btn = QPushButton("Meteostanice")
         btn.clicked.connect(self.send_set_weather_station_digital_command)
         page_style_grid.addWidget(btn, 1, 1)
+
+        page_style_grid.addWidget(QPushButton("Termostat"), 1, 2)
+        page_style_grid.addWidget(QPushButton("Analogový teploměr"), 1, 3)
 
         btn = QPushButton("Umělý horizont")
         btn.clicked.connect(self.send_set_accelerometer_artificial_horizon_command)
         page_style_grid.addWidget(btn, 2, 1)
+
+        page_style_grid.addWidget(QPushButton("Vodováha"), 2, 2)
+        page_style_grid.addWidget(QPushButton("Digitální"), 2, 3)
+
+        page_style_grid.addWidget(QPushButton("Barometr"), 3, 1)
+        page_style_grid.addWidget(QPushButton("Výškoměr celý"), 3, 2)
+        page_style_grid.addWidget(QPushButton("Výškoměr zjednodušený"), 3, 3)
 
         return page_style_grid
 
@@ -140,6 +194,42 @@ class ClientPanel(QWidget):
 
         return lbl, slider
 
+    def create_gyro_roll_slider(self):
+        lbl = QLabel("Náklon")
+        lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        slider = QSlider()
+        slider.setOrientation(Qt.Orientation.Horizontal)
+        slider.setMinimum(-89)
+        slider.setMaximum(89)
+        slider.setValue(0)
+
+        return lbl, slider
+
+    def create_gyro_pitch_slider(self):
+        lbl = QLabel("Klopení")
+        lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        slider = QSlider()
+        slider.setOrientation(Qt.Orientation.Horizontal)
+        slider.setMinimum(-89)
+        slider.setMaximum(89)
+        slider.setValue(0)
+
+        return lbl, slider
+
+    def create_altitude_slider(self):
+        lbl = QLabel("Nadmořská výška (ft)")
+        lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        slider = QSlider()
+        slider.setOrientation(Qt.Orientation.Horizontal)
+        slider.setMinimum(0)
+        slider.setMaximum(40000)  # nedávat více než 40 000. Virtuální barometr potom selže
+        slider.setValue(1000)
+
+        return lbl, slider
+
 
     def create_sensor_status_layout(self):
         layout = QGridLayout()
@@ -152,7 +242,7 @@ class ClientPanel(QWidget):
         sht3_status_label.setStyleSheet(f"color: {self.red_hex}")
         self.SHT3x_status_label = sht3_status_label
 
-        sht3_meas_label = QLabel("Naměřené hodnoty")
+        sht3_meas_label = QLabel("Naměřené hodnoty (°C, %)")
 
         self.SHT3x_temp_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.SHT3x_humidity_label.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -195,7 +285,7 @@ class ClientPanel(QWidget):
         bmp_status_label.setStyleSheet(f"color: {self.red_hex}")
         self.BMP180_status_label = bmp_status_label
 
-        bmp_meas_label = QLabel("Naměřené hodnoty (°C, Pa, m)")
+        bmp_meas_label = QLabel("Naměřené hodnoty (°C, Pa, ft)")
 
         self.bmp180_temp_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.bmp180_pressure_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -239,12 +329,12 @@ class ClientPanel(QWidget):
             self.MMA5452Q_status_label.setText("Připojen")
             self.MMA5452Q_status_label.setStyleSheet(f"color: {self.green_hex}")
 
-            self.MMA5452Q_x_label.setText(str(DTO.MMA5452Q.values_accel.x))
-            self.MMA5452Q_y_label.setText(str(DTO.MMA5452Q.values_accel.y))
-            self.MMA5452Q_z_label.setText(str(DTO.MMA5452Q.values_accel.z))
+            self.MMA5452Q_x_label.setText(f"{DTO.MMA5452Q.values_accel.x:.1f}")
+            self.MMA5452Q_y_label.setText(f"{DTO.MMA5452Q.values_accel.y:.1f}")
+            self.MMA5452Q_z_label.setText(f"{DTO.MMA5452Q.values_accel.z:.1f}")
 
-            self.MMA5452Q_roll_label.setText(str(DTO.MMA5452Q.values_gyro.roll))
-            self.MMA5452Q_pitch_label.setText(str(DTO.MMA5452Q.values_gyro.pitch))
+            self.MMA5452Q_roll_label.setText(f"{DTO.MMA5452Q.values_gyro.roll:.1f}")
+            self.MMA5452Q_pitch_label.setText(f"{DTO.MMA5452Q.values_gyro.pitch:.1f}")
         else:
             self.MMA5452Q_status_label.setText("Odpojen")
             self.MMA5452Q_status_label.setStyleSheet(f"color: {self.red_hex}")
@@ -254,11 +344,23 @@ class ClientPanel(QWidget):
             self.SHT3x_status_label.setText("Připojen")
             self.SHT3x_status_label.setStyleSheet(f"color: {self.green_hex}")
 
-            self.SHT3x_temp_label.setText(str(DTO.SHT3x.values.temperature))
-            self.SHT3x_humidity_label.setText(str(DTO.SHT3x.values.humidity))
+            self.SHT3x_temp_label.setText(f"{DTO.SHT3x.values.temperature:.1f}")
+            self.SHT3x_humidity_label.setText(f"{DTO.SHT3x.values.humidity:.1f}")
         else:
             self.SHT3x_status_label.setText("Odpojen")
             self.SHT3x_status_label.setStyleSheet(f"color: {self.red_hex}")
+
+        bmp_connected = DTO.Bmp180.connected
+        if bmp_connected:
+            self.BMP180_status_label.setText("Připojen")
+            self.BMP180_status_label.setStyleSheet(f"color: {self.green_hex}")
+
+            self.bmp180_temp_label.setText(f"{DTO.Bmp180.values.temperature:.1f}")
+            self.bmp180_pressure_label.setText(f"{DTO.Bmp180.values.pressure:.1f}")
+            self.bmp180_altitude_label.setText(f"{DTO.Bmp180.values.altitude:.1f}")
+        else:
+            self.BMP180_status_label.setText("Odpojen")
+            self.BMP180_status_label.setStyleSheet(f"color: {self.red_hex}")
 
 
     # KOMUNIKACE PŘES TCP
@@ -298,4 +400,8 @@ class ClientPanel(QWidget):
     def send_gyro_calibrate_command(self):
         self.on_command_send_request.emit(CALIBRATE_GYRO_DTO)
 
+    def send_update_virtual_gyro_command(self):
+        self.on_command_send_request.emit(create_set_virtual_gyro_value_dto(self.current_roll, self.current_pitch))
 
+    def send_update_virtual_altitude_command(self):
+        self.on_command_send_request.emit(create_set_virtual_barometer_altitude_dto(int(self.current_altitude)))

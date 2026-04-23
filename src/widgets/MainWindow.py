@@ -7,6 +7,7 @@ from PySide6.QtCore import Qt, QTimer,QCoreApplication
 
 from helpers.SensorManager import SensorManager
 from helpers.BrightnessController import BrightnessController
+from sensors.VirtualBarometer import VirtualBarometer
 from sensors.VirtualTemperatureSensor import VirtualTemperatureSensor
 from widgets.Layouts.ManualModeLayout import ManualModeLayout
 from widgets.Layouts.SlidingLayout import SlidingLayout
@@ -21,6 +22,8 @@ class MainWindow(QWidget):
     def __init__(self, is_raspberry_pi=False):
         super().__init__()
         self.is_raspberry_pi = is_raspberry_pi
+
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
 
         if is_raspberry_pi:
             # Ano některé parametry zde nedávají moc smysl
@@ -112,6 +115,15 @@ class MainWindow(QWidget):
             else:
                 print(f"{command.ip} is requesting {command.name} with args {command.args}")
                 print("This isn't a raspberry pi. No sensor present here.")
+        elif command.name == "set_virtual_gyro_value":
+            roll = float(command.args[0])
+            pitch = float(command.args[1])
+            if not self.is_raspberry_pi:
+                self.sensorManager.MMA8452Q.set_gyro(roll, pitch)
+        elif command.name == "set_virtual_barometer_altitude":
+            altitude = int(command.args[0])
+            if not self.is_raspberry_pi:
+                self.sensorManager.Bmp180.set_altitude(altitude)
         else:
             print(f"{command.ip} is requesting {command.name} with args {command.args}")
             print("I have no idea what that means. Doing nothing.")
@@ -128,5 +140,8 @@ class MainWindow(QWidget):
 
         if not self.is_raspberry_pi and self.sensorManager.SHT3x is None:
             self.sensorManager.SHT3x = VirtualTemperatureSensor()
+
+        if not self.is_raspberry_pi and self.sensorManager.Bmp180 is None:
+            self.sensorManager.Bmp180 = VirtualBarometer()
 
         self.sensorManager.CheckForSensors()

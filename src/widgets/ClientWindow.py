@@ -14,6 +14,8 @@ class ClientWindow(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.setWindowTitle("Komunikační klient")
+
         self.ip_input = None
         self.tcp_client = None
 
@@ -69,7 +71,7 @@ class ClientWindow(QWidget):
         # Musíme vynutit změnu jasu, protože panel_widget nemá tušení kdy je aktivní a kdy ne
         self.panel_widget.send_change_brightness_command()
         self.tcp_client.error.disconnect(self.on_connection_error)
-        QTimer.singleShot(20, lambda: self.setFixedSize(400,600))
+        QTimer.singleShot(20, lambda: self.setFixedSize(500,680))
 
     def on_connection_closed(self):
         # Dal jsem sem QTimer kvůli race condition. Z nějakého důvodu změna widgetu způsobí, že okno nereaguje na setFixedSize

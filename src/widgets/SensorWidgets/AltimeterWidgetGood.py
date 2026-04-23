@@ -20,7 +20,7 @@ class AltimeterWidgetGood(QWidget):
         self.altitude = 1181
 
         self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update)
+        self.timer.timeout.connect(self.onTimerTick)
         self.timer.start(100)
 
     def onTimerTick(self):

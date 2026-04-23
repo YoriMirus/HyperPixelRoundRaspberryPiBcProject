@@ -33,6 +33,9 @@ class DigitalAccelerometerExample(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
 
+        painter.setBrush(QColor("black"))
+        painter.drawEllipse(0, 0, 480, 480)
+
         # Text
         painter.setPen(QColor(220, 220, 220))
 

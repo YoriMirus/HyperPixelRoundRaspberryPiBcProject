@@ -21,3 +21,8 @@ def create_change_brightness_dto(value: int):
     percent = max(0, min(100, value))
     return CommandDTO(name="change_brightness", args=(str(percent),))
 
+def create_set_virtual_gyro_value_dto(roll: float, pitch: float):
+    return CommandDTO(name="set_virtual_gyro_value", args=(str(roll), str(pitch)))
+
+def create_set_virtual_barometer_altitude_dto(altitude_ft: int):
+    return CommandDTO(name="set_virtual_barometer_altitude", args=(str(altitude_ft),))

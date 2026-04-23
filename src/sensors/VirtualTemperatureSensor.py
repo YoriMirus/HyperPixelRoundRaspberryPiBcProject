@@ -1,5 +1,7 @@
 import random
 
+from sensors.SHT3x import SHT3x
+
 
 class VirtualTemperatureSensor:
     DEFAULT_I2C_ADDR = 0x45
@@ -9,12 +11,12 @@ class VirtualTemperatureSensor:
         self.bus = None
 
         # Base values
-        self.base_temperature = 27.3
+        self.base_temperature = 30
         self.base_humidity = 65.8
 
         # Noise limits
-        self.temp_noise_range = 0.2   # ±0.2 °C
-        self.hum_noise_range = 1.0    # ±1 %
+        self.temp_noise_range = 2
+        self.hum_noise_range = 3
 
     # -------------------------------------------------------
     # Noise helpers

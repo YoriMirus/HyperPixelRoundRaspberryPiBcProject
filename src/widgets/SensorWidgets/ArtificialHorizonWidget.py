@@ -13,6 +13,7 @@ class ArtificialHorizonMovingPart(QWidget):
         self.pitch = 0
         self.roll = 0
 
+        self.setStyleSheet("background-color: white;")
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.setAttribute(Qt.WA_NoSystemBackground)
         self.setAttribute(Qt.WA_OpaquePaintEvent)
@@ -145,6 +146,7 @@ class ArtificialHorizonWidget(QWidget):
         super().__init__()
         self.sensor = None
         self.sensorManager = sensorManager
+        self.setStyleSheet("background-color: black;")
 
         self.surround_pix = QPixmap("assets/artificial-horizon-surroundings.png") \
                                 .scaled(480, 480, Qt.KeepAspectRatio, Qt.SmoothTransformation)

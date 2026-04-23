@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QEvent, QTimer
 
-from widgets.SensorWidgets.ColorCodingExample import ColorCodingExample
+from widgets.SensorWidgets.TemperatureDial import TemperatureDial
 from widgets.SensorWidgets.DigitalAccelerometer import DigitalAccelerometerExample
 from widgets.SensorWidgets.Barometer import Barometer
 from widgets.SensorWidgets.ArtificialHorizonWidget import ArtificialHorizonWidget
@@ -32,8 +32,8 @@ class SlidingLayout(QWidget):
 
         bmp180_container = ZoomCarousel()
         bmp180_container.addWidget(Barometer(sensor_manager=sensorManager))
-        bmp180_container.addWidget(AltimeterWidgetGood())
-        bmp180_container.addWidget(AltimeterWidgetBad())
+        bmp180_container.addWidget(AltimeterWidgetGood(sensorManager=sensorManager))
+        bmp180_container.addWidget(AltimeterWidgetBad(sensorManager=sensorManager))
 
         accelerometer_container = ZoomCarousel()
         accelerometer_container.addWidget(DigitalAccelerometerExample(sensor_manager=sensorManager))
@@ -41,9 +41,9 @@ class SlidingLayout(QWidget):
         accelerometer_container.addWidget(ArtificialHorizonWidget(self.sensorManager))
 
         temperature_container = ZoomCarousel()
-        temperature_container.addWidget(WeatherRadialWidget(self.sensorManager))
         temperature_container.addWidget(WeatherStationWidget(self.sensorManager))
-        temperature_container.addWidget(ColorCodingExample())
+        temperature_container.addWidget(WeatherRadialWidget(self.sensorManager))
+        temperature_container.addWidget(TemperatureDial(self.sensorManager))
 
         self.pages = [
             QuitWidget(),
