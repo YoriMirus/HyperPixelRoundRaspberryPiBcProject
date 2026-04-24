@@ -185,7 +185,7 @@ class ArtificialHorizonWidget(QWidget):
             return
 
         try:
-            roll, pitch = self.sensorManager.MMA8452Q.read_gyro()
+            roll, pitch = self.sensorManager.MMA8452Q.read_gyro_artificial_horizon()
             self.pitch = pitch
             self.roll = roll
             self.moving.setRoll(self.roll)

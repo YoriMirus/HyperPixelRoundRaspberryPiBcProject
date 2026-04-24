@@ -66,10 +66,12 @@ class ClientPanel(QWidget):
         main_layout.addLayout(self.create_sensor_status_layout())
 
         calibration_button = QPushButton("Definuj rovinu (vodováha)")
-        calibration_button.clicked.connect(self.send_gyro_calibrate_command)
+        calibration_button.clicked.connect(self.send_gyro_calibrate_level_command)
         main_layout.addWidget(calibration_button)
 
-        main_layout.addWidget(QPushButton("Definuj rovinu (umělý horizont)"))
+        calibration2_button = QPushButton("Definuj rovinu (umělý horizont)")
+        calibration2_button.clicked.connect(self.send_gyro_calibrate_artificial_horizon_command)
+        main_layout.addWidget(calibration2_button)
 
         rolllbl, rollslider = self.create_gyro_roll_slider()
         self.roll_slider = rollslider
@@ -397,8 +399,11 @@ class ClientPanel(QWidget):
         self.on_command_send_request.emit(create_change_brightness_dto(self.brightness_slider.value()))
         self.current_brightness = self.brightness_slider.value()
 
-    def send_gyro_calibrate_command(self):
-        self.on_command_send_request.emit(CALIBRATE_GYRO_DTO)
+    def send_gyro_calibrate_level_command(self):
+        self.on_command_send_request.emit(CALIBRATE_GYRO_LEVEL_DTO)
+
+    def send_gyro_calibrate_artificial_horizon_command(self):
+        self.on_command_send_request.emit(CALIBRATE_GYRO_ARTIFICIAL_HORIZON_DTO)
 
     def send_update_virtual_gyro_command(self):
         self.on_command_send_request.emit(create_set_virtual_gyro_value_dto(self.current_roll, self.current_pitch))

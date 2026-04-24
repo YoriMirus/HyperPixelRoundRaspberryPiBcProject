@@ -127,7 +127,7 @@ class LevelWidget(QWidget):
         if self.sensor_manager.MMA8452Q is None:
             return
 
-        roll, pitch = self.sensor_manager.MMA8452Q.read_gyro()
+        roll, pitch = self.sensor_manager.MMA8452Q.read_gyro_level()
         self.roll = roll
         self.pitch = -pitch
         self.update()

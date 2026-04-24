@@ -1,4 +1,4 @@
-from math import atan2, sqrt, radians, sin, cos
+from math import atan2, sqrt
 import smbus2
 import time
 
@@ -27,6 +27,7 @@ class MMA8452Q:
             self.scale_bits = 0b00
             self.scale = 2
 
+        # filtering
         self.filter_len = 10
         self.bufX = [0.0] * self.filter_len
         self.bufY = [0.0] * self.filter_len
@@ -37,12 +38,9 @@ class MMA8452Q:
         self._configure_scale()
         self._enter_active()
 
-        # Identity rotation until calibrated
-        self.R = [
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1]
-        ]
+        # Two independent rotation matrices
+        self.R_level = [[1,0,0],[0,1,0],[0,0,1]]
+        self.R_horizon = [[1,0,0],[0,1,0],[0,0,1]]
 
     # -------------------------------------------------------
     # Detection
@@ -50,9 +48,6 @@ class MMA8452Q:
 
     @staticmethod
     def detect(bus_number):
-        """
-        Returns the I2C address if an MMA8452Q responds on the given bus.
-        """
         try:
             bus = smbus2.SMBus(bus_number)
         except:
@@ -69,6 +64,7 @@ class MMA8452Q:
 
         bus.close()
         return None
+
     # -------------------------------------------------------
     # Low-level I2C
     # -------------------------------------------------------
@@ -94,7 +90,7 @@ class MMA8452Q:
         self._write_register(self.REG_XYZ_DATA_CFG, cfg)
 
     # -------------------------------------------------------
-    # Reading raw data
+    # Raw reading
     # -------------------------------------------------------
 
     def read_raw_6bytes(self):
@@ -120,7 +116,7 @@ class MMA8452Q:
         ay = y / counts_per_g
         az = z / counts_per_g
 
-        # ---- moving average filter ----
+        # moving average
         self.bufX[self.buf_i] = ax
         self.bufY[self.buf_i] = ay
         self.bufZ[self.buf_i] = az
@@ -133,22 +129,18 @@ class MMA8452Q:
 
         return ax, ay, az
 
-    def read_acceleration(self):
-        ax, ay, az = self.read_acceleration_raw()
-        ax, ay, az = self._rotate(ax, ay, az)
-
-        return ax, ay, az
-
-
     # -------------------------------------------------------
-    # Calibration & rotation math
+    # Rotation helpers
     # -------------------------------------------------------
 
-    def calibrate_level(self, samples=50, delay=0.01):
-        """
-        Reads several samples and defines that orientation as 0°.
-        Call this while the device is in the desired 'level' position.
-        """
+    def _rotate_with_matrix(self, x, y, z, R):
+        return (
+            R[0][0]*x + R[0][1]*y + R[0][2]*z,
+            R[1][0]*x + R[1][1]*y + R[1][2]*z,
+            R[2][0]*x + R[2][1]*y + R[2][2]*z
+        )
+
+    def _compute_calibration_matrix(self, samples=50, delay=0.01):
         sx = sy = sz = 0.0
 
         for _ in range(samples):
@@ -162,16 +154,13 @@ class MMA8452Q:
         gy = sy / samples
         gz = sz / samples
 
-        # Normalize gravity vector
         norm = sqrt(gx*gx + gy*gy + gz*gz)
         gx /= norm
         gy /= norm
         gz /= norm
 
-        # Target gravity vector
         tx, ty, tz = 0.0, 0.0, 1.0
 
-        # Axis-angle rotation
         vx = gy * tz - gz * ty
         vy = gz * tx - gx * tz
         vz = gx * ty - gy * tx
@@ -180,17 +169,16 @@ class MMA8452Q:
         c = gx*tx + gy*ty + gz*tz
 
         if s < 1e-6:
-            self.R = [[1,0,0],[0,1,0],[0,0,1]]
-            return
+            return [[1,0,0],[0,1,0],[0,0,1]]
 
         vx /= s
         vy /= s
         vz /= s
 
         K = [
-            [ 0, -vz,  vy],
-            [ vz,  0, -vx],
-            [-vy, vx,   0]
+            [0, -vz, vy],
+            [vz, 0, -vx],
+            [-vy, vx, 0]
         ]
 
         def matmul(A, B):
@@ -199,7 +187,7 @@ class MMA8452Q:
         I = [[1,0,0],[0,1,0],[0,0,1]]
         K2 = matmul(K, K)
 
-        self.R = [
+        return [
             [
                 I[i][j] + K[i][j]*s + K2[i][j]*(1-c)
                 for j in range(3)
@@ -207,25 +195,49 @@ class MMA8452Q:
             for i in range(3)
         ]
 
-    def _rotate(self, x, y, z):
-        return (
-            self.R[0][0]*x + self.R[0][1]*y + self.R[0][2]*z,
-            self.R[1][0]*x + self.R[1][1]*y + self.R[1][2]*z,
-            self.R[2][0]*x + self.R[2][1]*y + self.R[2][2]*z
-        )
-
     # -------------------------------------------------------
-    # Orientation output
+    # Calibration
     # -------------------------------------------------------
 
-    def read_gyro(self):
+    def calibrate_level(self, samples=50, delay=0.01):
+        self.R_level = self._compute_calibration_matrix(samples, delay)
+
+    def calibrate_artificial_horizon(self, samples=50, delay=0.01):
+        self.R_horizon = self._compute_calibration_matrix(samples, delay)
+
+    # -------------------------------------------------------
+    # Orientation outputs
+    # -------------------------------------------------------
+
+    def read_gyro_level(self):
         ax, ay, az = self.read_acceleration_raw()
-        ax, ay, az = self._rotate(ax, ay, az)
+        ax, ay, az = self._rotate_with_matrix(ax, ay, az, self.R_level)
 
-        roll  =atan2(ay, az) * 57.2958
+        roll  = atan2(ay, az) * 57.2958
         pitch = atan2(-ax, sqrt(ay*ay + az*az)) * 57.2958
 
         return roll, pitch
+
+    def read_gyro_artificial_horizon(self):
+        ax, ay, az = self.read_acceleration_raw()
+        ax, ay, az = self._rotate_with_matrix(ax, ay, az, self.R_horizon)
+
+        roll  = atan2(ay, az) * 57.2958
+        pitch = atan2(-ax, sqrt(ay*ay + az*az)) * 57.2958
+
+        return roll, pitch
+
+    def read_acceleration_level(self):
+        ax, ay, az = self.read_acceleration_raw()
+        return self._rotate_with_matrix(ax, ay, az, self.R_level)
+
+    def read_acceleration_artificial_horizon(self):
+        ax, ay, az = self.read_acceleration_raw()
+        return self._rotate_with_matrix(ax, ay, az, self.R_horizon)
+
+    # backward compatibility
+    def read_acceleration(self):
+        return self.read_acceleration_level()
 
     # -------------------------------------------------------
     # Cleanup

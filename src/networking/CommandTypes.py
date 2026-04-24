@@ -12,7 +12,9 @@ DISPLAY_CLOCK_DTO = CommandDTO(name="change_display", args=tuple("0"))
 DISPLAY_WEATHER_STATION_DTO = CommandDTO(name="change_display", args=tuple("1"))
 DISPLAY_ARTIFICIAL_HORIZON_DTO = CommandDTO(name="change_display", args=tuple("2"))
 GET_STATUS_DTO = CommandDTO(name="get_status")
-CALIBRATE_GYRO_DTO = CommandDTO(name="calibrate_gyro")
+CALIBRATE_GYRO_LEVEL_DTO = CommandDTO(name="calibrate_gyro_level")
+CALIBRATE_GYRO_ARTIFICIAL_HORIZON_DTO = CommandDTO(name="calibrate_gyro_artificial_horizon")
+
 
 def create_status_dto(status_str: str) -> CommandDTO:
     return CommandDTO(name="get_status_response", args=(status_str,))

@@ -47,8 +47,11 @@ class VirtualAccelerometer:
     def read_acceleration(self):
         return self.read_acceleration_raw()
 
-    def read_gyro(self):
+    def read_gyro_level(self):
         # Return noisy orientation as well
+        return self._noisy_angles()
+
+    def read_gyro_artificial_horizon(self):
         return self._noisy_angles()
 
     def set_gyro(self, roll, pitch):

@@ -66,7 +66,7 @@ class SensorManager:
         # --- MMA5452Q ---
         if self.MMA8452Q is not None:
             x,y,z = self.MMA8452Q.read_acceleration()
-            roll, pitch = self.MMA8452Q.read_gyro()
+            roll, pitch = self.MMA8452Q.read_gyro_level()
 
             mma_status = MMA5452Q_status(
                 connected=True,

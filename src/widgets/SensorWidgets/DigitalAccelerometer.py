@@ -4,8 +4,6 @@ from PySide6.QtCore import QTimer, Qt
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QColor, QFont
 
-from sensors.MMA8452Q import MMA8452Q
-
 
 class DigitalAccelerometerExample(QWidget):
     def __init__(self, parent=None, sensor_manager=None):
@@ -16,12 +14,12 @@ class DigitalAccelerometerExample(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setStyleSheet("background-color: black;")
 
-        # Values
-        self.x = 0
-        self.y = 0
-        self.z = 0
-        self.roll = 0
-        self.pitch = 0
+        # Values (RENAMED to avoid QWidget conflicts)
+        self.accel_x = 0.0
+        self.accel_y = 0.0
+        self.accel_z = 0.0
+        self.roll = 0.0
+        self.pitch = 0.0
 
         # Timer
         self.timer_refresh_rate = 30
@@ -36,50 +34,49 @@ class DigitalAccelerometerExample(QWidget):
         painter.setBrush(QColor("black"))
         painter.drawEllipse(0, 0, 480, 480)
 
-        # Text
         painter.setPen(QColor(220, 220, 220))
 
         title_font = QFont("Arial", 20, QFont.Bold)
         value_font = QFont("Arial", 18)
 
         center_x = self.width() // 2
-        y = 80
+        y_pos = 80  # renamed to avoid confusion
 
         # Zrychlení
         painter.setFont(title_font)
-        painter.drawText(0, y, 480, 40, Qt.AlignCenter, "ZRYCHLENÍ")
-        y += 50
+        painter.drawText(0, y_pos, 480, 40, Qt.AlignCenter, "ZRYCHLENÍ")
+        y_pos += 50
 
         painter.setFont(value_font)
-        painter.drawText(0, y, 480, 30, Qt.AlignCenter, f"X: {self.x:.3f}")
-        y += 35
-        painter.drawText(0, y, 480, 30, Qt.AlignCenter, f"Y: {self.y:.3f}")
-        y += 35
-        painter.drawText(0, y, 480, 30, Qt.AlignCenter, f"Z: {self.z:.3f}")
-        y += 60
+        painter.drawText(0, y_pos, 480, 30, Qt.AlignCenter, f"X: {self.accel_x:.3f}")
+        y_pos += 35
+        painter.drawText(0, y_pos, 480, 30, Qt.AlignCenter, f"Y: {self.accel_y:.3f}")
+        y_pos += 35
+        painter.drawText(0, y_pos, 480, 30, Qt.AlignCenter, f"Z: {self.accel_z:.3f}")
+        y_pos += 60
 
         # Orientace
         painter.setFont(title_font)
-        painter.drawText(0, y, 480, 40, Qt.AlignCenter, "ORIENTACE")
-        y += 50
+        painter.drawText(0, y_pos, 480, 40, Qt.AlignCenter, "ORIENTACE")
+        y_pos += 50
 
         painter.setFont(value_font)
-        painter.drawText(0, y, 480, 30, Qt.AlignCenter, f"Náklon:  {self.roll:.2f}°")
-        y += 35
-        painter.drawText(0, y, 480, 30, Qt.AlignCenter, f"Klopení: {self.pitch:.2f}°")
+        painter.drawText(0, y_pos, 480, 30, Qt.AlignCenter, f"Náklon:  {self.roll:.2f}°")
+        y_pos += 35
+        painter.drawText(0, y_pos, 480, 30, Qt.AlignCenter, f"Klopení: {self.pitch:.2f}°")
 
     def on_timer_tick(self):
         if self.sensor_manager.MMA8452Q is None:
             return
 
-        # Example: adjust depending on your actual API
         try:
-            self.x, self.y, self.z = self.sensor_manager.MMA8452Q.read_acceleration()
+            self.accel_x, self.accel_y, self.accel_z = \
+                self.sensor_manager.MMA8452Q.read_acceleration()
         except:
             pass
 
         try:
-            roll, pitch = self.sensor_manager.MMA8452Q.read_gyro()
+            roll, pitch = self.sensor_manager.MMA8452Q.read_gyro_level()
             self.roll = roll
             self.pitch = pitch
         except:

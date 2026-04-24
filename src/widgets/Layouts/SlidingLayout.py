@@ -26,31 +26,34 @@ class SlidingLayout(QWidget):
         self.setStyleSheet("QWidget { background-color: black; }")
         self.setAttribute(Qt.WidgetAttribute.WA_AcceptTouchEvents)  # Enable multitouch
 
-        clock_container = ZoomCarousel()
-        clock_container.addWidget(AnalogClock())
-        clock_container.addWidget(DigitalClockDesignA())
+        #clock_container = ZoomCarousel()
+        #clock_container.addWidget(AnalogClock())
+        #clock_container.addWidget(DigitalClockDesignA())
 
-        bmp180_container = ZoomCarousel()
-        bmp180_container.addWidget(Barometer(sensor_manager=sensorManager))
-        bmp180_container.addWidget(AltimeterWidgetGood(sensorManager=sensorManager))
-        bmp180_container.addWidget(AltimeterWidgetBad(sensorManager=sensorManager))
+        #bmp180_container = ZoomCarousel()
+        #bmp180_container.addWidget(Barometer(sensor_manager=sensorManager))
+        #bmp180_container.addWidget(AltimeterWidgetGood(sensorManager=sensorManager))
+        #bmp180_container.addWidget(AltimeterWidgetBad(sensorManager=sensorManager))
 
-        accelerometer_container = ZoomCarousel()
-        accelerometer_container.addWidget(DigitalAccelerometerExample(sensor_manager=sensorManager))
-        accelerometer_container.addWidget(LevelWidget(sensor_manager=sensorManager))
-        accelerometer_container.addWidget(ArtificialHorizonWidget(self.sensorManager))
+        #accelerometer_container = ZoomCarousel()
+        #accelerometer_container.addWidget(DigitalAccelerometerExample(sensor_manager=sensorManager))
+        #accelerometer_container.addWidget(LevelWidget(sensor_manager=sensorManager))
+        #accelerometer_container.addWidget(ArtificialHorizonWidget(self.sensorManager))
 
-        temperature_container = ZoomCarousel()
-        temperature_container.addWidget(WeatherStationWidget(self.sensorManager))
-        temperature_container.addWidget(WeatherRadialWidget(self.sensorManager))
-        temperature_container.addWidget(TemperatureDial(self.sensorManager))
+        #temperature_container = ZoomCarousel()
+        #temperature_container.addWidget(WeatherStationWidget(self.sensorManager))
+        #temperature_container.addWidget(WeatherRadialWidget(self.sensorManager))
+        #temperature_container.addWidget(TemperatureDial(self.sensorManager))
 
         self.pages = [
             QuitWidget(),
-            bmp180_container,
-            clock_container,
-            temperature_container,
-            accelerometer_container
+            LevelWidget(sensor_manager=sensorManager),
+            ArtificialHorizonWidget(sensorManager=sensorManager),
+            DigitalAccelerometerExample(sensor_manager=sensorManager),
+            #clock_container,
+            #temperature_container,
+            #accelerometer_container,
+            #bmp180_container
         ]
 
         for i, page in enumerate(self.pages):
