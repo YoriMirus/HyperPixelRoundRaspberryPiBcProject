@@ -17,6 +17,9 @@ from widgets.Other.CircularOverlay import CircularOverlay
 from widgets.Layouts.ZoomCarousel import ZoomCarousel
 from widgets.Other.DebugInfo import DebugInfo
 
+
+from widgets.SensorWidgets.GalbraithGraphTemp import GalbraigthGraphTemp
+
 class SlidingLayout(QWidget):
     def __init__(self, is_raspberry_pi=False, sensorManager=None):
         super().__init__()
@@ -26,34 +29,31 @@ class SlidingLayout(QWidget):
         self.setStyleSheet("QWidget { background-color: black; }")
         self.setAttribute(Qt.WidgetAttribute.WA_AcceptTouchEvents)  # Enable multitouch
 
-        #clock_container = ZoomCarousel()
-        #clock_container.addWidget(AnalogClock())
-        #clock_container.addWidget(DigitalClockDesignA())
+        clock_container = ZoomCarousel()
+        clock_container.addWidget(AnalogClock())
+        clock_container.addWidget(DigitalClockDesignA())
 
-        #bmp180_container = ZoomCarousel()
-        #bmp180_container.addWidget(Barometer(sensor_manager=sensorManager))
-        #bmp180_container.addWidget(AltimeterWidgetGood(sensorManager=sensorManager))
-        #bmp180_container.addWidget(AltimeterWidgetBad(sensorManager=sensorManager))
+        bmp180_container = ZoomCarousel()
+        bmp180_container.addWidget(Barometer(sensor_manager=sensorManager))
+        bmp180_container.addWidget(AltimeterWidgetGood(sensorManager=sensorManager))
+        bmp180_container.addWidget(AltimeterWidgetBad(sensorManager=sensorManager))
 
-        #accelerometer_container = ZoomCarousel()
-        #accelerometer_container.addWidget(DigitalAccelerometerExample(sensor_manager=sensorManager))
-        #accelerometer_container.addWidget(LevelWidget(sensor_manager=sensorManager))
-        #accelerometer_container.addWidget(ArtificialHorizonWidget(self.sensorManager))
+        accelerometer_container = ZoomCarousel()
+        accelerometer_container.addWidget(DigitalAccelerometerExample(sensor_manager=sensorManager))
+        accelerometer_container.addWidget(LevelWidget(sensor_manager=sensorManager))
+        accelerometer_container.addWidget(ArtificialHorizonWidget(self.sensorManager))
 
-        #temperature_container = ZoomCarousel()
-        #temperature_container.addWidget(WeatherStationWidget(self.sensorManager))
-        #temperature_container.addWidget(WeatherRadialWidget(self.sensorManager))
-        #temperature_container.addWidget(TemperatureDial(self.sensorManager))
+        temperature_container = ZoomCarousel()
+        temperature_container.addWidget(WeatherStationWidget(self.sensorManager))
+        temperature_container.addWidget(WeatherRadialWidget(self.sensorManager))
+        temperature_container.addWidget(TemperatureDial(self.sensorManager))
 
         self.pages = [
-            QuitWidget(),
-            LevelWidget(sensor_manager=sensorManager),
-            ArtificialHorizonWidget(sensorManager=sensorManager),
-            DigitalAccelerometerExample(sensor_manager=sensorManager),
-            #clock_container,
-            #temperature_container,
-            #accelerometer_container,
-            #bmp180_container
+            clock_container,
+            temperature_container,
+            accelerometer_container,
+            bmp180_container,
+            GalbraigthGraphTemp(sensorManager=sensorManager),
         ]
 
         for i, page in enumerate(self.pages):
@@ -210,8 +210,10 @@ class SlidingLayout(QWidget):
     # ANIMATION HELPER
     # ───────────────────────────────────────────────
     def animate_to(self, target_index):
-        self.current_index = target_index
+        if target_index >= len(self.pages) or target_index == self.current_index:
+            return
 
+        self.current_index = target_index
         self.animations.clear()
 
         for i, page in enumerate(self.pages):
@@ -226,3 +228,17 @@ class SlidingLayout(QWidget):
             anim.start()
 
             self.animations.append(anim)  # store to prevent GC
+
+    def change_display_style(self, display_index, style_index):
+        if display_index >= len(self.pages):
+            return
+
+        if style_index < 0 or style_index > 2:
+            return
+
+        widget = self.pages[display_index]
+        try:
+            widget.move_to(style_index)
+        except AttributeError:
+            print("This widget does not support long presses")
+            pass

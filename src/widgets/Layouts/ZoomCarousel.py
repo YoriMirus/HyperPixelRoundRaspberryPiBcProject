@@ -225,3 +225,10 @@ class ZoomCarousel(QWidget):
         anim.start()
 
         self._scroll_anim = anim
+
+    def move_to(self, index):
+        if index < 0 or index > len(self.proxies) - 1:
+            return
+
+        self.current_index = index
+        self._animate_scroll_to_current()

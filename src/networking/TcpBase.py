@@ -9,7 +9,7 @@ class BaseTcpThread(QThread):
     error = Signal(str)
     disconnected = Signal()
 
-    def __init__(self, timeout=0.2):
+    def __init__(self, timeout=0.5):
         super().__init__()
         self.timeout = timeout
         self._running = True

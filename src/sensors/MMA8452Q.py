@@ -1,7 +1,8 @@
 from math import atan2, sqrt
 import smbus2
 import time
-
+import os
+import json
 
 class MMA8452Q:
     SLAVE_ADDR_HIGH = 0b0011101
@@ -42,9 +43,35 @@ class MMA8452Q:
         self.R_level = [[1,0,0],[0,1,0],[0,0,1]]
         self.R_horizon = [[1,0,0],[0,1,0],[0,0,1]]
 
-    # -------------------------------------------------------
-    # Detection
-    # -------------------------------------------------------
+        self.load_calibration()
+
+    def save_calibration(self, filepath="mma8452q_calibration.json"):
+        data = {
+            "R_level": self.R_level,
+            "R_horizon": self.R_horizon
+        }
+
+        try:
+            with open(filepath, "w") as f:
+                json.dump(data, f)
+        except Exception as e:
+            print(f"Failed to save calibration: {e}")
+
+    def load_calibration(self, filepath="mma8452q_calibration.json"):
+        if not os.path.exists(filepath):
+            return  # no file → keep defaults
+
+        try:
+            with open(filepath, "r") as f:
+                data = json.load(f)
+
+            # basic validation
+            if "R_level" in data and "R_horizon" in data:
+                self.R_level = data["R_level"]
+                self.R_horizon = data["R_horizon"]
+        except Exception as e:
+            print(f"Failed to load calibration: {e}")
+
 
     @staticmethod
     def detect(bus_number):
@@ -65,9 +92,6 @@ class MMA8452Q:
         bus.close()
         return None
 
-    # -------------------------------------------------------
-    # Low-level I2C
-    # -------------------------------------------------------
 
     def _read_register(self, reg):
         return self.bus.read_byte_data(self.address, reg)
@@ -89,9 +113,6 @@ class MMA8452Q:
         cfg |= self.scale_bits
         self._write_register(self.REG_XYZ_DATA_CFG, cfg)
 
-    # -------------------------------------------------------
-    # Raw reading
-    # -------------------------------------------------------
 
     def read_raw_6bytes(self):
         return self.bus.read_i2c_block_data(self.address, self.REG_OUT_X_MSB, 6)
@@ -128,10 +149,6 @@ class MMA8452Q:
         az = sum(self.bufZ) / self.filter_len
 
         return ax, ay, az
-
-    # -------------------------------------------------------
-    # Rotation helpers
-    # -------------------------------------------------------
 
     def _rotate_with_matrix(self, x, y, z, R):
         return (
@@ -195,19 +212,13 @@ class MMA8452Q:
             for i in range(3)
         ]
 
-    # -------------------------------------------------------
-    # Calibration
-    # -------------------------------------------------------
-
     def calibrate_level(self, samples=50, delay=0.01):
         self.R_level = self._compute_calibration_matrix(samples, delay)
+        self.save_calibration()
 
     def calibrate_artificial_horizon(self, samples=50, delay=0.01):
         self.R_horizon = self._compute_calibration_matrix(samples, delay)
-
-    # -------------------------------------------------------
-    # Orientation outputs
-    # -------------------------------------------------------
+        self.save_calibration()
 
     def read_gyro_level(self):
         ax, ay, az = self.read_acceleration_raw()
@@ -238,10 +249,6 @@ class MMA8452Q:
     # backward compatibility
     def read_acceleration(self):
         return self.read_acceleration_level()
-
-    # -------------------------------------------------------
-    # Cleanup
-    # -------------------------------------------------------
 
     def close(self):
         if self.bus is None:

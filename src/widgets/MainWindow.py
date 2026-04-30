@@ -40,13 +40,10 @@ class MainWindow(QWidget):
         self.setStyleSheet("background-color: black")
         self.brightness_controller = None
 
-        self.manual_mode = False
         self.sliding_layout = SlidingLayout(is_raspberry_pi=is_raspberry_pi, sensorManager=self.sensorManager)
-        self.manual_mode_layout = ManualModeLayout(self.sensorManager)
 
         self.stacked = QStackedLayout()
         self.stacked.addWidget(self.sliding_layout)
-        self.stacked.addWidget(self.manual_mode_layout)
         self.stacked.setCurrentWidget(self.sliding_layout)
         self.setLayout(self.stacked)
 
@@ -57,7 +54,6 @@ class MainWindow(QWidget):
 
         if is_raspberry_pi:
             self.brightness_controller = BrightnessController()
-
 
         self.listener = TcpListener()
         self.listener.command_received.connect(self.on_command_received)
@@ -74,23 +70,23 @@ class MainWindow(QWidget):
             # Jakékoliv číslo jiné než 0 je v run.sh skriptu na raspberry pi vnímáno jako error a samotný OS se nevypne
             # Hodí se pro debug účely kdy je potřeba vypnout program, ale nevypnout samotné raspberry pi
             QCoreApplication.exit(2)
-        elif command.name == "enter_default_window":
-            self.stacked.setCurrentWidget(self.sliding_layout)
-        elif command.name == "enter_manual_window":
-            self.stacked.setCurrentWidget(self.manual_mode_layout)
         elif command.name == "change_display":
             index = command.args[0]
             if index.isnumeric():
                 index_int = int(index)
-                self.manual_mode_layout.setDisplayedWidget(index_int)
+                self.sliding_layout.animate_to(index_int)
             else:
                 print(f"{command.ip} is requesting {command.name} with args {command.args}")
                 print("Invalid index. Doing nothing.")
-        elif command.name == "change_clock_style":
-            index = command.args[0]
-            if index.isnumeric():
-                index_int = int(index)
-                self.manual_mode_layout.changeWidgetStyle(0, index_int)
+        elif command.name == "change_display_style":
+            index_1 = command.args[0]
+            index_2 = command.args[1]
+            if index_1.isnumeric() and index_2.isnumeric():
+                display_index_int = int(index_1)
+                style_index_int = int(index_2)
+                self.sliding_layout.change_display_style(display_index_int, style_index_int)
+                self.sliding_layout.animate_to(display_index_int)
+
             else:
                 print(f"{command.ip} is requesting {command.name} with args {command.args}")
                 print("Invalid index. Doing nothing.")

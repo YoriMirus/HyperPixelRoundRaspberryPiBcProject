@@ -7,7 +7,7 @@ from networking.TcpBase import BaseTcpThread
 class TcpClient(BaseTcpThread):
     connected = Signal()
 
-    def __init__(self, host: str, port: int, timeout=0.2):
+    def __init__(self, host: str, port: int, timeout=0.5):
         super().__init__(timeout)
         self.host = host
         self.port = port

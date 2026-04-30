@@ -155,32 +155,48 @@ class ClientPanel(QWidget):
         page_style_grid.addWidget(QLabel("Tlak"))
 
         btn = QPushButton("Klasické")
-        btn.clicked.connect(self.send_set_clock_style_analog_command)
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(0, 0))
         page_style_grid.addWidget(btn, 0, 1)
 
         btn = QPushButton("Digitální")
-        btn.clicked.connect(self.send_set_clock_style_digital_a_command)
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(0, 1))
         page_style_grid.addWidget(btn, 0, 2)
 
-        #page_style_grid.addWidget(QPushButton("Digitální 2"), 0, 3)
-
         btn = QPushButton("Meteostanice")
-        btn.clicked.connect(self.send_set_weather_station_digital_command)
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(1, 0))
         page_style_grid.addWidget(btn, 1, 1)
 
-        page_style_grid.addWidget(QPushButton("Termostat"), 1, 2)
-        page_style_grid.addWidget(QPushButton("Analogový teploměr"), 1, 3)
+        btn = QPushButton("Termostat")
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(1, 1))
+        page_style_grid.addWidget(btn, 1, 2)
+
+        btn = QPushButton("Analogový teploměr")
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(1, 2))
+        page_style_grid.addWidget(btn, 1, 3)
+
+        btn = QPushButton("Digitální")
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(2, 0))
+        page_style_grid.addWidget(btn, 2, 3)
+
+        btn = QPushButton("Vodováha")
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(2, 1))
+        page_style_grid.addWidget(btn, 2, 2)
 
         btn = QPushButton("Umělý horizont")
-        btn.clicked.connect(self.send_set_accelerometer_artificial_horizon_command)
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(2, 2))
         page_style_grid.addWidget(btn, 2, 1)
 
-        page_style_grid.addWidget(QPushButton("Vodováha"), 2, 2)
-        page_style_grid.addWidget(QPushButton("Digitální"), 2, 3)
+        btn = QPushButton("Barometr")
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(3, 0))
+        page_style_grid.addWidget(btn, 3, 1)
 
-        page_style_grid.addWidget(QPushButton("Barometr"), 3, 1)
-        page_style_grid.addWidget(QPushButton("Výškoměr celý"), 3, 2)
-        page_style_grid.addWidget(QPushButton("Výškoměr zjednodušený"), 3, 3)
+        btn = QPushButton("Výškoměr celý")
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(3, 1))
+        page_style_grid.addWidget(btn, 3, 2)
+
+        btn = QPushButton("Výškoměr zjednodušený")
+        btn.clicked.connect(lambda: self.send_change_displayed_widget_command(3, 2))
+        page_style_grid.addWidget(btn, 3, 3)
 
         return page_style_grid
 
@@ -381,19 +397,8 @@ class ClientPanel(QWidget):
     def send_manual_window_command(self):
         self.on_command_send_request.emit(ENTER_MANUAL_WINDOW_DTO)
 
-    def send_set_clock_style_analog_command(self):
-        self.on_command_send_request.emit(DISPLAY_CLOCK_DTO)
-        self.on_command_send_request.emit(CHANGE_CLOCK_STYLE_ANALOG_DTO)
-
-    def send_set_clock_style_digital_a_command(self):
-        self.on_command_send_request.emit(DISPLAY_CLOCK_DTO)
-        self.on_command_send_request.emit(CHANGE_CLOCK_STYLE_DIGITAL_A_DTO)
-
-    def send_set_weather_station_digital_command(self):
-        self.on_command_send_request.emit(DISPLAY_WEATHER_STATION_DTO)
-
-    def send_set_accelerometer_artificial_horizon_command(self):
-        self.on_command_send_request.emit(DISPLAY_ARTIFICIAL_HORIZON_DTO)
+    def send_change_displayed_widget_command(self, display_index, style_index):
+        self.on_command_send_request.emit(create_change_display_widget_style_dto(display_index, style_index))
 
     def send_change_brightness_command(self):
         self.on_command_send_request.emit(create_change_brightness_dto(self.brightness_slider.value()))
